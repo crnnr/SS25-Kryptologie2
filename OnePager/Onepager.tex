@@ -1,0 +1,53 @@
+% Onepager zu CVE-2020-0601 (Curveball)
+% Basierend auf Informationen aus Kryptologie_2_Informationen_PrA.pdf :contentReference[oaicite:0]{index=0}:contentReference[oaicite:1]{index=1}
+\documentclass[paper=a4,fontsize=11pt]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=2cm]{geometry}
+\usepackage{hyperref}
+
+\begin{document}
+\begin{center}
+  {\LARGE\bfseries CVE-2020-0601 (Curveball) – Proof-of-Concept}\\[1ex]
+  {\small Eine kurze Zusammenfassung und PoC-Überblick}
+\end{center}
+
+\section*{Einleitung}
+CVE-2020-0601, auch bekannt als „Curveball“, bezeichnet eine Spoofing-Schwachstelle in der Windows CryptoAPI (Crypt32.dll). Durch fehlerhafte Validierung von ECC-Zertifikaten können Angreifer gefälschte Code-Signing-Zertifikate erstellen, mit denen Malware als vertrauenswürdig erscheint.
+
+\section*{Hintergrund}
+Die Windows CryptoAPI prüft bei Signatur- und Zertifikats-Verification elliptische Kurven gemäß NIST P-256. Aufgrund einer fehlerhaften Implementierung kann ein Angreifer Parameter manipulieren, sodass gefälschte ECC-Zertifikate als gültig behandelt werden.
+
+\section*{Schwachstelle}
+\begin{itemize}
+  \item \textbf{Betroffene Komponente:} Crypt32.dll (Windows 10, Server 2016/2019)
+  \item \textbf{Art:} Unsichere Kurvenparameter-/Punktvalidierung
+  \item \textbf{Ausnutzungsweg:} Erstellung eines manipulierten ECC-Zertifikats
+\end{itemize}
+
+\section*{Proof-of-Concept (PoC)}
+Für die Crypto-Challenge wird eine Python-Implementierung konzipiert und umgesetzt:
+\begin{enumerate}
+  \item \textbf{Erzeugen eines manipulierten Zertifikats:} Modifikation von Kurvenparametern (z.\,B. Ordnung, Generator).
+  \item \textbf{Signaturerstellung:} Signieren einer Test-Binärdatei mit dem gefälschten Zertifikat.
+  \item \textbf{Verifikation:} Windows akzeptiert die Signatur und behandelt die Datei als von einer vertrauenswürdigen CA ausgestellt.
+\end{enumerate}
+
+\section*{Auswirkungen}
+\begin{itemize}
+  \item \emph{Vertrauensbruch:} Malware kann als legitim erscheinen.
+  \item \emph{Code-Ausführung:} Remote-Ausführung bösartiger Code-Signaturen.
+  \item \emph{Breite Angriffsfläche:} Alle Anwendungen, die CryptoAPI zur Zertifikatsprüfung nutzen.
+\end{itemize}
+
+\section*{Gegenmaßnahmen}
+\begin{itemize}
+  \item Installation des Microsoft-Sicherheitsupdates (z.\,B. KB4528760).
+  \item Einsatz zusätzlicher Validierungstools (z.\,B. OpenSSL).
+  \item Überwachung und Revocation verdächtiger Zertifikate.
+\end{itemize}
+
+\section*{Fazit}
+CVE-2020-0601 demonstriert, wie wichtig korrekte ECC-Parameterprüfung in Kryptobibliotheken ist. Die Python-PoC-Challenge vertieft das Verständnis für Spoofing-Angriffe auf Zertifikatsketten und sensibilisiert für sichere Implementierungen.
+
+\end{document}

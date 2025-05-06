@@ -1,0 +1,16 @@
+# Ignore LaTeX auxiliary files in the * directory
+*/*.aux
+*/*.log
+*/*.out
+*/*.synctex.gz
+*/*.toc
+*/*.lof
+*/*.lot
+*/*.fls
+*/*.fdb_latexmk
+*/*.bbl
+*/*.blg
+*/*.dvi
+*/*.xdv
+*/*.bcf
+*/*.run.xml
