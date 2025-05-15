@@ -1,2 +1,5 @@
-cryptography
+gmpy2
+fastecdsa
+Crypto
+pycryptodome
 ecdsa

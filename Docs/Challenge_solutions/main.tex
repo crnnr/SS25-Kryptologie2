@@ -1,0 +1,133 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[hmargin=2.5cm,vmargin=3cm,bindingoffset=0.5cm]{geometry}
+\usepackage{graphicx}
+\graphicspath{ {figures/} }
+
+\usepackage{listings} 
+\renewcommand{\lstlistlistingname}{Auflistungsverzeichnis}
+\renewcommand{\lstlistingname}{Auflistung}
+
+\usepackage{todonotes}
+
+\begin{document}
+
+\pagenumbering{alph}
+
+\begin{titlepage}
+	\begin{center}
+		
+        \includegraphics[width=\textwidth]{THD-Logo.pdf}
+	
+	    \vspace{1cm}
+	
+		\rule{1\textwidth}{1mm} \\[0.3cm]
+
+		\textsc{\scshape \huge Bachelor Cyber Security}\\
+		
+		\rule{1\textwidth}{1mm} \\[2cm] 
+		
+		{ 
+			 \vspace{1cm}
+			 
+			 \Large \textbf{Kryptologie 2}
+			 
+			 \vspace{3cm}
+			 \Large \textbf{Projektbericht}}\\[0.5cm]
+			 \LARGE \textbf{Musterlösung zur Cryptochallenge: CurveBall}\\[2cm]
+		\begin{minipage}[t]{0.4\textwidth}
+			\begin{flushleft} \normalsize
+				\emph{Autor:}\\[0.3cm]
+				
+			    Manuel Friedl, Matrikel-Nr.: 1236626
+			    Christof Renner, Matrikel-Nr.: 22301943
+				
+			\end{flushleft}
+		\end{minipage}
+		\begin{minipage}[t]{0.5\textwidth}
+			\begin{flushright} \normalsize
+				\emph{Betreuer:}\\[0.3cm]
+				
+    			Prof. Dr. Martin Schramm
+				
+			\end{flushright}
+		\end{minipage}\\[3cm]
+		{\large Deggendorf - \today\\}	
+	\end{center}
+\end{titlepage}
+
+\pagenumbering{Roman}
+
+\section*{Eigenständigkeitserklärung}
+Hiermit bestätige ich, dass ich die vorliegende Arbeit selbstständig verfasst und keine anderen Publikationen, Vorlagen und Hilfsmitteln als die angegebenen benutzt habe. Alle Teile meiner Arbeit, die wortwörtlich oder dem Sinn nach anderen Werken entnommen sind, wurden unter Angabe der Quelle kenntlich gemacht.
+
+\vspace{1cm}
+
+Musterstadt, \underline{\hspace{0.815\textwidth}}\\
+\begin{tabular}{lll}
+\hspace{3cm} & \small(Datum)\hspace{1cm} & \hspace{2cm}\small(Unterschrift) \normalsize 
+\end{tabular}
+
+\newpage
+
+\section*{Musterlösung zur CurveBall-Challenge}
+
+\subsection*{Ziel der Aufgabe}
+
+Ziel war es, die simulierte Schwachstelle CVE-2020-0601 ('CurveBall') auszunutzen. Dazu musste ein manipuliertes ECC-Schlüsselmaterial erzeugt werden, mit dem eine Signatur erstellt werden kann, die von einer verwundbaren Validierungslogik akzeptiert wird.
+
+\subsection*{Durchführung}
+
+\begin{enumerate}
+    \item Mit dem Tool \texttt{gen-key.py} wurde ein manipulierter privater Schlüssel generiert:
+    \begin{lstlisting}[language=bash]
+    python gen-key.py USERTrustECCCertificationAuthority.crt
+    \end{lstlisting}
+
+    \item Es entstand eine Datei \texttt{p384-key-rogue.pem} mit einem privaten Schlüssel basierend auf einem manipulierten Generatorpunkt $G'$.
+
+    \item Die Datei \texttt{simulate\_vuln\_check.py} überprüft die Signatur:
+    \begin{lstlisting}[language=Python]
+    from ecdsa import SigningKey, NIST384p, BadSignatureError
+    import hashlib
+
+    with open("p384-key-rogue.pem", "rb") as f:
+        rogue_key = SigningKey.from_pem(f.read())
+
+    rogue_pub = rogue_key.verifying_key
+    message = b"Simulated CVE-2020-0601 message"
+    digest = hashlib.sha256(message).digest()
+    signature = rogue_key.sign_digest(digest)
+
+    try:
+        if rogue_pub.verify_digest(signature, digest):
+            print('Verwundbare Pruefung akzeptiert die Signatur.')
+    except BadSignatureError:
+        print("Ungueltige Signatur.")
+    \end{lstlisting}
+
+    \item Die simulierte Validierung gab aus:
+    \begin{quote}
+    \texttt{Verwundbare Prüfung akzeptiert die Signatur.}
+    \end{quote}
+\end{enumerate}
+
+\subsection*{Erklärung}
+
+Die Windows CryptoAPI überprüfte früher nicht, ob der öffentliche Schlüssel aus dem erwarteten Generatorpunkt $G$ stammt. Ein Angreifer kann also $G'$ und $d'$ so wählen, dass $Q = d' \cdot G'$ zum legitimen CA-Key $Q$ passt.
+
+Die veraltete Logik prüfte:
+\begin{itemize}
+    \item Ist $Q$ derselbe wie der vertrauenswürdige Key? $\Rightarrow$ Ja
+    \item Ist die Signatur gültig für $Q$? $\Rightarrow$ Ja
+\end{itemize}
+
+Damit akzeptierte sie die Signatur, obwohl sie mit einem manipulierten Schlüssel erstellt wurde.
+
+\subsection*{Fazit}
+
+Die Challenge konnte erfolgreich abgeschlossen werden. Die Signatur wurde unter Verwendung eines manipulierten Schlüsselpaars erzeugt, welches mathematisch äquivalent zum Originalkey erschien, jedoch auf einem manipulierten Generatorpunkt basierte.
+
+Die simulierte Umgebung erlaubte die Prüfung der Schwachstelle ohne ein verwundbares Windows-System.
+
+\end{document}
