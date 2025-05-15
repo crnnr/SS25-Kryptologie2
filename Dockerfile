@@ -33,8 +33,4 @@ RUN cat server-cert.pem ca-rogue.pem > cert-chain.pem
 
 RUN python simulate_vuln_check.py
 
-
-EXPOSE 443
-
-
 CMD ["python3", "simulate_vuln_check.py"]
