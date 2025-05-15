@@ -14,7 +14,6 @@ COPY requirements.txt .
 COPY gen-key.py .
 COPY ca.cnf .
 COPY openssl.cnf .
-COPY https_server.py .
 COPY simulate_vuln_check.py .
 COPY USERTrustECCCertificationAuthority.crt .
 
