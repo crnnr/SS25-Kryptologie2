@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Curveball CTF</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f4; padding: 20px; }
+        .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);}
+        button { padding: 10px 20px; border: none; background: #007BFF; color: white; border-radius: 5px; cursor: pointer;}
+        button:hover { background: #0056b3; }
+        .flag { margin-top: 20px; padding: 10px; background: #e2f7e2; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Curveball CTF</h2>
+        <p>Versuche, den Flag zu holen, indem du dich korrekt authentifizierst.</p>
+        <form method="post">
+            <button type="submit">Flag abholen</button>
+        </form>
+        {% if flag %}
+        <div class="flag">
+            <strong>Flag:</strong> {{ flag }}
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

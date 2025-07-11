@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  webserver:
+    build: ./webserver
+    ports:
+      - "8443:443"
+    networks:
+      - ctfnet
+
+  challenger:
+    build: ./challenger
+    networks:
+      - ctfnet
+    depends_on:
+      - webserver
+
+networks:
+  ctfnet:
+    driver: bridge
