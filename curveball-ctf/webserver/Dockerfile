@@ -5,8 +5,8 @@ RUN apk add --no-cache openssl
 WORKDIR /app
 COPY . /app
 
-RUN pip install flask
+RUN pip install flask cryptography
 
-EXPOSE 443
+EXPOSE 8443
 
 CMD ["python", "server.py"]

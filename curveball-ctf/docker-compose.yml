@@ -4,16 +4,16 @@ services:
   webserver:
     build: ./webserver
     ports:
-      - "8443:443"
+      - "8443:8443"
     networks:
       - ctfnet
 
-  challenger:
-    build: ./challenger
-    networks:
-      - ctfnet
-    depends_on:
-      - webserver
+  # challenger:
+  #   build: ./challenger
+  #   networks:
+  #     - ctfnet
+  #   depends_on:
+  #     - webserver
 
 networks:
   ctfnet:
