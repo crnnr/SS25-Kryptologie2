@@ -4,598 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Curveball CTF Challenge</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
-            min-height: 100vh;
-            color: #e0e0e0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        /* Animated background particles */
-        .background-particles {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: -1;
-        }
-
-        .particle {
-            position: absolute;
-            background: rgba(0, 255, 255, 0.1);
-            border-radius: 50%;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        .particle:nth-child(1) { width: 80px; height: 80px; left: 10%; animation-delay: 0s; }
-        .particle:nth-child(2) { width: 60px; height: 60px; left: 20%; animation-delay: 2s; }
-        .particle:nth-child(3) { width: 40px; height: 40px; left: 70%; animation-delay: 4s; }
-        .particle:nth-child(4) { width: 120px; height: 120px; left: 80%; animation-delay: 1s; }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
-            50% { transform: translateY(-100px) rotate(180deg); opacity: 0.8; }
-        }
-
-        .container {
-            background: rgba(15, 15, 35, 0.95);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            border-radius: 25px;
-            padding: 50px;
-            max-width: 800px;
-            width: 95%;
-            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.7), 
-                        0 0 0 1px rgba(255, 255, 255, 0.15) inset;
-            position: relative;
-            text-align: center;
-        }
-
-        .container::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00, #00ffff);
-            border-radius: 20px;
-            z-index: -1;
-            animation: borderGlow 3s linear infinite;
-        }
-
-        @keyframes borderGlow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .logo {
-            font-size: 3.5rem;
-            font-weight: bold;
-            background: linear-gradient(45deg, #00ffff, #ff6b6b, #4ecdc4);
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientShift 4s ease infinite;
-            margin-bottom: 10px;
-            text-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .subtitle {
-            color: white;
-            font-size: 1.3rem;
-            margin-bottom: 35px;
-            font-weight: 300;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-        }
-
-        .challenge-info {
-            background: rgba(0, 0, 0, 0.6);
-            border-left: 4px solid #00ffff;
-            padding: 25px;
-            margin: 35px 0;
-            border-radius: 12px;
-            text-align: left;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .challenge-info h3 {
-            color: #00ffff;
-            margin-bottom: 15px;
-            font-size: 1.5rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-        }
-
-        .challenge-info p {
-            line-height: 1.8;
-            color: #e0e0e0;
-            font-size: 1.1rem;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
-        }
-
-        .introduction-section {
-            background: rgba(20, 20, 40, 0.9);
-            border-left: 4px solid #ff6b6b;
-            padding: 30px;
-            margin: 35px 0;
-            border-radius: 12px;
-            text-align: left;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .introduction-section h3 {
-            color: #ff6b6b;
-            margin-bottom: 20px;
-            font-size: 1.6rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-        }
-
-        .intro-content {
-            color: #e0e0e0;
-        }
-
-        .intro-overview {
-            background: rgba(255, 107, 107, 0.1);
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 25px;
-            border: 1px solid rgba(255, 107, 107, 0.2);
-        }
-
-        .intro-overview p {
-            font-size: 1.1rem;
-            line-height: 1.7;
-            margin: 0;
-        }
-
-        .intro-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin: 25px 0;
-        }
-
-        .detail-box {
-            background: rgba(0, 0, 0, 0.4);
-            padding: 20px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .detail-box h4 {
-            color: #ffdd57;
-            margin-bottom: 12px;
-            font-size: 1.2rem;
-        }
-
-        .detail-box p {
-            font-size: 1rem;
-            line-height: 1.6;
-            margin: 0;
-        }
-
-        .knowledge-requirements {
-            margin: 25px 0;
-            padding: 20px;
-            background: rgba(0, 100, 200, 0.1);
-            border-radius: 10px;
-            border: 1px solid rgba(0, 100, 200, 0.2);
-        }
-
-        .knowledge-requirements h4 {
-            color: #4ecdc4;
-            margin-bottom: 15px;
-            font-size: 1.3rem;
-        }
-
-        .knowledge-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .knowledge-item {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 15px;
-            border-radius: 8px;
-        }
-
-        .knowledge-item strong {
-            color: #4ecdc4;
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        .knowledge-item ul {
-            margin: 0;
-            padding-left: 20px;
-            color: #ccc;
-        }
-
-        .knowledge-item li {
-            margin: 4px 0;
-            font-size: 0.95rem;
-        }
-
-        .resources-section {
-            margin-top: 25px;
-            padding: 20px;
-            background: rgba(102, 126, 234, 0.1);
-            border-radius: 10px;
-            border: 1px solid rgba(102, 126, 234, 0.2);
-        }
-
-        .resources-section h4 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 1.3rem;
-        }
-
-        .resource-link {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: bold;
-            padding: 8px 15px;
-            background: rgba(102, 126, 234, 0.2);
-            border-radius: 20px;
-            transition: all 0.3s ease;
-            display: inline-block;
-            margin: 10px 0;
-        }
-
-        .resource-link:hover {
-            background: rgba(102, 126, 234, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .quick-facts {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .fact-item {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 10px;
-            border-radius: 6px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-
-        .fact-label {
-            font-size: 0.9rem;
-            color: #aaa;
-            margin-bottom: 4px;
-        }
-
-        .fact-value {
-            font-weight: bold;
-            color: #fff;
-            font-size: 1rem;
-        }
-
-        .warning {
-            background: rgba(255, 107, 107, 0.15);
-            border: 2px solid rgba(255, 107, 107, 0.5);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 25px 0;
-            color: #ffaaaa;
-            font-size: 1.1rem;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .warning strong {
-            color: #ff6b6b;
-        }
-
-        .action-button {
-            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            padding: 18px 50px;
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: white;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
-            position: relative;
-            overflow: hidden;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        .action-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
-        }
-
-        .action-button:active {
-            transform: translateY(-1px);
-        }
-
-        .action-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .action-button:hover::before {
-            left: 100%;
-        }
-
-        .flag-container {
-            margin-top: 30px;
-            padding: 25px;
-            background: linear-gradient(45deg, rgba(76, 175, 80, 0.1), rgba(139, 195, 74, 0.1));
-            border: 2px solid #4caf50;
-            border-radius: 15px;
-            animation: flagPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes flagPulse {
-            0%, 100% { box-shadow: 0 0 20px rgba(76, 175, 80, 0.3); }
-            50% { box-shadow: 0 0 40px rgba(76, 175, 80, 0.6); }
-        }
-
-        .flag-container h4 {
-            color: #4caf50;
-            font-size: 1.4rem;
-            margin-bottom: 15px;
-        }
-
-        .flag-value {
-            background: rgba(0, 0, 0, 0.5);
-            padding: 15px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 1.1rem;
-            color: #00ff00;
-            letter-spacing: 2px;
-            word-break: break-all;
-        }
-
-        .vulnerability-badge {
-            display: inline-block;
-            background: rgba(255, 193, 7, 0.25);
-            color: #ffdd57;
-            padding: 8px 20px;
-            border-radius: 25px;
-            font-size: 1rem;
-            font-weight: 600;
-            margin: 12px 8px;
-            border: 2px solid rgba(255, 193, 7, 0.5);
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
-            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.2);
-        }
-
-        .interactive-section {
-            background: rgba(0, 0, 0, 0.6);
-            border-left: 4px solid #4ecdc4;
-            padding: 30px;
-            margin: 35px 0;
-            border-radius: 12px;
-            text-align: left;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .interactive-section h3 {
-            color: #4ecdc4;
-            margin-bottom: 25px;
-            font-size: 1.5rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-            text-align: center;
-        }
-
-        .parameter-form {
-            display: grid;
-            gap: 20px;
-        }
-
-        .parameter-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .parameter-group label {
-            color: #4ecdc4;
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .param-select, .param-input, .param-textarea {
-            background: rgba(0, 0, 0, 0.5);
-            border: 2px solid rgba(78, 205, 196, 0.3);
-            border-radius: 8px;
-            padding: 12px;
-            color: #e0e0e0;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .param-select:focus, .param-input:focus, .param-textarea:focus {
-            outline: none;
-            border-color: #4ecdc4;
-            box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.2);
-        }
-
-        .param-textarea {
-            min-height: 80px;
-            resize: vertical;
-            font-family: 'Courier New', monospace;
-        }
-
-        .param-info {
-            font-size: 0.9rem;
-            color: #aaa;
-            font-style: italic;
-        }
-
-        .validate-btn {
-            margin-top: 20px;
-            background: linear-gradient(45deg, #4ecdc4 0%, #44a08d 100%);
-        }
-
-        .validate-btn:hover {
-            box-shadow: 0 15px 40px rgba(78, 205, 196, 0.5);
-        }
-
-        .debug-info {
-            margin-top: 15px;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-        }
-
-        .debug-info h5 {
-            color: #ffc107;
-            margin-bottom: 10px;
-        }
-
-        .debug-item {
-            margin: 5px 0;
-            color: #ccc;
-        }
-
-        .debug-item.success {
-            color: #4caf50;
-        }
-
-        .debug-item.warning {
-            color: #ff9800;
-        }
-
-        .debug-item.error {
-            color: #f44336;
-        }
-
-        .hints-section {
-            margin: 30px 0;
-            text-align: center;
-        }
-
-        .hint-button {
-            background: linear-gradient(45deg, #f39c12, #e67e22);
-            border: none;
-            padding: 12px 30px;
-            font-size: 1rem;
-            font-weight: bold;
-            color: white;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        .hint-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(243, 156, 18, 0.4);
-        }
-
-        .hints-container {
-            margin-top: 20px;
-            padding: 20px;
-            background: rgba(243, 156, 18, 0.1);
-            border: 1px solid rgba(243, 156, 18, 0.3);
-            border-radius: 12px;
-            max-height: 300px;
-            overflow-y: auto;
-            text-align: left;
-        }
-
-        .hints-container.hidden {
-            display: none;
-        }
-
-        .hint-item {
-            padding: 10px;
-            margin: 8px 0;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            color: #f39c12;
-            font-size: 1rem;
-        }
-
-        .validation-result {
-            margin-top: 25px;
-            padding: 20px;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            text-align: center;
-        }
-
-        .validation-success {
-            background: rgba(76, 175, 80, 0.15);
-            border: 2px solid #4caf50;
-            color: #4caf50;
-        }
-
-        .validation-error {
-            background: rgba(244, 67, 54, 0.15);
-            border: 2px solid #f44336;
-            color: #ff6b6b;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 30px;
-                margin: 20px;
-                max-width: 95%;
-            }
-            
-            .logo {
-                font-size: 2.8rem;
-            }
-
-            .subtitle {
-                font-size: 1.1rem;
-            }
-
-            .challenge-info p {
-                font-size: 1rem;
-            }
-
-            .action-button {
-                padding: 15px 40px;
-                font-size: 1.2rem;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <div class="background-particles">
@@ -698,6 +107,189 @@
             </div>
         </div>
 
+        <div class="tutorial-section" id="tutorial-section">
+            <h3>🎓 Interaktives Tutorial - Erste Schritte</h3>
+            
+            <!-- Tutorial Step 1: Welcome -->
+            <div class="tutorial-step active" id="tutorial-step-1">
+                <div class="tutorial-header">
+                    <h4>Willkommen zur Curveball Challenge!</h4>
+                    <div class="tutorial-progress">
+                        <div class="tutorial-progress-bar" style="width: 16.67%;"></div>
+                    </div>
+                    <span class="tutorial-step-indicator">Schritt 1 von 6</span>
+                </div>
+                <div class="tutorial-content">
+                    <p>Dieses Tutorial führt Sie Schritt für Schritt durch die <strong>CVE-2020-0601 Curveball Challenge</strong>. Sie lernen:</p>
+                    <ul style="margin: 15px 0; padding-left: 20px;">
+                        <li>✅ Wie elliptische Kurven funktionieren</li>
+                        <li>✅ Was Generator-Punkte sind und warum sie wichtig sind</li>
+                        <li>✅ Wie die Curveball-Schwachstelle funktioniert</li>
+                        <li>✅ Wie Sie einen Exploit praktisch durchführen</li>
+                    </ul>
+                    <p><strong>Geschätzte Dauer:</strong> 10-15 Minuten</p>
+                </div>
+                <div class="tutorial-controls">
+                    <button class="tutorial-btn secondary" onclick="closeTutorial()">Tutorial überspringen</button>
+                    <button class="tutorial-btn" onclick="nextTutorialStep()">Los geht's! →</button>
+                </div>
+            </div>
+
+            <!-- Tutorial Step 2: ECC Basics -->
+            <div class="tutorial-step" id="tutorial-step-2">
+                <div class="tutorial-header">
+                    <h4>📐 Elliptische Kurven verstehen</h4>
+                    <div class="tutorial-progress">
+                        <div class="tutorial-progress-bar" style="width: 33.33%;"></div>
+                    </div>
+                    <span class="tutorial-step-indicator">Schritt 2 von 6</span>
+                </div>
+                <div class="tutorial-content">
+                    <p>Elliptische Kurven bilden die Grundlage der <strong>ECC-Kryptographie</strong>. Sie basieren auf der mathematischen Gleichung:</p>
+                    <div class="tutorial-example">
+                        <h5>📝 Kurvengleichung:</h5>
+                        <code>y² = x³ + ax + b</code>
+                    </div>
+                    <p>Jede Kurve hat spezielle Eigenschaften:</p>
+                    <ul style="margin: 10px 0; padding-left: 20px;">
+                        <li><strong>Sicherheitslevel:</strong> Bestimmt durch die Kurvengröße (z.B. 256 bit)</li>
+                        <li><strong>Standards:</strong> NIST-Kurven wie P-256, P-384</li>
+                        <li><strong>Generator-Punkt:</strong> Ein festgelegter Basispunkt auf der Kurve</li>
+                    </ul>
+                </div>
+                <div class="tutorial-controls">
+                    <button class="tutorial-btn secondary" onclick="prevTutorialStep()">← Zurück</button>
+                    <button class="tutorial-btn" onclick="nextTutorialStep()">Verstanden →</button>
+                </div>
+            </div>
+
+            <!-- Tutorial Step 3: Generator Points -->
+            <div class="tutorial-step" id="tutorial-step-3">
+                <div class="tutorial-header">
+                    <h4>🎯 Generator-Punkte - Das Herzstück</h4>
+                    <div class="tutorial-progress">
+                        <div class="tutorial-progress-bar" style="width: 50%;"></div>
+                    </div>
+                    <span class="tutorial-step-indicator">Schritt 3 von 6</span>
+                </div>
+                <div class="tutorial-content">
+                    <p>Der <span class="tutorial-highlight">Generator-Punkt G</span> ist fundamental für ECC-Sicherheit:</p>
+                    <div class="tutorial-example">
+                        <h5>🔑 Schlüsselerzeugung:</h5>
+                        <code>Öffentlicher_Schlüssel = Privater_Schlüssel × Generator_Punkt</code><br>
+                        <code>Q = d × G</code>
+                    </div>
+                    <p><strong>Normale Sicherheit:</strong></p>
+                    <ul style="margin: 10px 0; padding-left: 20px;">
+                        <li>Generator G ist durch Standards festgelegt</li>
+                        <li>Privater Schlüssel d ist unbekannt und schwer zu finden</li>
+                        <li>Öffentlicher Schlüssel Q ist berechenbar, aber d bleibt geheim</li>
+                    </ul>
+                    <p><strong>⚠️ Curveball Problem:</strong> Windows prüfte nicht, ob der Generator den Standards entspricht!</p>
+                </div>
+                <div class="tutorial-controls">
+                    <button class="tutorial-btn secondary" onclick="prevTutorialStep()">← Zurück</button>
+                    <button class="tutorial-btn" onclick="nextTutorialStep()">Weiter zum Exploit →</button>
+                </div>
+            </div>
+
+            <!-- Tutorial Step 4: The Vulnerability -->
+            <div class="tutorial-step" id="tutorial-step-4">
+                <div class="tutorial-header">
+                    <h4>💥 Die Curveball-Schwachstelle</h4>
+                    <div class="tutorial-progress">
+                        <div class="tutorial-progress-bar" style="width: 66.67%;"></div>
+                    </div>
+                    <span class="tutorial-step-indicator">Schritt 4 von 6</span>
+                </div>
+                <div class="tutorial-content">
+                    <p>Der <strong>CVE-2020-0601</strong> Exploit funktioniert so:</p>
+                    <div class="tutorial-example">
+                        <h5>🚨 Angreifer-Vorteil:</h5>
+                        <code>Q = d' × G'</code><br>
+                        <small>↳ Angreifer wählt sowohl d' als auch G' selbst!</small>
+                    </div>
+                    <p><strong>Normale Situation:</strong></p>
+                    <ul style="margin: 10px 0; padding-left: 20px; color: #4caf50;">
+                        <li>✅ Generator G ist standardisiert</li>
+                        <li>✅ Privater Schlüssel d ist unbekannt</li>
+                        <li>✅ Sicherheit durch Discrete Logarithm Problem</li>
+                    </ul>
+                    <p><strong>Curveball Angriff:</strong></p>
+                    <ul style="margin: 10px 0; padding-left: 20px; color: #f44336;">
+                        <li>❌ Manipulierter Generator G' wird akzeptiert</li>
+                        <li>❌ Angreifer kennt passenden privaten Schlüssel d'</li>
+                        <li>❌ "Gültige" Zertifikate für beliebige Identitäten</li>
+                    </ul>
+                </div>
+                <div class="tutorial-controls">
+                    <button class="tutorial-btn secondary" onclick="prevTutorialStep()">← Zurück</button>
+                    <button class="tutorial-btn" onclick="nextTutorialStep()">Jetzt ausprobieren! →</button>
+                </div>
+            </div>
+
+            <!-- Tutorial Step 5: Practical Example -->
+            <div class="tutorial-step" id="tutorial-step-5">
+                <div class="tutorial-header">
+                    <h4>🧪 Praktisches Beispiel</h4>
+                    <div class="tutorial-progress">
+                        <div class="tutorial-progress-bar" style="width: 83.33%;"></div>
+                    </div>
+                    <span class="tutorial-step-indicator">Schritt 5 von 6</span>
+                </div>
+                <div class="tutorial-content">
+                    <p>Versuchen wir einen einfachen Exploit! Folgen Sie diesen Schritten:</p>
+                    <div class="tutorial-example">
+                        <h5>🎯 Exploit-Anleitung:</h5>
+                        <ol style="margin: 10px 0; padding-left: 20px;">
+                            <li><strong>Kurve auswählen:</strong> Wählen Sie "secp256r1" (sicher)</li>
+                            <li><strong>Generator manipulieren:</strong> Wählen Sie "rogue" aus der Preset-Liste</li>
+                            <li><strong>Private Key setzen:</strong> Geben Sie "curveball123" ein</li>
+                            <li><strong>Validierung starten:</strong> Klicken Sie "Parameter validieren"</li>
+                        </ol>
+                    </div>
+                    <p><strong>Erwartetes Ergebnis:</strong> Der Exploit sollte erfolgreich sein und eine "gefälschte" aber von Windows akzeptierte Signatur erzeugen!</p>
+                </div>
+                <div class="tutorial-controls">
+                    <button class="tutorial-btn secondary" onclick="prevTutorialStep()">← Zurück</button>
+                    <button class="tutorial-btn try-it" onclick="startGuidedExample()">Guided Example starten →</button>
+                </div>
+            </div>
+
+            <!-- Tutorial Step 6: Completion -->
+            <div class="tutorial-step" id="tutorial-step-6">
+                <div class="tutorial-header">
+                    <h4>🎉 Tutorial abgeschlossen!</h4>
+                    <div class="tutorial-progress">
+                        <div class="tutorial-progress-bar" style="width: 100%;"></div>
+                    </div>
+                    <span class="tutorial-step-indicator">Schritt 6 von 6</span>
+                </div>
+                <div class="tutorial-content">
+                    <p>Gratulation! Sie haben die Grundlagen der Curveball-Schwachstelle kennengelernt:</p>
+                    <ul style="margin: 15px 0; padding-left: 20px; color: #4caf50;">
+                        <li>✅ ECC und Generator-Punkte verstanden</li>
+                        <li>✅ CVE-2020-0601 Schwachstelle erklärt</li>
+                        <li>✅ Praktischen Exploit durchgeführt</li>
+                    </ul>
+                    <div class="tutorial-example">
+                        <h5>🚀 Nächste Schritte:</h5>
+                        <ul style="margin: 10px 0; padding-left: 20px;">
+                            <li>Experimentieren Sie mit verschiedenen Parametern</li>
+                            <li>Nutzen Sie die Info-Icons (i) für detaillierte Erklärungen</li>
+                            <li>Sammeln Sie Hints bei Fehlversuchen</li>
+                            <li>Versuchen Sie komplexere Exploit-Varianten</li>
+                        </ul>
+                    </div>
+                    <p><strong>Viel Spaß beim Hacken! 🔓</strong></p>
+                </div>
+                <div class="tutorial-controls">
+                    <button class="tutorial-btn secondary" onclick="prevTutorialStep()">← Zurück</button>
+                    <button class="tutorial-btn" onclick="completeTutorial()">Challenge starten! 🚀</button>
+                </div>
+            </div>
+        </div>
+
         <div class="challenge-info">
             <h3>🎯 Interactive ECC Parameter Challenge</h3>
             <p>
@@ -712,14 +304,22 @@
                 3. Setzen Sie einen Private Key<br>
                 4. Lösen Sie die CVE-2020-0601 Schwachstelle aus!
             </div>
+            <div style="margin-top: 15px; text-align: center;">
+                <button class="tutorial-btn secondary" onclick="restartTutorial()">
+                    🎓 Tutorial neu starten
+                </button>
+            </div>
         </div>
 
         <div class="interactive-section">
             <h3>� ECC Parameter Manipulation</h3>
-            <form method="post" class="parameter-form">
+            <form method="post" class="parameter-form" onsubmit="validateParameters(event)">
                 
                 <div class="parameter-group">
-                    <label for="curve">📐 Elliptische Kurve:</label>
+                    <label for="curve">
+                        📐 Elliptische Kurve:
+                        <span class="info-icon" onclick="toggleParameterInfo('curve-info-desc')">i</span>
+                    </label>
                     <select id="curve" name="curve" class="param-select">
                         {% for curve_name, curve_info in curves.items() %}
                         <option value="{{ curve_name }}" 
@@ -730,10 +330,25 @@
                         {% endfor %}
                     </select>
                     <div class="param-info" id="curve-info">Wählen Sie eine Kurve aus</div>
+                    <div class="parameter-description" id="curve-info-desc">
+                        <button class="close-btn" onclick="toggleParameterInfo('curve-info-desc')">×</button>
+                        <h5>📐 Elliptische Kurven - Erklärung</h5>
+                        <p><strong>Was sind elliptische Kurven?</strong><br>
+                        Elliptische Kurven sind mathematische Strukturen, die in der Kryptographie für sichere Verschlüsselung verwendet werden. Sie basieren auf der Gleichung y² = x³ + ax + b.</p>
+                        
+                        <p><strong>Warum sind sie wichtig?</strong><br>
+                        ECC (Elliptic Curve Cryptography) bietet die gleiche Sicherheit wie RSA mit deutlich kleineren Schlüsseln. Eine 256-bit ECC entspricht etwa einer 3072-bit RSA-Verschlüsselung.</p>
+                        
+                        <p><strong>Curveball-Relevanz:</strong><br>
+                        Die Wahl der Kurve bestimmt die mathematischen Parameter. Windows validierte nicht ordnungsgemäß, ob benutzerdefinierte Generator-Punkte zur gewählten Kurve gehören.</p>
+                    </div>
                 </div>
 
                 <div class="parameter-group">
-                    <label for="generator_preset">🎯 Generator-Punkt (Vordefiniert):</label>
+                    <label for="generator_preset">
+                        🎯 Generator-Punkt (Vordefiniert):
+                        <span class="info-icon" onclick="toggleParameterInfo('generator-preset-info-desc')">i</span>
+                    </label>
                     <select id="generator_preset" name="generator_preset" class="param-select">
                         {% for gen_name, gen_info in generators.items() %}
                         <option value="{{ gen_name }}" data-x="{{ gen_info.x }}" data-valid="{{ gen_info.valid }}">
@@ -742,32 +357,110 @@
                         </option>
                         {% endfor %}
                     </select>
+                    <div class="parameter-description" id="generator-preset-info-desc">
+                        <button class="close-btn" onclick="toggleParameterInfo('generator-preset-info-desc')">×</button>
+                        <h5>🎯 Generator-Punkt - Erklärung</h5>
+                        <p><strong>Was ist der Generator-Punkt?</strong><br>
+                        Der Generator-Punkt G ist ein spezifischer Punkt auf der elliptischen Kurve, der zur Erzeugung aller anderen Punkte verwendet wird. Er ist ein fundamentaler Parameter in ECC.</p>
+                        
+                        <p><strong>Mathematische Bedeutung:</strong><br>
+                        Alle öffentlichen Schlüssel werden durch Multiplikation des privaten Schlüssels d mit dem Generator G berechnet: Q = d × G</p>
+                        
+                        <p><strong>Curveball-Schwachstelle:</strong><br>
+                        Windows prüfte nicht, ob der Generator-Punkt den offiziellen Standards entspricht. Angreifer konnten eigene Generator-Punkte verwenden und damit die Sicherheit vollständig umgehen.</p>
+                    </div>
                 </div>
 
                 <div class="parameter-group">
-                    <label for="generator_x">🔢 Generator X-Koordinate:</label>
+                    <label for="generator_x">
+                        🔢 Generator X-Koordinate:
+                        <span class="info-icon" onclick="toggleParameterInfo('generator-x-info-desc')">i</span>
+                    </label>
                     <input type="text" id="generator_x" name="generator_x" class="param-input" 
                            placeholder="Hex-Wert oder 'evil' für Exploit...">
                     <div class="param-info">Versuchen Sie 'rogue' oder eigene Werte mit 'evil'</div>
+                    <div class="parameter-description" id="generator-x-info-desc">
+                        <button class="close-btn" onclick="toggleParameterInfo('generator-x-info-desc')">×</button>
+                        <h5>🔢 Generator X-Koordinate - Erklärung</h5>
+                        <p><strong>X-Koordinate des Generator-Punkts:</strong><br>
+                        Dies ist die horizontale Koordinate des Generator-Punkts auf der elliptischen Kurve. In normalen Implementierungen ist dieser Wert durch Standards festgelegt.</p>
+                        
+                        <p><strong>Exploit-Möglichkeiten:</strong><br>
+                        • <code>rogue</code> - Verwendet einen manipulierten Generator<br>
+                        • <code>evil</code> - Aktiviert verschiedene Exploit-Varianten<br>
+                        • Hex-Werte - Eigene X-Koordinaten testen</p>
+                        
+                        <p><strong>Sicherheitshinweis:</strong><br>
+                        Ein manipulierter Generator ermöglicht es, "gültige" Signaturen für beliebige Daten zu erstellen, ohne den echten privaten Schlüssel zu kennen.</p>
+                    </div>
                 </div>
 
                 <div class="parameter-group">
-                    <label for="generator_y">🔢 Generator Y-Koordinate:</label>
+                    <label for="generator_y">
+                        🔢 Generator Y-Koordinate:
+                        <span class="info-icon" onclick="toggleParameterInfo('generator-y-info-desc')">i</span>
+                    </label>
                     <input type="text" id="generator_y" name="generator_y" class="param-input" 
                            placeholder="Hex-Wert (optional)">
+                    <div class="parameter-description" id="generator-y-info-desc">
+                        <button class="close-btn" onclick="toggleParameterInfo('generator-y-info-desc')">×</button>
+                        <h5>🔢 Generator Y-Koordinate - Erklärung</h5>
+                        <p><strong>Y-Koordinate des Generator-Punkts:</strong><br>
+                        Dies ist die vertikale Koordinate des Generator-Punkts. Zusammen mit der X-Koordinate definiert sie den vollständigen Punkt auf der Kurve.</p>
+                        
+                        <p><strong>Mathematische Beziehung:</strong><br>
+                        Die Y-Koordinate muss der Kurvengleichung y² = x³ + ax + b entsprechen. Für eine gegebene X-Koordinate gibt es maximal zwei gültige Y-Werte.</p>
+                        
+                        <p><strong>Optionalität:</strong><br>
+                        Oft kann die Y-Koordinate aus der X-Koordinate berechnet werden. Die meisten Standards definieren, welcher der beiden möglichen Y-Werte verwendet wird.</p>
+                    </div>
                 </div>
 
                 <div class="parameter-group">
-                    <label for="private_key">🔐 Private Key:</label>
+                    <label for="private_key">
+                        🔐 Private Key:
+                        <span class="info-icon" onclick="toggleParameterInfo('private-key-info-desc')">i</span>
+                    </label>
                     <input type="text" id="private_key" name="private_key" class="param-input" 
                            placeholder="Ihr privater Schlüssel...">
                     <div class="param-info">Längere Keys (>8 Zeichen) könnten hilfreicher sein</div>
+                    <div class="parameter-description" id="private-key-info-desc">
+                        <button class="close-btn" onclick="toggleParameterInfo('private-key-info-desc')">×</button>
+                        <h5>🔐 Private Key - Erklärung</h5>
+                        <p><strong>Was ist ein Private Key?</strong><br>
+                        Der private Schlüssel ist eine geheime Zahl, die nur dem Besitzer bekannt sein sollte. Er wird zur Erstellung digitaler Signaturen und zur Entschlüsselung verwendet.</p>
+                        
+                        <p><strong>Beziehung zum Public Key:</strong><br>
+                        Der öffentliche Schlüssel Q wird durch Multiplikation berechnet: Q = private_key × Generator_Point</p>
+                        
+                        <p><strong>Curveball-Kontext:</strong><br>
+                        Bei manipulierten Generator-Punkten können Angreifer beliebige private Schlüssel wählen und trotzdem "gültige" Zertifikate erstellen, die von Windows akzeptiert werden.</p>
+                        
+                        <p><strong>Tipp:</strong> Längere Schlüssel (>8 Zeichen) erhöhen die Wahrscheinlichkeit, den Exploit auszulösen.</p>
+                    </div>
                 </div>
 
                 <div class="parameter-group">
-                    <label for="signature_data">✍️ Signature Data:</label>
+                    <label for="signature_data">
+                        ✍️ Signature Data:
+                        <span class="info-icon" onclick="toggleParameterInfo('signature-data-info-desc')">i</span>
+                    </label>
                     <textarea id="signature_data" name="signature_data" class="param-textarea" 
                               placeholder="Optionale Signature-Daten..."></textarea>
+                    <div class="parameter-description" id="signature-data-info-desc">
+                        <button class="close-btn" onclick="toggleParameterInfo('signature-data-info-desc')">×</button>
+                        <h5>✍️ Signature Data - Erklärung</h5>
+                        <p><strong>Signatur-Daten:</strong><br>
+                        Dies sind die Daten, die digital signiert werden sollen. In realen Anwendungen wären dies z.B. Dokumente, Software oder Zertifikatsinhalte.</p>
+                        
+                        <p><strong>Digitale Signaturen:</strong><br>
+                        Eine digitale Signatur beweist, dass die Daten von dem Besitzer des privaten Schlüssels stammen und nicht verändert wurden.</p>
+                        
+                        <p><strong>Curveball-Angriff:</strong><br>
+                        Mit manipulierten Generator-Punkten können Angreifer gültige Signaturen für beliebige Daten erstellen, ohne den echten privaten Schlüssel zu besitzen.</p>
+                        
+                        <p><strong>Verwendung:</strong> Dieser Parameter ist optional, aber kann bei der Demonstration verschiedener Angriffsvektoren hilfreich sein.</p>
+                    </div>
                 </div>
 
                 <button type="submit" class="action-button validate-btn">
@@ -815,9 +508,12 @@
 
         <div class="hints-section">
             <button type="button" class="hint-button" onclick="loadHints()">
-                � Gestufte Hints anzeigen
+                💡 Hints anzeigen <span id="hint-counter">(verfügbar nach Fehlversuchen)</span>
             </button>
-            <div id="hints-container" class="hints-container hidden"></div>
+            <div id="hints-container" class="hints-container hidden">
+                <div id="progress-info" class="progress-info"></div>
+                <div id="hints-list"></div>
+            </div>
         </div>
 
         {% if flag %}
@@ -826,132 +522,54 @@
             <div class="flag-value">{{ flag }}</div>
         </div>
         {% endif %}
+
+        {% if certificate_info %}
+        <div class="certificate-section">
+            <h3>📜 Generiertes Zertifikat - Details</h3>
+            <div class="cert-content">
+                <div class="cert-overview">
+                    <div class="cert-status {{ 'cert-dangerous' if curveball_info.vulnerability_indicator else ('cert-custom' if curveball_info.custom_indicator else 'cert-safe') }}">
+                        {% if curveball_info.vulnerability_indicator %}
+                        ⚠️ Unsichere Kurve erkannt! Mögliche Curveball-Schwachstelle.
+                        {% else %}
+                        ✅ Kurve als sicher validiert.
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="cert-details">
+                    <div class="cert-detail">
+                        <strong>Aussteller:</strong> {{ certificate_info.issuer }}
+                    </div>
+                    <div class="cert-detail">
+                        <strong>Betreff:</strong> {{ certificate_info.subject }}
+                    </div>
+                    <div class="cert-detail">
+                        <strong>Gültig von:</strong> {{ certificate_info.valid_from }}
+                    </div>
+                    <div class="cert-detail">
+                        <strong>Bis:</strong> {{ certificate_info.valid_to }}
+                    </div>
+                    <div class="cert-detail">
+                        <strong>Öffentlicher Schlüssel:</strong> {{ certificate_info.public_key }}
+                    </div>
+                </div>
+
+                <div class="cert-actions">
+                    <button class="action-button" onclick="downloadCertificate()">⬇️ Zertifikat herunterladen</button>
+                </div>
+            </div>
+        </div>
+        {% endif %}
     </div>
 
     <script>
-        async function loadHints() {
-            const container = document.getElementById('hints-container');
-            if (!container.classList.contains('hidden')) {
-                container.classList.add('hidden');
-                return;
-            }
-
-            try {
-                const response = await fetch('/hint');
-                const hints = await response.json();
-                
-                container.innerHTML = '';
-                hints.forEach((hint, index) => {
-                    const hintDiv = document.createElement('div');
-                    hintDiv.className = 'hint-item';
-                    hintDiv.innerHTML = `<strong>Hint ${index + 1}:</strong> ${hint}`;
-                    container.appendChild(hintDiv);
-                });
-                
-                container.classList.remove('hidden');
-            } catch (error) {
-                console.error('Error loading hints:', error);
-            }
-        }
-
-        async function explainTopic(topic) {
-            try {
-                const response = await fetch(`/explain/${topic}`);
-                const explanation = await response.json();
-                alert(`${explanation.title}\n\n${explanation.content}`);
-            } catch (error) {
-                console.error('Error loading explanation:', error);
-            }
-        }
-
-        // Interactive form functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const curveSelect = document.getElementById('curve');
-            const curveInfo = document.getElementById('curve-info');
-            const generatorPreset = document.getElementById('generator_preset');
-            const generatorX = document.getElementById('generator_x');
-
-            // Update curve info on selection
-            if (curveSelect && curveInfo) {
-                curveSelect.addEventListener('change', function() {
-                    const selectedOption = this.options[this.selectedIndex];
-                    const size = selectedOption.dataset.size;
-                    const secure = selectedOption.dataset.secure === 'True';
-                    
-                    curveInfo.innerHTML = `
-                        Kurvengröße: ${size} bit | 
-                        Sicherheit: ${secure ? '✅ Sicher' : '⚠️ Unsicher'} |
-                        <a href="#" onclick="explainTopic('ecc')" style="color: #4ecdc4;">Was ist ECC?</a>
-                    `;
-                });
-                
-                // Trigger initial update
-                curveSelect.dispatchEvent(new Event('change'));
-            }
-
-            // Auto-fill generator X coordinate from preset
-            if (generatorPreset && generatorX) {
-                generatorPreset.addEventListener('change', function() {
-                    const selectedOption = this.options[this.selectedIndex];
-                    const xValue = selectedOption.dataset.x;
-                    const isValid = selectedOption.dataset.valid === 'True';
-                    
-                    generatorX.value = xValue;
-                    generatorX.style.borderColor = isValid ? 'rgba(78, 205, 196, 0.3)' : 'rgba(255, 107, 107, 0.5)';
-                });
-            }
-
-            // Add real-time validation feedback
-            const inputs = document.querySelectorAll('.param-input, .param-select');
-            inputs.forEach(input => {
-                input.addEventListener('input', function() {
-                    // Simple validation feedback
-                    if (this.value.toLowerCase().includes('evil') || 
-                        this.value.toLowerCase().includes('rogue')) {
-                        this.style.borderColor = '#ff9800';
-                        this.style.boxShadow = '0 0 0 3px rgba(255, 152, 0, 0.2)';
-                    } else if (this.value.length > 0) {
-                        this.style.borderColor = 'rgba(78, 205, 196, 0.5)';
-                        this.style.boxShadow = '0 0 0 3px rgba(78, 205, 196, 0.2)';
-                    } else {
-                        this.style.borderColor = 'rgba(78, 205, 196, 0.3)';
-                        this.style.boxShadow = 'none';
-                    }
-                });
-            });
-
-            // Add helpful tooltips
-            const paramGroups = document.querySelectorAll('.parameter-group');
-            paramGroups.forEach(group => {
-                const label = group.querySelector('label');
-                if (label) {
-                    label.style.cursor = 'help';
-                    label.addEventListener('click', function() {
-                        const topic = this.textContent.toLowerCase().includes('generator') ? 'generator' : 
-                                     this.textContent.toLowerCase().includes('kurve') ? 'ecc' : 'curveball';
-                        explainTopic(topic);
-                    });
-                }
-            });
-        });
-
-        // Add some easter eggs for fun
-        let konami = [];
-        const konamiCode = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65]; // ↑↑↓↓←→←→BA
-
-        document.addEventListener('keydown', function(e) {
-            konami.push(e.keyCode);
-            if (konami.length > konamiCode.length) {
-                konami.shift();
-            }
-            
-            if (konami.toString() === konamiCode.toString()) {
-                document.querySelector('#generator_x').value = 'deadbeefcafebabe1337133713371337deadbeefcafebabe1337133713371337';
-                document.querySelector('#private_key').value = 'konami_code_exploit';
-                alert('🎮 Konami Code aktiviert! Die Parameter wurden für Sie gesetzt.');
-                konami = [];
-            }
-        });
+        // Set template variables for external JS
+        window.currentFailedAttempts = {{ failed_attempts }};
     </script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
+
 </body>
 </html>
