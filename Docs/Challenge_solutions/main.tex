@@ -3,131 +3,121 @@
 \usepackage[hmargin=2.5cm,vmargin=3cm,bindingoffset=0.5cm]{geometry}
 \usepackage{graphicx}
 \graphicspath{ {figures/} }
-
-\usepackage{listings} 
-\renewcommand{\lstlistlistingname}{Auflistungsverzeichnis}
+\usepackage{listings}
+\usepackage{hyperref}
 \renewcommand{\lstlistingname}{Auflistung}
-
-\usepackage{todonotes}
 
 \begin{document}
 
 \pagenumbering{alph}
-
 \begin{titlepage}
-	\begin{center}
-		
-        \includegraphics[width=\textwidth]{THD-Logo.pdf}
-	
-	    \vspace{1cm}
-	
-		\rule{1\textwidth}{1mm} \\[0.3cm]
-
-		\textsc{\scshape \huge Bachelor Cyber Security}\\
-		
-		\rule{1\textwidth}{1mm} \\[2cm] 
-		
-		{ 
-			 \vspace{1cm}
-			 
-			 \Large \textbf{Kryptologie 2}
-			 
-			 \vspace{3cm}
-			 \Large \textbf{Projektbericht}}\\[0.5cm]
-			 \LARGE \textbf{Musterlösung zur Cryptochallenge: CurveBall}\\[2cm]
-		\begin{minipage}[t]{0.4\textwidth}
-			\begin{flushleft} \normalsize
-				\emph{Autor:}\\[0.3cm]
-				
-			    Manuel Friedl, Matrikel-Nr.: 1236626
-			    Christof Renner, Matrikel-Nr.: 22301943
-				
-			\end{flushleft}
-		\end{minipage}
-		\begin{minipage}[t]{0.5\textwidth}
-			\begin{flushright} \normalsize
-				\emph{Betreuer:}\\[0.3cm]
-				
-    			Prof. Dr. Martin Schramm
-				
-			\end{flushright}
-		\end{minipage}\\[3cm]
-		{\large Deggendorf - \today\\}	
-	\end{center}
+  \begin{center}
+    \includegraphics[width=\textwidth]{THD-Logo.pdf}
+    \vspace{1cm}
+    \rule{1\textwidth}{1mm} \\[0.3cm]
+    \textsc{\scshape \huge Bachelor Cyber Security}\\
+    \rule{1\textwidth}{1mm} \\[2cm]
+    {
+      \vspace{1cm}
+      \Large \textbf{Kryptologie 2}
+      \vspace{3cm}
+      \Large \textbf{Projektbericht}
+    }\\[0.5cm]
+    \LARGE \textbf{Ausarbeitung Cryptochallenge: CurveBall}\\[2cm]
+    \begin{minipage}[t]{0.4\textwidth}
+      \begin{flushleft}
+        \normalsize \emph{Autor:}\\[0.3cm]
+        Manuel Friedl, Matrikel-Nr.: 1236626\\
+        Christof Renner, Matrikel-Nr.: 22301943
+      \end{flushleft}
+    \end{minipage}
+    \begin{minipage}[t]{0.5\textwidth}
+      \begin{flushright}
+        \normalsize \emph{Betreuer:}\\[0.3cm]
+        Prof. Dr. Martin Schramm
+      \end{flushright}
+    \end{minipage}\\[3cm]
+    {\large Deggendorf – \today\\}
+  \end{center}
 \end{titlepage}
 
+\newpage
 \pagenumbering{Roman}
 
 \section*{Eigenständigkeitserklärung}
-Hiermit bestätige ich, dass ich die vorliegende Arbeit selbstständig verfasst und keine anderen Publikationen, Vorlagen und Hilfsmitteln als die angegebenen benutzt habe. Alle Teile meiner Arbeit, die wortwörtlich oder dem Sinn nach anderen Werken entnommen sind, wurden unter Angabe der Quelle kenntlich gemacht.
+Hiermit bestätigen wir, dass wir die vorliegende Arbeit selbstständig verfasst und keine anderen Publikationen, Vorlagen und Hilfsmittel als die angegebenen benutzt haben. Alle Teile unserer Arbeit, die wortwörtlich oder dem Sinn nach anderen Werken entnommen sind, wurden unter Angabe der Quelle kenntlich gemacht.
 
 \vspace{1cm}
-
-Musterstadt, \underline{\hspace{0.815\textwidth}}\\
+Deggendorf, \underline{\hspace{0.715\textwidth}}\\
 \begin{tabular}{lll}
-\hspace{3cm} & \small(Datum)\hspace{1cm} & \hspace{2cm}\small(Unterschrift) \normalsize 
+  \hspace{3cm} & \small(Datum)\hspace{1cm} & \hspace{2cm}\small(Unterschrift)
 \end{tabular}
 
 \newpage
+\tableofcontents
+\newpage
 
-\section*{Musterlösung zur CurveBall-Challenge}
+\pagenumbering{arabic}
 
-\subsection*{Ziel der Aufgabe}
+\section{Einleitung und Hintergrund}
+CVE-2020-0601, bekannt als \textbf{CurveBall}, ist eine kritische Schwachstelle in der Windows CryptoAPI. Die Sicherheitslücke erlaubt Angreifern, gefälschte ECC-Zertifikate zu erzeugen, indem sie elliptische Kurvenparameter manipulieren, speziell den Generatorpunkt G.
 
-Ziel war es, die simulierte Schwachstelle CVE-2020-0601 ('CurveBall') auszunutzen. Dazu musste ein manipuliertes ECC-Schlüsselmaterial erzeugt werden, mit dem eine Signatur erstellt werden kann, die von einer verwundbaren Validierungslogik akzeptiert wird.
+\section{Projektübersicht und Zielsetzung}
+Das Projekt „SS25-Kryptologie2“ bietet eine interaktive Web-basierte Simulation der CurveBall-Schwachstelle. Ziel ist es, diese Sicherheitslücke eigenständig zu simulieren, zu verstehen und praxisnah zu analysieren.
 
-\subsection*{Durchführung}
+\section{Beschreibung der Webinterface-Simulation}
+Das Webinterface ermöglicht eine intuitive Bedienung der Challenge, unterteilt in die folgenden Schritte:
+
+\subsection{Aufbau und Übersicht}
+Das Interface gliedert sich in drei zentrale Bereiche:
 
 \begin{enumerate}
-    \item Mit dem Tool \texttt{gen-key.py} wurde ein manipulierter privater Schlüssel generiert:
-    \begin{lstlisting}[language=bash]
-    python gen-key.py USERTrustECCCertificationAuthority.crt
-    \end{lstlisting}
-
-    \item Es entstand eine Datei \texttt{p384-key-rogue.pem} mit einem privaten Schlüssel basierend auf einem manipulierten Generatorpunkt $G'$.
-
-    \item Die Datei \texttt{simulate\_vuln\_check.py} überprüft die Signatur:
-    \begin{lstlisting}[language=Python]
-    from ecdsa import SigningKey, NIST384p, BadSignatureError
-    import hashlib
-
-    with open("p384-key-rogue.pem", "rb") as f:
-        rogue_key = SigningKey.from_pem(f.read())
-
-    rogue_pub = rogue_key.verifying_key
-    message = b"Simulated CVE-2020-0601 message"
-    digest = hashlib.sha256(message).digest()
-    signature = rogue_key.sign_digest(digest)
-
-    try:
-        if rogue_pub.verify_digest(signature, digest):
-            print('Verwundbare Pruefung akzeptiert die Signatur.')
-    except BadSignatureError:
-        print("Ungueltige Signatur.")
-    \end{lstlisting}
-
-    \item Die simulierte Validierung gab aus:
-    \begin{quote}
-    \texttt{Verwundbare Prüfung akzeptiert die Signatur.}
-    \end{quote}
+    \item Schlüsselgenerierung
+    \item Zertifikatsgenerierung
+    \item Validierungssimulation
 \end{enumerate}
 
-\subsection*{Erklärung}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{webinterface_overview.png}
+\caption{Übersicht des Webinterfaces (Platzhalter)}
+\end{figure}
 
-Die Windows CryptoAPI überprüfte früher nicht, ob der öffentliche Schlüssel aus dem erwarteten Generatorpunkt $G$ stammt. Ein Angreifer kann also $G'$ und $d'$ so wählen, dass $Q = d' \cdot G'$ zum legitimen CA-Key $Q$ passt.
+\subsection{Schlüsselgenerierung über das Webinterface}
+Im ersten Schritt wird über die Oberfläche das Python-Skript \texttt{gen-key.py} ausgeführt, welches aus einem gültigen CA-Zertifikat einen manipulierten ECC-Schlüssel erzeugt.
 
-Die veraltete Logik prüfte:
-\begin{itemize}
-    \item Ist $Q$ derselbe wie der vertrauenswürdige Key? $\Rightarrow$ Ja
-    \item Ist die Signatur gültig für $Q$? $\Rightarrow$ Ja
-\end{itemize}
+\begin{lstlisting}[language=bash,caption={Schlüsselgenerierung}]
+python gen-key.py USERTrustECCCertificationAuthority.crt
+\end{lstlisting}
 
-Damit akzeptierte sie die Signatur, obwohl sie mit einem manipulierten Schlüssel erstellt wurde.
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{webinterface_keygen.png}
+\caption{Webinterface Schlüsselgenerierung (Platzhalter)}
+\end{figure}
 
-\subsection*{Fazit}
+\subsection{Zertifikatsgenerierung}
+Im nächsten Schritt erfolgt die automatische Zertifikatsgenerierung via OpenSSL mithilfe des generierten Schlüssels und vordefinierter Konfigurationsdateien.
 
-Die Challenge konnte erfolgreich abgeschlossen werden. Die Signatur wurde unter Verwendung eines manipulierten Schlüsselpaars erzeugt, welches mathematisch äquivalent zum Originalkey erschien, jedoch auf einem manipulierten Generatorpunkt basierte.
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{webinterface_certgen.png}
+\caption{Webinterface Zertifikatsgenerierung (Platzhalter)}
+\end{figure}
 
-Die simulierte Umgebung erlaubte die Prüfung der Schwachstelle ohne ein verwundbares Windows-System.
+\subsection{Validierungssimulation}
+Abschließend prüft das Webinterface mit \texttt{simulate\_vuln\_check.py}, ob die erstellten Zertifikate von der verwundbaren Implementierung akzeptiert werden.
 
-\end{document}
+\begin{lstlisting}[language=python,caption={Simulationsprüfung}]
+signature = rogue_key.sign_digest(digest)
+if rogue_pub.verify_digest(signature, digest):
+    print("Vulnerable validation: Signature accepted.")
+\end{lstlisting}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{webinterface_validation.png}
+\caption{Validierungsergebnis über das Webinterface (Platzhalter)}
+\end{figure}
+
+\section{Technische Hintergründe der Schwach
