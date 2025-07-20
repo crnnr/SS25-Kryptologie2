@@ -10,7 +10,6 @@
 - **CVSS Score**: 10.0 (Kritisch)
 - **Anzahl betroffener Systeme**: ~900 Millionen weltweit
 
----
 
 ## 🔐 Grundlagen der Elliptic Curve Cryptography (ECC)
 
@@ -29,7 +28,6 @@ y² = x³ + ax + b (mod p)
 
 #### 1. **Die Kurve selbst**
 ```python
-# Beispiel: secp256r1 (P-256)
 p = 2^256 - 2^224 + 2^192 + 2^96 - 1  # Primzahl
 a = -3
 b = 0x5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b
@@ -49,8 +47,6 @@ Die Anzahl der Punkte, die durch Multiplikation mit G erzeugt werden können.
 private_key = d  # Zufällige Zahl < n
 public_key = d * G  # Punkt auf der Kurve
 ```
-
----
 
 ## ⚠️ Die Curveball-Schwachstelle im Detail
 
@@ -86,7 +82,6 @@ private_key_rogue = calculate_inverse(Q, G_rogue)
 malicious_cert = sign_certificate(data, private_key_rogue, G_rogue)
 ```
 
----
 
 ## 🧮 Mathematische Grundlagen
 
@@ -124,7 +119,6 @@ d_rogue = Q / G_rogue  # Modular inverse
 # Jetzt: Q = d_rogue * G_rogue
 ```
 
----
 
 ## 🛠️ Technische Implementierung
 
@@ -161,7 +155,6 @@ ECCurve ::= SEQUENCE {
 }
 ```
 
----
 
 ## 🎮 Praktische Exploitation
 
@@ -194,7 +187,6 @@ openssl req -key rogue_key.pem -new -x509 -out malicious_cert.pem
 signature = sign_with_rogue_key(document)
 ```
 
----
 
 ## 🛡️ Erkennung und Schutz
 
@@ -242,7 +234,6 @@ def validate_generator(curve, generator):
 2. **Certificate Transparency Monitoring**
 3. **Regelmäßige Zertifikat-Audits**
 
----
 
 ## 📊 Auswirkungen in der Praxis
 
@@ -274,7 +265,6 @@ Client <-- HTTPS --> [Angreifer mit rogue cert] <-- HTTP --> Server
 - Banking-Trojaner mit "vertrauenswürdigen" Zertifikaten
 - Ransomware-Deployment über kompromittierte Update-Mechanismen
 
----
 
 ## 🔬 Tiefere mathematische Analyse
 
@@ -304,7 +294,6 @@ G_rogue = scalar_multiply(Q, mod_inverse(2, curve.order))
 - Der Generator-Punkt G
 - Die private Schlüssel d
 
----
 
 ## 🎓 Lernziele für Studenten
 
@@ -328,7 +317,6 @@ Nach dieser Challenge sollten Sie verstehen:
 - ✅ ASN.1 und X.509 Struktur-Analyse
 - ✅ Vulnerability Assessment
 
----
 
 ## 📖 Weiterführende Ressourcen
 
@@ -348,7 +336,6 @@ Nach dieser Challenge sollten Sie verstehen:
 - **OpenSSL**: Zertifikat-Manipulation
 - **Certificate Transparency Logs**: Zertifikat-Monitoring
 
----
 
 ## 🏆 Challenge-Ziel
 

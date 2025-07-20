@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2024.12.21)  20 JUL 2025 22:08
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2024.12.21)  20 JUL 2025 23:50
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -374,7 +374,7 @@ Package hyperref Info: Link coloring OFF on input line 10.
 \@outlinefile=\write3
 \openout3 = `main.out'.
 
-<figures/THD-Logo.pdf, id=47, 1275.76625pt x 277.035pt>
+<figures/THD-Logo.pdf, id=43, 1275.76625pt x 277.035pt>
 File: figures/THD-Logo.pdf Graphic file (type pdf)
 <use figures/THD-Logo.pdf>
 Package pdftex.def Info: figures/THD-Logo.pdf  used on input line 15.
@@ -382,53 +382,26 @@ Package pdftex.def Info: figures/THD-Logo.pdf  used on input line 15.
  [1
 
 {C:/Users/ChristofRenner/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map} <./f
-igures/THD-Logo.pdf>]
+igures/THD-Logo.pdf>] (main.toc
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 51.
+(Font)              <7> on input line 4.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 51.
- [1] (main.toc)
+(Font)              <5> on input line 4.
+)
 \tf@toc=\write4
 \openout4 = `main.toc'.
 
-
-[2]
-
-! LaTeX Error: Command \quotedblbase unavailable in encoding OT1.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.66 Das Projekt „
-                    SS25-Kryptologie2“ bietet eine interaktive Web-basiert...
-
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-
-Overfull \hbox (12.94595pt too wide) in paragraph at lines 66--67
-\OT1/cmr/m/n/10 Das Pro-jekt SS25-Kryptologie2\ bi-etet eine in-ter-ak-tive Web
--basierte Sim-u-la-tion der CurveBall-Schwachstelle.
+ [1]
+Overfull \hbox (13.50151pt too wide) in paragraph at lines 57--58
+\OT1/cmr/m/n/10 Das Pro-jekt 'SS25-Kryptologie2' bi-etet eine in-ter-ak-tive We
+b-basierte Sim-u-la-tion der CurveBall-Schwachstelle.
  []
 
-
-LaTeX Warning: File `webinterface_overview.png' not found on input line 82.
-
-
-! Package pdftex.def Error: File `webinterface_overview.png' not found: using d
-raft setting.
-
-See the pdftex.def package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.82 ...=0.9\textwidth]{webinterface_overview.png}
-                                                  
-Try typing  <return>  to proceed.
-If that doesn't work, type  X <return>  to quit.
-
+<webinterface_overview.png, id=95, 1022.82124pt x 763.35187pt>
+File: webinterface_overview.png Graphic file (type png)
+<use webinterface_overview.png>
+Package pdftex.def Info: webinterface_overview.png  used on input line 73.
+(pdftex.def)             Requested size: 412.02158pt x 307.49017pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
@@ -442,43 +415,21 @@ ng1.sty
 File: lstlang1.sty 2023/02/27 1.9 listings language file
 )
 Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on i
-nput line 89.
-
-
-LaTeX Warning: File `webinterface_keygen.png' not found on input line 95.
-
-
-! Package pdftex.def Error: File `webinterface_keygen.png' not found: using dra
-ft setting.
-
-See the pdftex.def package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.95 ...th=0.8\textwidth]{webinterface_keygen.png}
-                                                  
-Try typing  <return>  to proceed.
-If that doesn't work, type  X <return>  to quit.
+nput line 80.
+<webinterface_keygen.png, id=97, 822.57312pt x 632.3625pt>
+File: webinterface_keygen.png Graphic file (type png)
+<use webinterface_keygen.png>
+Package pdftex.def Info: webinterface_keygen.png  used on input line 86.
+(pdftex.def)             Requested size: 366.24529pt x 281.54999pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-
-LaTeX Warning: File `webinterface_certgen.png' not found on input line 104.
-
-
-! Package pdftex.def Error: File `webinterface_certgen.png' not found: using dr
-aft setting.
-
-See the pdftex.def package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.104 ...=0.8\textwidth]{webinterface_certgen.png}
-                                                  
-Try typing  <return>  to proceed.
-If that doesn't work, type  X <return>  to quit.
-
+<webinterface_certgen.png, id=98, 822.57312pt x 632.3625pt>
+File: webinterface_certgen.png Graphic file (type png)
+<use webinterface_certgen.png>
+Package pdftex.def Info: webinterface_certgen.png  used on input line 95.
+(pdftex.def)             Requested size: 366.24529pt x 281.54999pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
@@ -487,50 +438,49 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 ng1.sty
 File: lstlang1.sty 2023/02/27 1.9 listings language file
 )
-
-LaTeX Warning: File `webinterface_validation.png' not found on input line 119.
-
-
-! Package pdftex.def Error: File `webinterface_validation.png' not found: using
- draft setting.
-
-See the pdftex.def package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.119 ...8\textwidth]{webinterface_validation.png}
-                                                  
-Try typing  <return>  to proceed.
-If that doesn't work, type  X <return>  to quit.
+<webinterface_validation.png, id=99, 822.07124pt x 175.15437pt>
+File: webinterface_validation.png Graphic file (type png)
+<use webinterface_validation.png>
+Package pdftex.def Info: webinterface_validation.png  used on input line 110.
+(pdftex.def)             Requested size: 366.24529pt x 78.03297pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-)
-Runaway argument?
-{Technische Hintergründe der Schwach 
-! File ended while scanning use of \@xdblarg.
-<inserted text> 
-                \par 
-<*> ./main.tex
-              
-I suspect you have forgotten a `}', causing me
-to read past where you wanted me to stop.
-I'll try to recover; but if the error is serious,
-you'd better type `E' or `X' now and fix your file.
-
-! Emergency stop.
-<*> ./main.tex
-              
-*** (job aborted, no legal \end found)
-
- 
+[1] [2 <./webinterface_overview.png>] [3 <./webinterface_keygen.png>] [4 <./web
+interface_certgen.png> <./webinterface_validation.png>] (main.aux)
+ ***********
+LaTeX2e <2023-11-01> patch level 1
+L3 programming layer <2024-01-04>
+ ***********
+Package rerunfilecheck Info: File `main.out' has not changed.
+(rerunfilecheck)             Checksum: 96F10FAF3280F7AAFBCAB178C6E1CD2D;1925.
+ ) 
 Here is how much of TeX's memory you used:
- 10905 strings out of 474486
- 170953 string characters out of 5739506
- 1932542 words of memory out of 5000000
- 33077 multiletter control sequences out of 15000+600000
+ 10829 strings out of 474486
+ 167902 string characters out of 5739506
+ 1939542 words of memory out of 5000000
+ 32984 multiletter control sequences out of 15000+600000
  561943 words of font info for 49 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  75i,7n,79p,446b,1231s stack positions out of 10000i,1000n,20000p,200000b,200000s
-!  ==> Fatal error occurred, no output PDF file produced!
+ <C:\Users\ChristofRenner\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dp
+i600\tcrm1000.pk><C:/Users/ChristofRenner/AppData/Local/Programs/MiKTeX/fonts/t
+ype1/public/amsfonts/cm/cmbx10.pfb><C:/Users/ChristofRenner/AppData/Local/Progr
+ams/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/ChristofRenner/A
+ppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><C:/Use
+rs/ChristofRenner/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/
+cmmi10.pfb><C:/Users/ChristofRenner/AppData/Local/Programs/MiKTeX/fonts/type1/p
+ublic/amsfonts/cm/cmr10.pfb><C:/Users/ChristofRenner/AppData/Local/Programs/MiK
+TeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/ChristofRenner/AppData/L
+ocal/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/Users/Christof
+Renner/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb><
+C:/Users/ChristofRenner/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfon
+ts/cm/cmti10.pfb><C:/Users/ChristofRenner/AppData/Local/Programs/MiKTeX/fonts/t
+ype1/public/amsfonts/cm/cmtt10.pfb>
+Output written on main.pdf (6 pages, 1306325 bytes).
+PDF statistics:
+ 193 PDF objects out of 1000 (max. 8388607)
+ 32 named destinations out of 1000 (max. 500000)
+ 106 words of extra memory for PDF output out of 10000 (max. 10000000)
+

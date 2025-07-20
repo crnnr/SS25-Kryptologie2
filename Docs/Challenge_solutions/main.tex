@@ -44,15 +44,6 @@
 \newpage
 \pagenumbering{Roman}
 
-\section*{Eigenständigkeitserklärung}
-Hiermit bestätigen wir, dass wir die vorliegende Arbeit selbstständig verfasst und keine anderen Publikationen, Vorlagen und Hilfsmittel als die angegebenen benutzt haben. Alle Teile unserer Arbeit, die wortwörtlich oder dem Sinn nach anderen Werken entnommen sind, wurden unter Angabe der Quelle kenntlich gemacht.
-
-\vspace{1cm}
-Deggendorf, \underline{\hspace{0.715\textwidth}}\\
-\begin{tabular}{lll}
-  \hspace{3cm} & \small(Datum)\hspace{1cm} & \hspace{2cm}\small(Unterschrift)
-\end{tabular}
-
 \newpage
 \tableofcontents
 \newpage
@@ -63,7 +54,7 @@ Deggendorf, \underline{\hspace{0.715\textwidth}}\\
 CVE-2020-0601, bekannt als \textbf{CurveBall}, ist eine kritische Schwachstelle in der Windows CryptoAPI. Die Sicherheitslücke erlaubt Angreifern, gefälschte ECC-Zertifikate zu erzeugen, indem sie elliptische Kurvenparameter manipulieren, speziell den Generatorpunkt G.
 
 \section{Projektübersicht und Zielsetzung}
-Das Projekt „SS25-Kryptologie2“ bietet eine interaktive Web-basierte Simulation der CurveBall-Schwachstelle. Ziel ist es, diese Sicherheitslücke eigenständig zu simulieren, zu verstehen und praxisnah zu analysieren.
+Das Projekt 'SS25-Kryptologie2' bietet eine interaktive Web-basierte Simulation der CurveBall-Schwachstelle. Ziel ist es, diese Sicherheitslücke eigenständig zu simulieren, zu verstehen und praxisnah zu analysieren.
 
 \section{Beschreibung der Webinterface-Simulation}
 Das Webinterface ermöglicht eine intuitive Bedienung der Challenge, unterteilt in die folgenden Schritte:
@@ -93,7 +84,7 @@ python gen-key.py USERTrustECCCertificationAuthority.crt
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.8\textwidth]{webinterface_keygen.png}
-\caption{Webinterface Schlüsselgenerierung (Platzhalter)}
+\caption{Webinterface Schlüsselgenerierung}
 \end{figure}
 
 \subsection{Zertifikatsgenerierung}
@@ -117,7 +108,28 @@ if rogue_pub.verify_digest(signature, digest):
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.8\textwidth]{webinterface_validation.png}
-\caption{Validierungsergebnis über das Webinterface (Platzhalter)}
+\caption{Validierungsergebnis über das Webinterface}
 \end{figure}
 
-\section{Technische Hintergründe der Schwach
+\section{Technische Hintergründe der Schwachstelle}
+Durch gezielte Manipulation des ECC-Generatorpunkts ($G'$) kann ein Angreifer einen privaten Schlüssel erzeugen, der vermeintlich korrekte Signaturen liefert. Windows CryptoAPI validierte die Herkunft des Schlüssels von $G$ nicht, was die Attacke ermöglicht.
+
+\section{Ergebnisse der Simulation}
+Die Web-basierte Simulation bestätigte eindrucksvoll, wie einfach manipulierte Zertifikate erzeugt und validiert werden konnten. Die erfolgreiche Validierung im simulierten Szenario zeigt die Gefahr solcher unzureichenden Validierungen.
+
+\section{Fazit}
+Das Projekt bietet eine didaktisch wertvolle Möglichkeit, die CurveBall-Schwachstelle praxisnah nachzuvollziehen. Die Webschnittstelle vereinfacht den Lernprozess und verdeutlicht eindrücklich die Gefahren der Schwachstelle.
+
+\newpage
+
+\section*{Eigenständigkeitserklärung}
+Hiermit bestätigen wir, dass wir die vorliegende Arbeit selbstständig verfasst und keine anderen Publikationen, Vorlagen und Hilfsmittel als die angegebenen benutzt haben. Alle Teile unserer Arbeit, die wortwörtlich oder dem Sinn nach anderen Werken entnommen sind, wurden unter Angabe der Quelle kenntlich gemacht.
+
+\vspace{1cm}
+Deggendorf, \underline{\hspace{0.715\textwidth}}\\
+\begin{tabular}{lll}
+  \hspace{3cm} & \small(Datum)\hspace{1cm} & \hspace{2cm}\small(Unterschrift)
+\end{tabular}
+\newpage
+
+\end{document}
