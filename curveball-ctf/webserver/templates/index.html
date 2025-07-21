@@ -107,469 +107,55 @@
             </div>
         </div>
 
-        <div class="tutorial-section" id="tutorial-section">
-            <h3>🎓 Interaktives Tutorial - Erste Schritte</h3>
+
+
+        <!-- Challenge Übersicht -->
+        <div class="challenges-section">
+            <h3>🎯 Challenges</h3>
+            <p>Wählen Sie eine Challenge aus, um mit dem Lernen zu beginnen:</p>
             
-            <!-- Tutorial Step 1: Welcome -->
-            <div class="tutorial-step active" id="tutorial-step-1">
-                <div class="tutorial-header">
-                    <h4>Willkommen zur Curveball Challenge!</h4>
-                    <div class="tutorial-progress">
-                        <div class="tutorial-progress-bar" style="width: 16.67%;"></div>
+            <div class="challenges-grid">
+                <div class="challenge-card">
+                    <h4>Challenge 1: ECC Grundlagen</h4>
+                    <p>Lernen Sie die Grundlagen der elliptischen Kurven-Kryptographie durch praktische Punktmultiplikation.</p>
+                    <div class="challenge-meta">
+                        <span class="difficulty beginner">Anfänger</span>
+                        <span class="duration">15-20 Min</span>
                     </div>
-                    <span class="tutorial-step-indicator">Schritt 1 von 6</span>
+                    <a href="/challenge1" class="challenge-btn">Challenge starten →</a>
                 </div>
-                <div class="tutorial-content">
-                    <p>Dieses Tutorial führt Sie Schritt für Schritt durch die <strong>CVE-2020-0601 Curveball Challenge</strong>. Sie lernen:</p>
-                    <ul style="margin: 15px 0; padding-left: 20px;">
-                        <li>✅ Wie elliptische Kurven funktionieren</li>
-                        <li>✅ Was Generator-Punkte sind und warum sie wichtig sind</li>
-                        <li>✅ Wie die Curveball-Schwachstelle funktioniert</li>
-                        <li>✅ Wie Sie einen Exploit praktisch durchführen</li>
-                    </ul>
-                    <p><strong>Geschätzte Dauer:</strong> 10-15 Minuten</p>
-                </div>
-                <div class="tutorial-controls">
-                    <button class="tutorial-btn secondary" onclick="closeTutorial()">Tutorial überspringen</button>
-                    <button class="tutorial-btn" onclick="nextTutorialStep()">Los geht's! →</button>
-                </div>
-            </div>
-
-            <!-- Tutorial Step 2: ECC Basics -->
-            <div class="tutorial-step" id="tutorial-step-2">
-                <div class="tutorial-header">
-                    <h4>📐 Elliptische Kurven verstehen</h4>
-                    <div class="tutorial-progress">
-                        <div class="tutorial-progress-bar" style="width: 33.33%;"></div>
-                    </div>
-                    <span class="tutorial-step-indicator">Schritt 2 von 6</span>
-                </div>
-                <div class="tutorial-content">
-                    <p>Elliptische Kurven bilden die Grundlage der <strong>ECC-Kryptographie</strong>. Sie basieren auf der mathematischen Gleichung:</p>
-                    <div class="tutorial-example">
-                        <h5>📝 Kurvengleichung:</h5>
-                        <code>y² = x³ + ax + b</code>
-                    </div>
-                    <p>Jede Kurve hat spezielle Eigenschaften:</p>
-                    <ul style="margin: 10px 0; padding-left: 20px;">
-                        <li><strong>Sicherheitslevel:</strong> Bestimmt durch die Kurvengröße (z.B. 256 bit)</li>
-                        <li><strong>Standards:</strong> NIST-Kurven wie P-256, P-384</li>
-                        <li><strong>Generator-Punkt:</strong> Ein festgelegter Basispunkt auf der Kurve</li>
-                    </ul>
-                </div>
-                <div class="tutorial-controls">
-                    <button class="tutorial-btn secondary" onclick="prevTutorialStep()">← Zurück</button>
-                    <button class="tutorial-btn" onclick="nextTutorialStep()">Verstanden →</button>
-                </div>
-            </div>
-
-            <!-- Tutorial Step 3: Generator Points -->
-            <div class="tutorial-step" id="tutorial-step-3">
-                <div class="tutorial-header">
-                    <h4>🎯 Generator-Punkte - Das Herzstück</h4>
-                    <div class="tutorial-progress">
-                        <div class="tutorial-progress-bar" style="width: 50%;"></div>
-                    </div>
-                    <span class="tutorial-step-indicator">Schritt 3 von 6</span>
-                </div>
-                <div class="tutorial-content">
-                    <p>Der <span class="tutorial-highlight">Generator-Punkt G</span> ist fundamental für ECC-Sicherheit:</p>
-                    <div class="tutorial-example">
-                        <h5>🔑 Schlüsselerzeugung:</h5>
-                        <code>Öffentlicher_Schlüssel = Privater_Schlüssel × Generator_Punkt</code><br>
-                        <code>Q = d × G</code>
-                    </div>
-                    <p><strong>Normale Sicherheit:</strong></p>
-                    <ul style="margin: 10px 0; padding-left: 20px;">
-                        <li>Generator G ist durch Standards festgelegt</li>
-                        <li>Privater Schlüssel d ist unbekannt und schwer zu finden</li>
-                        <li>Öffentlicher Schlüssel Q ist berechenbar, aber d bleibt geheim</li>
-                    </ul>
-                    <p><strong>⚠️ Curveball Problem:</strong> Windows prüfte nicht, ob der Generator den Standards entspricht!</p>
-                </div>
-                <div class="tutorial-controls">
-                    <button class="tutorial-btn secondary" onclick="prevTutorialStep()">← Zurück</button>
-                    <button class="tutorial-btn" onclick="nextTutorialStep()">Weiter zum Exploit →</button>
-                </div>
-            </div>
-
-            <!-- Tutorial Step 4: The Vulnerability -->
-            <div class="tutorial-step" id="tutorial-step-4">
-                <div class="tutorial-header">
-                    <h4>💥 Die Curveball-Schwachstelle</h4>
-                    <div class="tutorial-progress">
-                        <div class="tutorial-progress-bar" style="width: 66.67%;"></div>
-                    </div>
-                    <span class="tutorial-step-indicator">Schritt 4 von 6</span>
-                </div>
-                <div class="tutorial-content">
-                    <p>Der <strong>CVE-2020-0601</strong> Exploit funktioniert so:</p>
-                    <div class="tutorial-example">
-                        <h5>🚨 Angreifer-Vorteil:</h5>
-                        <code>Q = d' × G'</code><br>
-                        <small>↳ Angreifer wählt sowohl d' als auch G' selbst!</small>
-                    </div>
-                    <p><strong>Normale Situation:</strong></p>
-                    <ul style="margin: 10px 0; padding-left: 20px; color: #4caf50;">
-                        <li>✅ Generator G ist standardisiert</li>
-                        <li>✅ Privater Schlüssel d ist unbekannt</li>
-                        <li>✅ Sicherheit durch Discrete Logarithm Problem</li>
-                    </ul>
-                    <p><strong>Curveball Angriff:</strong></p>
-                    <ul style="margin: 10px 0; padding-left: 20px; color: #f44336;">
-                        <li>❌ Manipulierter Generator G' wird akzeptiert</li>
-                        <li>❌ Angreifer kennt passenden privaten Schlüssel d'</li>
-                        <li>❌ "Gültige" Zertifikate für beliebige Identitäten</li>
-                    </ul>
-                </div>
-                <div class="tutorial-controls">
-                    <button class="tutorial-btn secondary" onclick="prevTutorialStep()">← Zurück</button>
-                    <button class="tutorial-btn" onclick="nextTutorialStep()">Jetzt ausprobieren! →</button>
-                </div>
-            </div>
-
-            <!-- Tutorial Step 5: Practical Example -->
-            <div class="tutorial-step" id="tutorial-step-5">
-                <div class="tutorial-header">
-                    <h4>🧪 Praktisches Beispiel</h4>
-                    <div class="tutorial-progress">
-                        <div class="tutorial-progress-bar" style="width: 83.33%;"></div>
-                    </div>
-                    <span class="tutorial-step-indicator">Schritt 5 von 6</span>
-                </div>
-                <div class="tutorial-content">
-                    <p>Versuchen wir einen einfachen Exploit! Folgen Sie diesen Schritten:</p>
-                    <div class="tutorial-example">
-                        <h5>🎯 Exploit-Anleitung:</h5>
-                        <ol style="margin: 10px 0; padding-left: 20px;">
-                            <li><strong>Kurve auswählen:</strong> Wählen Sie "secp256r1" (sicher)</li>
-                            <li><strong>Generator manipulieren:</strong> Wählen Sie "rogue" aus der Preset-Liste</li>
-                            <li><strong>Private Key setzen:</strong> Geben Sie "curveball123" ein</li>
-                            <li><strong>Validierung starten:</strong> Klicken Sie "Parameter validieren"</li>
-                        </ol>
-                    </div>
-                    <p><strong>Erwartetes Ergebnis:</strong> Der Exploit sollte erfolgreich sein und eine "gefälschte" aber von Windows akzeptierte Signatur erzeugen!</p>
-                </div>
-                <div class="tutorial-controls">
-                    <button class="tutorial-btn secondary" onclick="prevTutorialStep()">← Zurück</button>
-                    <button class="tutorial-btn try-it" onclick="startGuidedExample()">Guided Example starten →</button>
-                </div>
-            </div>
-
-            <!-- Tutorial Step 6: Completion -->
-            <div class="tutorial-step" id="tutorial-step-6">
-                <div class="tutorial-header">
-                    <h4>🎉 Tutorial abgeschlossen!</h4>
-                    <div class="tutorial-progress">
-                        <div class="tutorial-progress-bar" style="width: 100%;"></div>
-                    </div>
-                    <span class="tutorial-step-indicator">Schritt 6 von 6</span>
-                </div>
-                <div class="tutorial-content">
-                    <p>Gratulation! Sie haben die Grundlagen der Curveball-Schwachstelle kennengelernt:</p>
-                    <ul style="margin: 15px 0; padding-left: 20px; color: #4caf50;">
-                        <li>✅ ECC und Generator-Punkte verstanden</li>
-                        <li>✅ CVE-2020-0601 Schwachstelle erklärt</li>
-                        <li>✅ Praktischen Exploit durchgeführt</li>
-                    </ul>
-                    <div class="tutorial-example">
-                        <h5>🚀 Nächste Schritte:</h5>
-                        <ul style="margin: 10px 0; padding-left: 20px;">
-                            <li>Experimentieren Sie mit verschiedenen Parametern</li>
-                            <li>Nutzen Sie die Info-Icons (i) für detaillierte Erklärungen</li>
-                            <li>Sammeln Sie Hints bei Fehlversuchen</li>
-                            <li>Versuchen Sie komplexere Exploit-Varianten</li>
-                        </ul>
-                    </div>
-                    <p><strong>Viel Spaß beim Hacken! 🔓</strong></p>
-                </div>
-                <div class="tutorial-controls">
-                    <button class="tutorial-btn secondary" onclick="prevTutorialStep()">← Zurück</button>
-                    <button class="tutorial-btn" onclick="completeTutorial()">Challenge starten! 🚀</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="challenge-info">
-            <h3>🎯 Interactive ECC Parameter Challenge</h3>
-            <p>
-                Willkommen zur <strong>interaktiven Curveball-Challenge</strong>! Hier können Sie die 
-                ECC-Parameter direkt manipulieren und die CVE-2020-0601 Schwachstelle spielerisch erforschen.
-                Experimentieren Sie mit verschiedenen Parametern, bis Sie die Validierung umgehen können!
-            </p>
-            <div style="margin-top: 15px; padding: 15px; background: rgba(0, 100, 200, 0.1); border-radius: 8px;">
-                <strong>🎮 Spielregeln:</strong><br>
-                1. Wählen Sie eine elliptische Kurve<br>
-                2. Manipulieren Sie den Generator-Punkt<br>
-                3. Setzen Sie einen Private Key<br>
-                4. Lösen Sie die CVE-2020-0601 Schwachstelle aus!
-            </div>
-            <div style="margin-top: 15px; text-align: center;">
-                <button class="tutorial-btn secondary" onclick="restartTutorial()">
-                    🎓 Tutorial neu starten
-                </button>
-            </div>
-        </div>
-
-        <div class="interactive-section">
-            <h3>� ECC Parameter Manipulation</h3>
-            <form method="post" class="parameter-form" onsubmit="validateParameters(event)">
                 
-                <div class="parameter-group">
-                    <label for="curve">
-                        📐 Elliptische Kurve:
-                        <span class="info-icon" onclick="toggleParameterInfo('curve-info-desc')">i</span>
-                    </label>
-                    <select id="curve" name="curve" class="param-select">
-                        {% for curve_name, curve_info in curves.items() %}
-                        <option value="{{ curve_name }}" 
-                                data-size="{{ curve_info.size }}" 
-                                data-secure="{{ curve_info.secure }}">
-                            {{ curve_name }} ({{ curve_info.name }}, {{ curve_info.size }} bit)
-                        </option>
-                        {% endfor %}
-                    </select>
-                    <div class="param-info" id="curve-info">Wählen Sie eine Kurve aus</div>
-                    <div class="parameter-description" id="curve-info-desc">
-                        <button class="close-btn" onclick="toggleParameterInfo('curve-info-desc')">×</button>
-                        <h5>📐 Elliptische Kurven - Erklärung</h5>
-                        <p><strong>Was sind elliptische Kurven?</strong><br>
-                        Elliptische Kurven sind mathematische Strukturen, die in der Kryptographie für sichere Verschlüsselung verwendet werden. Sie basieren auf der Gleichung y² = x³ + ax + b.</p>
-                        
-                        <p><strong>Warum sind sie wichtig?</strong><br>
-                        ECC (Elliptic Curve Cryptography) bietet die gleiche Sicherheit wie RSA mit deutlich kleineren Schlüsseln. Eine 256-bit ECC entspricht etwa einer 3072-bit RSA-Verschlüsselung.</p>
-                        
-                        <p><strong>Curveball-Relevanz:</strong><br>
-                        Die Wahl der Kurve bestimmt die mathematischen Parameter. Windows validierte nicht ordnungsgemäß, ob benutzerdefinierte Generator-Punkte zur gewählten Kurve gehören.</p>
+                <div class="challenge-card">
+                    <h4>Challenge 2: Zertifikatsanalyse</h4>
+                    <p>Analysieren Sie X.509-Zertifikate mit OpenSSL und finden Sie versteckte Informationen in Zertifikatsfeldern.</p>
+                    <div class="challenge-meta">
+                        <span class="difficulty intermediate">Fortgeschritten</span>
+                        <span class="duration">20-30 Min</span>
                     </div>
+                    <a href="/challenge2" class="challenge-btn">Challenge starten →</a>
                 </div>
-
-                <div class="parameter-group">
-                    <label for="generator_preset">
-                        🎯 Generator-Punkt (Vordefiniert):
-                        <span class="info-icon" onclick="toggleParameterInfo('generator-preset-info-desc')">i</span>
-                    </label>
-                    <select id="generator_preset" name="generator_preset" class="param-select">
-                        {% for gen_name, gen_info in generators.items() %}
-                        <option value="{{ gen_name }}" data-x="{{ gen_info.x }}" data-valid="{{ gen_info.valid }}">
-                            {{ gen_name.title() }} Generator
-                            {% if not gen_info.valid %}⚠️ Manipuliert{% endif %}
-                        </option>
-                        {% endfor %}
-                    </select>
-                    <div class="parameter-description" id="generator-preset-info-desc">
-                        <button class="close-btn" onclick="toggleParameterInfo('generator-preset-info-desc')">×</button>
-                        <h5>🎯 Generator-Punkt - Erklärung</h5>
-                        <p><strong>Was ist der Generator-Punkt?</strong><br>
-                        Der Generator-Punkt G ist ein spezifischer Punkt auf der elliptischen Kurve, der zur Erzeugung aller anderen Punkte verwendet wird. Er ist ein fundamentaler Parameter in ECC.</p>
-                        
-                        <p><strong>Mathematische Bedeutung:</strong><br>
-                        Alle öffentlichen Schlüssel werden durch Multiplikation des privaten Schlüssels d mit dem Generator G berechnet: Q = d × G</p>
-                        
-                        <p><strong>Curveball-Schwachstelle:</strong><br>
-                        Windows prüfte nicht, ob der Generator-Punkt den offiziellen Standards entspricht. Angreifer konnten eigene Generator-Punkte verwenden und damit die Sicherheit vollständig umgehen.</p>
+                
+                <div class="challenge-card">
+                    <h4>Challenge 3: Curveball Exploit</h4>
+                    <p>Simulieren Sie CVE-2020-0601 und erstellen Sie ein gefälschtes ECC-Zertifikat, das als vertrauenswürdig erkannt wird.</p>
+                    <div class="challenge-meta">
+                        <span class="difficulty expert">Experte</span>
+                        <span class="duration">45-60 Min</span>
                     </div>
+                    <a href="/challenge3" class="challenge-btn">Challenge starten →</a>
                 </div>
-
-                <div class="parameter-group">
-                    <label for="generator_x">
-                        🔢 Generator X-Koordinate:
-                        <span class="info-icon" onclick="toggleParameterInfo('generator-x-info-desc')">i</span>
-                    </label>
-                    <input type="text" id="generator_x" name="generator_x" class="param-input" 
-                           placeholder="Hex-Wert oder 'evil' für Exploit...">
-                    <div class="param-info">Versuchen Sie 'rogue' oder eigene Werte mit 'evil'</div>
-                    <div class="parameter-description" id="generator-x-info-desc">
-                        <button class="close-btn" onclick="toggleParameterInfo('generator-x-info-desc')">×</button>
-                        <h5>🔢 Generator X-Koordinate - Erklärung</h5>
-                        <p><strong>X-Koordinate des Generator-Punkts:</strong><br>
-                        Dies ist die horizontale Koordinate des Generator-Punkts auf der elliptischen Kurve. In normalen Implementierungen ist dieser Wert durch Standards festgelegt.</p>
-                        
-                        <p><strong>Exploit-Möglichkeiten:</strong><br>
-                        • <code>rogue</code> - Verwendet einen manipulierten Generator<br>
-                        • <code>evil</code> - Aktiviert verschiedene Exploit-Varianten<br>
-                        • Hex-Werte - Eigene X-Koordinaten testen</p>
-                        
-                        <p><strong>Sicherheitshinweis:</strong><br>
-                        Ein manipulierter Generator ermöglicht es, "gültige" Signaturen für beliebige Daten zu erstellen, ohne den echten privaten Schlüssel zu kennen.</p>
+                
+                <div class="challenge-card">
+                    <h4>Challenge 4: Coming Soon</h4>
+                    <p>Weitere Challenges folgen in Kürze...</p>
+                    <div class="challenge-meta">
+                        <span class="difficulty expert">Experte</span>
+                        <span class="duration">TBD</span>
                     </div>
-                </div>
-
-                <div class="parameter-group">
-                    <label for="generator_y">
-                        🔢 Generator Y-Koordinate:
-                        <span class="info-icon" onclick="toggleParameterInfo('generator-y-info-desc')">i</span>
-                    </label>
-                    <input type="text" id="generator_y" name="generator_y" class="param-input" 
-                           placeholder="Hex-Wert (optional)">
-                    <div class="parameter-description" id="generator-y-info-desc">
-                        <button class="close-btn" onclick="toggleParameterInfo('generator-y-info-desc')">×</button>
-                        <h5>🔢 Generator Y-Koordinate - Erklärung</h5>
-                        <p><strong>Y-Koordinate des Generator-Punkts:</strong><br>
-                        Dies ist die vertikale Koordinate des Generator-Punkts. Zusammen mit der X-Koordinate definiert sie den vollständigen Punkt auf der Kurve.</p>
-                        
-                        <p><strong>Mathematische Beziehung:</strong><br>
-                        Die Y-Koordinate muss der Kurvengleichung y² = x³ + ax + b entsprechen. Für eine gegebene X-Koordinate gibt es maximal zwei gültige Y-Werte.</p>
-                        
-                        <p><strong>Optionalität:</strong><br>
-                        Oft kann die Y-Koordinate aus der X-Koordinate berechnet werden. Die meisten Standards definieren, welcher der beiden möglichen Y-Werte verwendet wird.</p>
-                    </div>
-                </div>
-
-                <div class="parameter-group">
-                    <label for="private_key">
-                        🔐 Private Key:
-                        <span class="info-icon" onclick="toggleParameterInfo('private-key-info-desc')">i</span>
-                    </label>
-                    <input type="text" id="private_key" name="private_key" class="param-input" 
-                           placeholder="Ihr privater Schlüssel...">
-                    <div class="param-info">Längere Keys (>8 Zeichen) könnten hilfreicher sein</div>
-                    <div class="parameter-description" id="private-key-info-desc">
-                        <button class="close-btn" onclick="toggleParameterInfo('private-key-info-desc')">×</button>
-                        <h5>🔐 Private Key - Erklärung</h5>
-                        <p><strong>Was ist ein Private Key?</strong><br>
-                        Der private Schlüssel ist eine geheime Zahl, die nur dem Besitzer bekannt sein sollte. Er wird zur Erstellung digitaler Signaturen und zur Entschlüsselung verwendet.</p>
-                        
-                        <p><strong>Beziehung zum Public Key:</strong><br>
-                        Der öffentliche Schlüssel Q wird durch Multiplikation berechnet: Q = private_key × Generator_Point</p>
-                        
-                        <p><strong>Curveball-Kontext:</strong><br>
-                        Bei manipulierten Generator-Punkten können Angreifer beliebige private Schlüssel wählen und trotzdem "gültige" Zertifikate erstellen, die von Windows akzeptiert werden.</p>
-                        
-                        <p><strong>Tipp:</strong> Längere Schlüssel (>8 Zeichen) erhöhen die Wahrscheinlichkeit, den Exploit auszulösen.</p>
-                    </div>
-                </div>
-
-                <div class="parameter-group">
-                    <label for="signature_data">
-                        ✍️ Signature Data:
-                        <span class="info-icon" onclick="toggleParameterInfo('signature-data-info-desc')">i</span>
-                    </label>
-                    <textarea id="signature_data" name="signature_data" class="param-textarea" 
-                              placeholder="Optionale Signature-Daten..."></textarea>
-                    <div class="parameter-description" id="signature-data-info-desc">
-                        <button class="close-btn" onclick="toggleParameterInfo('signature-data-info-desc')">×</button>
-                        <h5>✍️ Signature Data - Erklärung</h5>
-                        <p><strong>Signatur-Daten:</strong><br>
-                        Dies sind die Daten, die digital signiert werden sollen. In realen Anwendungen wären dies z.B. Dokumente, Software oder Zertifikatsinhalte.</p>
-                        
-                        <p><strong>Digitale Signaturen:</strong><br>
-                        Eine digitale Signatur beweist, dass die Daten von dem Besitzer des privaten Schlüssels stammen und nicht verändert wurden.</p>
-                        
-                        <p><strong>Curveball-Angriff:</strong><br>
-                        Mit manipulierten Generator-Punkten können Angreifer gültige Signaturen für beliebige Daten erstellen, ohne den echten privaten Schlüssel zu besitzen.</p>
-                        
-                        <p><strong>Verwendung:</strong> Dieser Parameter ist optional, aber kann bei der Demonstration verschiedener Angriffsvektoren hilfreich sein.</p>
-                    </div>
-                </div>
-
-                <button type="submit" class="action-button validate-btn">
-                    🧪 Parameter validieren
-                </button>
-            </form>
-        </div>
-
-        <div class="warning">
-            <strong>⚠️ Warnung:</strong> Diese Simulation dient nur zu Bildungszwecken. 
-            Die verwendeten Techniken sollten niemals in produktiven Umgebungen eingesetzt werden.
-        </div>
-
-        <div class="vulnerability-badge">CVE-2020-0601</div>
-        <div class="vulnerability-badge">ECC Spoofing</div>
-        <div class="vulnerability-badge">Certificate Validation</div>
-
-        {% if validation_result %}
-        <div class="validation-result {% if validation_result.success %}validation-success{% else %}validation-error{% endif %}">
-            <strong>{% if validation_result.success %}🎯 EXPLOIT ERFOLGREICH!{% else %}❌ Exploit fehlgeschlagen{% endif %}</strong><br>
-            {{ validation_result.message }}
-            
-            {% if validation_result.debug %}
-            <div class="debug-info">
-                <h5>🔍 Debug-Informationen:</h5>
-                <div class="debug-item {% if validation_result.debug.curve_secure %}success{% else %}warning{% endif %}">
-                    Kurve sicher: {{ validation_result.debug.curve_secure }}
-                </div>
-                <div class="debug-item {% if validation_result.debug.generator_status == 'rogue' %}error{% else %}success{% endif %}">
-                    Generator-Status: {{ validation_result.debug.generator_status }}
-                </div>
-                <div class="debug-item {% if validation_result.debug.vulnerability_triggered %}error{% else %}success{% endif %}">
-                    Schwachstelle ausgelöst: {{ validation_result.debug.vulnerability_triggered }}
-                </div>
-                <div class="debug-item">
-                    Kurvengröße: {{ validation_result.debug.curve_size }} bit
-                </div>
-                <div class="debug-item">
-                    Private Key Länge: {{ validation_result.debug.private_key_length }}
-                </div>
-            </div>
-            {% endif %}
-        </div>
-        {% endif %}
-
-        <div class="hints-section">
-            <button type="button" class="hint-button" onclick="loadHints()">
-                💡 Hints anzeigen <span id="hint-counter">(verfügbar nach Fehlversuchen)</span>
-            </button>
-            <div id="hints-container" class="hints-container hidden">
-                <div id="progress-info" class="progress-info"></div>
-                <div id="hints-list"></div>
-            </div>
-        </div>
-
-        {% if flag %}
-        <div class="flag-container">
-            <h4>🏆 Erfolgreich authentifiziert!</h4>
-            <div class="flag-value">{{ flag }}</div>
-        </div>
-        {% endif %}
-
-        {% if certificate_info %}
-        <div class="certificate-section">
-            <h3>📜 Generiertes Zertifikat - Details</h3>
-            <div class="cert-content">
-                <div class="cert-overview">
-                    <div class="cert-status {{ 'cert-dangerous' if curveball_info.vulnerability_indicator else ('cert-custom' if curveball_info.custom_indicator else 'cert-safe') }}">
-                        {% if curveball_info.vulnerability_indicator %}
-                        ⚠️ Unsichere Kurve erkannt! Mögliche Curveball-Schwachstelle.
-                        {% else %}
-                        ✅ Kurve als sicher validiert.
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div class="cert-details">
-                    <div class="cert-detail">
-                        <strong>Aussteller:</strong> {{ certificate_info.issuer }}
-                    </div>
-                    <div class="cert-detail">
-                        <strong>Betreff:</strong> {{ certificate_info.subject }}
-                    </div>
-                    <div class="cert-detail">
-                        <strong>Gültig von:</strong> {{ certificate_info.valid_from }}
-                    </div>
-                    <div class="cert-detail">
-                        <strong>Bis:</strong> {{ certificate_info.valid_to }}
-                    </div>
-                    <div class="cert-detail">
-                        <strong>Öffentlicher Schlüssel:</strong> {{ certificate_info.public_key }}
-                    </div>
-                </div>
-
-                <div class="cert-actions">
-                    <button class="action-button" onclick="downloadCertificate()">⬇️ Zertifikat herunterladen</button>
+                    <button class="challenge-btn disabled" disabled>Bald verfügbar</button>
                 </div>
             </div>
         </div>
-        {% endif %}
     </div>
-
-    <script>
-        // Set template variables for external JS
-        window.currentFailedAttempts = {{ failed_attempts }};
-    </script>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-</body>
-</html>
-
 </body>
 </html>

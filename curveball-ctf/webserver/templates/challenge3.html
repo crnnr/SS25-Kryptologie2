@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge 3 - Curveball Exploit | Curveball CTF</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="background-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <div class="container">
+        <div class="header-section">
+            <h1 class="challenge-title">Challenge 3</h1>
+            <h2 class="challenge-subtitle">Curveball Exploit - Zertifikatsfälschung</h2>
+            <p class="challenge-description">
+                Simulieren Sie CVE-2020-0601 und erstellen Sie ein gefälschtes ECC-Zertifikat, das als vertrauenswürdig erkannt wird
+            </p>
+        </div>
+
+        <div class="challenge-content">
+            <!-- Exploit Story -->
+            <div class="exploit-story-section">
+                <h3>🎯 Das Ziel</h3>
+                <div class="story-content">
+                    <div class="story-box exploit-box">
+                        <h4>Die ultimative Curveball-Challenge</h4>
+                        <p>Sie haben die Grundlagen der ECC-Kryptographie gelernt und Zertifikate analysiert. Jetzt ist es Zeit für den nächsten Schritt: <strong>Erstellen Sie ein gefälschtes ECC-Zertifikat, das scheinbar von einer vertrauenswürdigen CA stammt - ohne Zugriff auf deren Private Key!</strong></p>
+                        
+                        <div class="vulnerability-explanation">
+                            <h5>🔓 Wie CVE-2020-0601 funktioniert:</h5>
+                            <ol>
+                                <li><strong>Generator-Manipulation:</strong> Windows validierte nicht korrekt, ob der Generator-Punkt in ECC-Zertifikaten dem Standard entspricht</li>
+                                <li><strong>Parameter-Spoofing:</strong> Angreifer können eigene Generator-Punkte verwenden und trotzdem gültige Signaturen erstellen</li>
+                                <li><strong>Trust-Chain-Bypass:</strong> Das gefälschte Zertifikat wird als von der echten CA signiert erkannt</li>
+                            </ol>
+                        </div>
+
+                        <div class="challenge-goal">
+                            <h5>🏆 Ihre Mission:</h5>
+                            <p>Erstellen Sie ein manipuliertes ECC-Zertifikat, das unser Python-Skript <code>verification.py</code> als gültig erkennt. Das Skript simuliert Microsofts CryptoAPI mit der Curveball-Schwachstelle.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technical Background -->
+            <div class="technical-section">
+                <h3>🔬 Technischer Hintergrund</h3>
+                <div class="technical-content">
+                    <div class="vulnerability-details">
+                        <h4>Die Schwachstelle im Detail</h4>
+                        <div class="vuln-grid">
+                            <div class="vuln-item">
+                                <h5>💔 Was war kaputt?</h5>
+                                <ul>
+                                    <li>Windows CryptoAPI validierte ECC-Parameter nicht korrekt</li>
+                                    <li>Generator-Punkt wurde nicht gegen bekannte Standards geprüft</li>
+                                    <li>Angreifer konnten beliebige Generator-Punkte verwenden</li>
+                                </ul>
+                            </div>
+                            <div class="vuln-item">
+                                <h5>⚡ Wie wurde es ausgenutzt?</h5>
+                                <ul>
+                                    <li>Angreifer generieren einen eigenen Generator-Punkt G'</li>
+                                    <li>Sie erstellen ein Zertifikat mit manipulierten ECC-Parametern</li>
+                                    <li>Windows akzeptiert das Zertifikat als gültig</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mathematical-background">
+                        <h4>🧮 Mathematische Grundlage</h4>
+                        <div class="math-explanation">
+                            <p>Normale ECC-Validierung:</p>
+                            <div class="formula-box">
+                                <code>Verify: e·G = r·G + s·Q (mit Standard-Generator G)</code>
+                            </div>
+                            
+                            <p>Curveball-Exploit:</p>
+                            <div class="formula-box exploit-formula">
+                                <code>Exploit: e·G' = r·G' + s·Q' (mit manipuliertem Generator G')</code>
+                            </div>
+                            
+                            <p class="exploit-note">
+                                ⚠️ <strong>Der Trick:</strong> Durch Kontrolle über G' kann der Angreifer beliebige "gültige" Signaturen erstellen!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Challenge Instructions -->
+            <div class="instructions-section">
+                <h3>📋 Anweisungen</h3>
+                <div class="instructions-content">
+                    <div class="step-by-step">
+                        <h4>Schritt-für-Schritt Anleitung:</h4>
+                        
+                        <div class="instruction-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h5>📥 Skript herunterladen</h5>
+                                <p>Laden Sie das Validierungsskript herunter, das die verwundbare CryptoAPI simuliert:</p>
+                                <div class="download-button-container">
+                                    <a href="{{ url_for('static', filename='scripts/verification.py') }}" 
+                                       class="download-btn verification-btn" 
+                                       download="verification.py">
+                                        🐍 verification.py herunterladen
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="instruction-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h5>🔍 Skript analysieren</h5>
+                                <p>Verstehen Sie, wie das Skript Zertifikate validiert und wo die Schwachstelle liegt:</p>
+                                <div class="code-preview">
+                                    <pre><code>python verification.py analyze</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="instruction-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h5>⚙️ Manipuliertes Zertifikat erstellen</h5>
+                                <p>Verwenden Sie die bereitgestellten Tools oder OpenSSL, um ein Zertifikat mit manipulierten ECC-Parametern zu erstellen.</p>
+                                <div class="tools-list">
+                                    <div class="tool-item">
+                                        <strong>Option 1:</strong> Python-Generator-Skript verwenden
+                                    </div>
+                                    <div class="tool-item">
+                                        <strong>Option 2:</strong> OpenSSL mit benutzerdefinierten Parametern
+                                    </div>
+                                    <div class="tool-item">
+                                        <strong>Option 3:</strong> Manuelle ASN.1-Manipulation
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="instruction-step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h5>✅ Zertifikat validieren</h5>
+                                <p>Testen Sie Ihr manipuliertes Zertifikat mit dem Validierungsskript:</p>
+                                <div class="code-preview">
+                                    <pre><code>python verification.py validate ihr_zertifikat.pem</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="instruction-step">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <h5>🚩 Flag erhalten</h5>
+                                <p>Wenn das Zertifikat erfolgreich validiert wird, gibt das Skript die Flag aus!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Helper Tools -->
+            <div class="tools-section">
+                <h3>🛠️ Hilfs-Tools</h3>
+                <div class="tools-content">
+                    <div class="tool-category">
+                        <h4>ECC-Parameter-Generator</h4>
+                        <p>Generieren Sie manipulierte ECC-Parameter für Ihren Exploit:</p>
+                        
+                        <div class="parameter-generator">
+                            <div class="generator-controls">
+                                <div class="control-group">
+                                    <label for="curveSelect">Kurve auswählen:</label>
+                                    <select id="curveSelect" class="parameter-input">
+                                        <option value="P256">NIST P-256</option>
+                                        <option value="P384">NIST P-384</option>
+                                        <option value="P521">NIST P-521</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="control-group">
+                                    <label for="attackMode">Angriffsmodus:</label>
+                                    <select id="attackMode" class="parameter-input">
+                                        <option value="generator">Generator-Manipulation</option>
+                                        <option value="parameters">Parameter-Spoofing</option>
+                                        <option value="custom">Benutzerdefiniert</option>
+                                    </select>
+                                </div>
+                                
+                                <button onclick="generateExploitParameters()" class="tool-btn">
+                                    ⚡ Exploit-Parameter generieren
+                                </button>
+                            </div>
+                            
+                            <div id="generatedParameters" class="generated-output"></div>
+                        </div>
+                    </div>
+
+                    <div class="tool-category">
+                        <h4>Zertifikat-Builder</h4>
+                        <p>Interaktives Tool zum Erstellen manipulierter Zertifikate:</p>
+                        
+                        <div class="cert-builder">
+                            <div class="builder-controls">
+                                <div class="control-group">
+                                    <label for="subjectName">Subject Name:</label>
+                                    <input type="text" id="subjectName" 
+                                           placeholder="CN=evil.example.com,O=Evil Corp" 
+                                           class="parameter-input">
+                                </div>
+                                
+                                <div class="control-group">
+                                    <label for="issuerName">Issuer (CA) Name:</label>
+                                    <input type="text" id="issuerName" 
+                                           placeholder="CN=Microsoft Root CA,O=Microsoft" 
+                                           class="parameter-input">
+                                </div>
+                                
+                                <div class="control-group">
+                                    <label for="exploitType">Exploit-Typ:</label>
+                                    <select id="exploitType" class="parameter-input">
+                                        <option value="generator_spoofing">Generator-Point Spoofing</option>
+                                        <option value="curve_manipulation">Curve Parameter Manipulation</option>
+                                        <option value="signature_forge">Signature Forgery</option>
+                                    </select>
+                                </div>
+                                
+                                <button onclick="buildExploitCertificate()" class="tool-btn primary">
+                                    🔨 Exploit-Zertifikat erstellen
+                                </button>
+                            </div>
+                            
+                            <div id="certificateOutput" class="generated-output"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Validation Section -->
+            <div class="validation-section">
+                <h3>🔬 Zertifikat-Validierung</h3>
+                <div class="validation-content">
+                    <div class="upload-area">
+                        <h4>Ihr manipuliertes Zertifikat testen</h4>
+                        <p>Laden Sie Ihr erstelltes Zertifikat hoch, um es gegen das Validierungsskript zu testen:</p>
+                        
+                        <div class="file-upload">
+                            <input type="file" id="certificateFile" accept=".pem,.crt,.cer" class="file-input">
+                            <label for="certificateFile" class="file-label">
+                                📄 Zertifikat auswählen (.pem, .crt, .cer)
+                            </label>
+                        </div>
+                        
+                        <button onclick="validateCertificate()" class="tool-btn validation-btn">
+                            🔍 Zertifikat validieren
+                        </button>
+                        
+                        <div id="validationResult" class="validation-output"></div>
+                    </div>
+
+                    <div class="manual-flag">
+                        <h4>Manuelle Flag-Eingabe</h4>
+                        <p>Wenn Sie die Flag bereits aus dem verification.py Skript erhalten haben:</p>
+                        
+                        <div class="input-group">
+                            <input type="text" 
+                                   id="flagInput" 
+                                   placeholder="FLAG{curveball_exploit_...}" 
+                                   class="flag-input">
+                            <button onclick="checkFlag()" class="submit-btn">
+                                ✓ Flag prüfen
+                            </button>
+                        </div>
+                        
+                        <div id="flagResult" class="result-message"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Educational Content -->
+            <div class="education-section">
+                <h3>📚 Vertiefung: Impact und Schutzmaßnahmen</h3>
+                <div class="education-content">
+                    <div class="impact-analysis">
+                        <h4>🌍 Real-World Impact</h4>
+                        <div class="impact-grid">
+                            <div class="impact-item critical">
+                                <h5>🔥 Kritische Auswirkungen</h5>
+                                <ul>
+                                    <li>Vollständiger TLS-Handshake-Bypass</li>
+                                    <li>Code-Signing-Validation umgehen</li>
+                                    <li>Man-in-the-Middle Angriffe</li>
+                                    <li>Malware-Distribution als "vertrauenswürdig"</li>
+                                </ul>
+                            </div>
+                            <div class="impact-item scope">
+                                <h5>🎯 Betroffene Systeme</h5>
+                                <ul>
+                                    <li>Windows 10 (alle Versionen bis Patch)</li>
+                                    <li>Windows Server 2016/2019</li>
+                                    <li>Alle Anwendungen mit CryptoAPI</li>
+                                    <li>Internet Explorer, Edge, Office</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="countermeasures">
+                        <h4>🛡️ Schutzmaßnahmen</h4>
+                        <div class="protection-strategies">
+                            <div class="strategy-item">
+                                <h5>✅ Microsoft's Fix</h5>
+                                <ul>
+                                    <li>Vollständige ECC-Parameter-Validierung</li>
+                                    <li>Generator-Punkt gegen Standards prüfen</li>
+                                    <li>Zusätzliche Curve-Validierung</li>
+                                </ul>
+                            </div>
+                            <div class="strategy-item">
+                                <h5>✅ Best Practices</h5>
+                                <ul>
+                                    <li>Certificate Pinning implementieren</li>
+                                    <li>CT (Certificate Transparency) überwachen</li>
+                                    <li>Zusätzliche Validierung auf Anwendungsebene</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation-section">
+            <a href="/challenge2" class="nav-btn back-btn">← Challenge 2</a>
+            <a href="/" class="nav-btn home-btn">🏠 Übersicht</a>
+            <a href="/challenge4" class="nav-btn next-btn disabled">Challenge 4 →</a>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/challenge3.js') }}"></script>
+</body>
+</html>

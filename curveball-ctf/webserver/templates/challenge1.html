@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge 1 - ECC Grundlagen | Curveball CTF</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="background-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <div class="container">
+        <div class="header-section">
+            <h1 class="challenge-title">Challenge 1</h1>
+            <h2 class="challenge-subtitle">Elliptische Kurven - Grundlagen</h2>
+            <p class="challenge-description">
+                Lernen Sie die Grundlagen der elliptischen Kurven-Kryptographie durch praktische Punktmultiplikation
+            </p>
+        </div>
+
+        <div class="challenge-content">
+            <!-- Theoretical Introduction -->
+            <div class="theory-section">
+                <h3>🧮 Mathematische Grundlagen</h3>
+                <div class="theory-content">
+                    <div class="curve-definition">
+                        <h4>Unsere elliptische Kurve:</h4>
+                        <div class="formula">y² ≡ x³ + 3x + 3 (mod 97)</div>
+                        <p>Generator-Punkt: <strong>G = (3, 6)</strong></p>
+                        <p>Private Key: <strong>d = 7</strong></p>
+                        <p><strong>Ziel:</strong> Berechnen Sie P = 7 × G durch wiederholte Punktaddition</p>
+                    </div>
+
+                    <div class="ecc-explanation">
+                        <h4>📚 Was passiert hier?</h4>
+                        <ul>
+                            <li><strong>Punktaddition:</strong> Zwei Punkte auf der Kurve werden addiert</li>
+                            <li><strong>Punktverdopplung:</strong> Ein Punkt wird mit sich selbst addiert</li>
+                            <li><strong>Skalarmultiplikation:</strong> Ein Punkt wird k-mal mit sich addiert</li>
+                            <li><strong>Public Key:</strong> Das Ergebnis der Skalarmultiplikation P = d × G</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Challenge -->
+            <div class="challenge-section">
+                <h3>🎯 Interaktive Berechnung</h3>
+                
+                <div class="calculation-steps">
+                    <div class="step-info">
+                        <p>Berechnen Sie <strong>P = 7 × G</strong> Schritt für Schritt:</p>
+                        <p class="hint">Hinweis: 7 = 4 + 2 + 1, also 7G = 4G + 2G + 1G</p>
+                    </div>
+
+                    <!-- Step 1: 1G = G -->
+                    <div class="calculation-step" id="step1">
+                        <h4>Schritt 1: 1G = G</h4>
+                        <div class="step-content">
+                            <p>1G = G = (3, 6)</p>
+                            <div class="result-display">
+                                <span class="point-label">1G =</span>
+                                <span class="point-coords" id="point1g">(3, 6)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: 2G = G + G -->
+                    <div class="calculation-step" id="step2">
+                        <h4>Schritt 2: 2G = G + G (Punktverdopplung)</h4>
+                        <div class="step-content">
+                            <div class="formula-explanation">
+                                <p>Für Punktverdopplung P = 2G, wenn G = (x₁, y₁):</p>
+                                <div class="formula-steps">
+                                    <div>λ = (3x₁² + a) × (2y₁)⁻¹ mod p</div>
+                                    <div>x₃ = λ² - 2x₁ mod p</div>
+                                    <div>y₃ = λ(x₁ - x₃) - y₁ mod p</div>
+                                </div>
+                            </div>
+                            
+                            <div class="input-section">
+                                <label>Berechnen Sie 2G:</label>
+                                <div class="coordinate-input">
+                                    <input type="number" id="x2g" placeholder="x-Koordinate" class="coord-input">
+                                    <input type="number" id="y2g" placeholder="y-Koordinate" class="coord-input">
+                                    <button onclick="check2G()" class="check-btn">Prüfen</button>
+                                </div>
+                                <div class="result-feedback" id="feedback2g"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: 4G = 2G + 2G -->
+                    <div class="calculation-step" id="step3" style="display:none;">
+                        <h4>Schritt 3: 4G = 2G + 2G</h4>
+                        <div class="step-content">
+                            <p>Verdoppeln Sie das Ergebnis von 2G:</p>
+                            <div class="input-section">
+                                <label>Berechnen Sie 4G:</label>
+                                <div class="coordinate-input">
+                                    <input type="number" id="x4g" placeholder="x-Koordinate" class="coord-input">
+                                    <input type="number" id="y4g" placeholder="y-Koordinate" class="coord-input">
+                                    <button onclick="check4G()" class="check-btn">Prüfen</button>
+                                </div>
+                                <div class="result-feedback" id="feedback4g"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: 7G = 4G + 2G + 1G -->
+                    <div class="calculation-step" id="step4" style="display:none;">
+                        <h4>Schritt 4: 7G = 4G + 2G + 1G</h4>
+                        <div class="step-content">
+                            <p>Addieren Sie alle berechneten Punkte:</p>
+                            <div class="addition-breakdown">
+                                <div>4G + 2G = 6G (zuerst diese addieren)</div>
+                                <div>6G + 1G = 7G (dann 1G addieren)</div>
+                            </div>
+                            
+                            <div class="input-section">
+                                <label>Berechnen Sie 6G = 4G + 2G:</label>
+                                <div class="coordinate-input">
+                                    <input type="number" id="x6g" placeholder="x-Koordinate" class="coord-input">
+                                    <input type="number" id="y6g" placeholder="y-Koordinate" class="coord-input">
+                                    <button onclick="check6G()" class="check-btn">Prüfen</button>
+                                </div>
+                                <div class="result-feedback" id="feedback6g"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: Final Result -->
+                    <div class="calculation-step" id="step5" style="display:none;">
+                        <h4>Schritt 5: 7G = 6G + 1G (Finales Ergebnis)</h4>
+                        <div class="step-content">
+                            <div class="input-section">
+                                <label>Berechnen Sie das finale Ergebnis 7G:</label>
+                                <div class="coordinate-input">
+                                    <input type="number" id="x7g" placeholder="x-Koordinate" class="coord-input">
+                                    <input type="number" id="y7g" placeholder="y-Koordinate" class="coord-input">
+                                    <button onclick="check7G()" class="check-btn">Prüfen</button>
+                                </div>
+                                <div class="result-feedback" id="feedback7g"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Success Section -->
+                <div class="success-section" id="successSection" style="display:none;">
+                    <h3>🎉 Glückwunsch!</h3>
+                    <div class="success-content">
+                        <p>Sie haben erfolgreich den Public Key berechnet!</p>
+                        <div class="final-result">
+                            <strong>Public Key P = 7G = (<span id="finalX"></span>, <span id="finalY"></span>)</strong>
+                        </div>
+                        <div class="explanation">
+                            <h4>🔑 Was haben Sie gelernt?</h4>
+                            <ul>
+                                <li><strong>Skalarmultiplikation:</strong> Wie man einen Punkt k-mal mit sich selbst addiert</li>
+                                <li><strong>Punktarithmetik:</strong> Die mathematischen Operationen auf elliptischen Kurven</li>
+                                <li><strong>Public Key Generation:</strong> Wie aus einem Private Key der Public Key wird</li>
+                                <li><strong>Modulare Arithmetik:</strong> Alle Berechnungen erfolgen modulo einer Primzahl</li>
+                            </ul>
+                        </div>
+                        <div class="next-challenge">
+                            <p>Bereit für die nächste Challenge?</p>
+                            <a href="/challenge2" class="next-btn">Challenge 2 →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Helper Tools -->
+            <div class="tools-section">
+                <h3>🛠️ Hilfsmittel</h3>
+                <div class="tools-content">
+                    <div class="calculator-tool">
+                        <h4>Modularer Inverser Rechner</h4>
+                        <p>Berechnen Sie a⁻¹ mod p für die Punktaddition:</p>
+                        <div class="calculator-input">
+                            <input type="number" id="modInvA" placeholder="a" class="tool-input">
+                            <span>⁻¹ mod</span>
+                            <input type="number" id="modInvP" placeholder="p" value="97" class="tool-input">
+                            <button onclick="calculateModInverse()" class="tool-btn">Berechnen</button>
+                        </div>
+                        <div class="tool-result" id="modInvResult"></div>
+                    </div>
+
+                    <div class="verification-tool">
+                        <h4>Punkt-Verifikation</h4>
+                        <p>Prüfen Sie, ob ein Punkt auf der Kurve liegt:</p>
+                        <div class="verification-input">
+                            <input type="number" id="verifyX" placeholder="x" class="tool-input">
+                            <input type="number" id="verifyY" placeholder="y" class="tool-input">
+                            <button onclick="verifyPoint()" class="tool-btn">Verifizieren</button>
+                        </div>
+                        <div class="tool-result" id="verifyResult"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <a href="/" class="nav-btn">← Zurück zum Hauptmenü</a>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/challenge1.js') }}"></script>
+</body>
+</html>
