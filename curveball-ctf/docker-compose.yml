@@ -1,20 +1,50 @@
-version: '3'
+
+version: '3.8'
 
 services:
   webserver:
-    build: ./webserver
+    build: 
+      context: ./webserver
+      dockerfile: Dockerfile
+    container_name: curveball-webserver
+    restart: unless-stopped
     ports:
       - "8443:8443"
     networks:
       - ctfnet
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; s = socket.socket(); s.settimeout(1); result = s.connect_ex(('localhost', 8443)); s.close(); exit(0 if result == 0 else 1)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # challenger:
-  #   build: ./challenger
+  #   build: 
+  #     context: ./challenger
+  #     dockerfile: Dockerfile
+  #   container_name: curveball-challenger
+  #   restart: unless-stopped
   #   networks:
   #     - ctfnet
   #   depends_on:
-  #     - webserver
+  #     webserver:
+  #       condition: service_healthy
 
 networks:
   ctfnet:
     driver: bridge
+    name: curveball_network
