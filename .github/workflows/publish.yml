@@ -23,6 +23,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
-          context: .
+          context: ./curveball-ctf/webserver
+          file: ./curveball-ctf/webserver/Dockerfile
           push: true
           tags: crnnr/curveball-cve-2020-0601:latest
