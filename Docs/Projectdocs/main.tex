@@ -389,9 +389,32 @@ jobs:
 \noindent
 Damit wird sichergestellt, dass der Code und die Container-Images regelmäßig auf Sicherheitslücken
 überprüft werden. Die Ergebnisse der Scans werden in der CI-Pipeline angezeigt.
+\noindent
+Hierbei wurden einige Schwachstellen identifiziert:
+
+\begin{lstlisting}[language=python,caption={bandit scan results}]
+Code scanned:
+	Total lines of code: 602
+	Total lines skipped (#nosec): 0
+	Total potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 0
+
+Run metrics:
+	Total issues (by severity):
+		Undefined: 0
+		Low: 6
+		Medium: 1
+		High: 1
+	Total issues (by confidence):
+		Undefined: 0
+		Low: 0
+		Medium: 3
+		High: 5
+\end{lstlisting}
+
+\noindent
+Diese Schwachstellen wurden im Rahmen der Entwicklung behoben, um die Sicherheit des Projekts zu gewährleisten. \\
 
 \newpage
-
 
 \section{Nicht umgesetzte VM-Erweiterung}
 Ursprünglich war eine vorgefertigte Windows 10-VM (Version 1909, ungepatcht) als zentraler Bestandteil des Projekts geplant,
