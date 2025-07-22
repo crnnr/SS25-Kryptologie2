@@ -1,11 +1,13 @@
 FROM python:3.12-alpine
 
-RUN apk add --no-cache openssl
+# Pin Alpine package versions for reproducible builds
+RUN apk add --no-cache openssl~=3.1
 
 WORKDIR /app
-COPY . /app
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir --requirement requirements.txt
 
-RUN pip install flask cryptography
+COPY . /app
 
 EXPOSE 8443
 
