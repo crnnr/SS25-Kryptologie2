@@ -1,10 +1,55 @@
 \documentclass{article}
+
 \usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
 \usepackage[hmargin=2.5cm,vmargin=3cm,bindingoffset=0.5cm]{geometry}
+
+\usepackage{amsmath,amssymb}
+
 \usepackage{graphicx}
-\graphicspath{ {figures/} }
-\usepackage{listings}
+\graphicspath{{figures/}}
+
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.symbols}
+
+\usepackage{xcolor,listings}
+\definecolor{codegray}{RGB}{245,245,245}
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{codegray},
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny,
+  breaklines=true,
+  captionpos=b,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\itshape\color{gray},
+  stringstyle=\color{red!60!black},
+  language=Python,
+  literate=
+    {→}{{$\rightarrow$}}2
+    {≈}{{$\approx$}}2
+    {≤}{{$\leq$}}2
+    {≥}{{$\geq$}}2
+    {–}{{--}}1
+    {—}{{---}}1
+}
+
+\usepackage{booktabs}
+\usepackage{longtable}
 \usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!70!black,
+  urlcolor=blue!70!black,
+  citecolor=blue!70!black
+}
+
 \renewcommand{\lstlistingname}{Auflistung}
 
 \begin{document}
@@ -14,40 +59,253 @@
   \begin{center}
     \includegraphics[width=\textwidth]{THD-Logo.pdf}
     \vspace{1cm}
-    \rule{1\textwidth}{1mm} \\[0.3cm]
-    \textsc{\scshape \huge Bachelor Cyber Security}\\
-    \rule{1\textwidth}{1mm} \\[2cm]
-    {
-      \vspace{1cm}
-      \Large \textbf{Kryptologie 2}
-      \vspace{3cm}
-      \Large \textbf{Projektbericht}
-    }\\[0.5cm]
-    \LARGE \textbf{Ausarbeitung Cryptochallenge: CurveBall}\\[2cm]
-    \begin{minipage}[t]{0.4\textwidth}
+    \rule{\textwidth}{1mm}\\[0.3cm]
+    \textsc{\scshape \huge Bachelor \,--\, Cyber Security}\\
+    \rule{\textwidth}{1mm}\\[1.8cm]
+
+    {\Large \bfseries Kryptologie 2}\\[1cm]
+    {\Huge \bfseries Projektdokumentation}\\[0.5cm]
+    {\Large \bfseries Cryptochallenge: CurveBall (CVE-2020-0601)}\\[2cm]
+
+    \begin{minipage}[t]{0.45\textwidth}
       \begin{flushleft}
-        \normalsize \emph{Autor:}\\[0.3cm]
-        Manuel Friedl, Matrikel-Nr.: 1236626\\
-        Christof Renner, Matrikel-Nr.: 22301943
+        \normalsize \emph{Autoren}\\
+        Manuel Friedl – 1236626\\
+        Christof Renner – 22301943
       \end{flushleft}
     \end{minipage}
-    \begin{minipage}[t]{0.5\textwidth}
+    \hfill
+    \begin{minipage}[t]{0.45\textwidth}
       \begin{flushright}
-        \normalsize \emph{Betreuer:}\\[0.3cm]
-        Prof. Dr. Martin Schramm
+        \normalsize \emph{Betreuer}\\
+        Prof.\,Dr.\,Martin Schramm
       \end{flushright}
-    \end{minipage}\\[3cm]
-    {\large Deggendorf – \today\\}
+    \end{minipage}\\[2cm]
+
+    {\large Deggendorf, \today}
   \end{center}
 \end{titlepage}
 
 \newpage
 \pagenumbering{Roman}
-
-\newpage
 \tableofcontents
 \newpage
-
 \pagenumbering{arabic}
+
+\section{Einleitung und Projektkontext}
+\subsection{Motivation}
+Die Schwachstelle \textbf{CurveBall} (CVE-2020-0601) in der Windows-CryptoAPI
+ermöglicht es, X.509-Zertifikate mit manipulierten Elliptic-Curve-Parametern zu
+signieren, sodass betroffene Windows-Versionen die Signaturen fälschlich als
+gültig akzeptieren.\footnote{Microsoft Security Advisory ADV200002, 14.\,01.\,2020}
+Im Modul \emph{Kryptologie 2} fehlte bislang ein modernes
+Hands-On-Szenario, um diesen Fehler praktisch zu demonstrieren.
+
+\subsection{Projektziele}
+\begin{enumerate}
+  \item \textbf{Didaktik}: Vollständiger Angriffszyklus von Discovery bis Exploit.
+  \item \textbf{Sicherheit}: Deployment selbst muss trotz absichtlich verletzter Krypto sicher sein.
+  \item \textbf{Portabilität}: Schnelle, plattformunabhängige Nutzung via Docker/Podman.
+\end{enumerate}
+
+\subsection{Bedrohungsmodell}
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+      entity/.style={draw, rounded corners, align=center, minimum width=3cm, minimum height=1cm},
+      arrow/.style={-Stealth, thick},
+      label/.style={font=\small\itshape}
+    ]
+    \node[entity] (attacker) {Angreifer\\(Fake-CA)};
+    \node[entity, right=4cm of attacker] (victim) {Windows 10\\(unpatched)};
+    \path[arrow] (attacker) edge[bend left=15] node[label, above]{gefälschtes Zertifikat} (victim);
+    \path[arrow] (victim) edge[bend left=15] node[label, below]{akzeptiert} (attacker);
+  \end{tikzpicture}
+  \caption{Simplifiziertes Threat-Model: fehlende Parameter-Validierung}
+  \label{fig:threatmodel}
+\end{figure}
+
+\section{Herangehensweise}
+\subsection{Zielsetzung}
+\begin{itemize}
+  \item Demonstration des Angriffs in einer kontrollierten Umgebung.
+  \item Vermittlung von DevSecOps-Best-Practices (Linting, CI, Scans).
+  \item Bereitstellung als \emph{„One-Click“}-Container, ohne lokale OpenSSL-Konfiguration.
+\end{itemize}
+
+\subsection{Methodik}
+Wir arbeiteten in zwei Sprints à zwei Wochen.  
+Abbildung~\ref{fig:process} zeigt den iterativen Ablauf.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+      box/.style={draw, rounded corners, align=center, minimum width=3.2cm, minimum height=1cm},
+      >=Stealth
+    ]
+    \node[box] (analyse) {Bedrohungs-\\Analyse};
+    \node[box, right=1.8cm of analyse] (design) {Design \&\\Spezifikation};
+    \node[box, right=1.8cm of design] (impl)  {Implementierung};
+    \node[box, right=1.8cm of impl] (review) {Code\\Review};
+    \node[box, right=1.8cm of review] (deploy) {Docker\\Release};
+
+    \draw[->] (analyse) -- (design);
+    \draw[->] (design) -- (impl);
+    \draw[->] (impl) -- (review);
+    \draw[->] (review) -- (deploy);
+  \end{tikzpicture}
+  \caption{Iterativer Projektablauf}\label{fig:process}
+\end{figure}
+
+\section{Arbeitsaufteilung}
+
+\noindent Die Arbeitsaufteilung erfolgte pragmatisch basierend auf den individuellen Stärken der Teammitglieder, wobei gleichzeitig Wert auf Wissenstransfer und gemeinsames Lernen gelegt wurde.
+
+\begin{longtable}{|p{3cm}|p{5cm}|p{6cm}|}
+    \hline
+    \textbf{Teammitglied} & \textbf{Hauptaufgaben} & \textbf{Spezifische Aufgaben} \\
+    \hline
+    \endhead
+    
+    Christof Renner & Kryptographie \& Frontend & 
+    \begin{itemize}
+      \item Analyse der CVE-2020-0601 Schwachstelle
+      \item Entwicklung der Python-Skripte \texttt{gen\_key.py} und \texttt{simulate\_vuln\_check.py}
+      \item Entwicklung des Web-Interface und Zertifikats-Visualizers
+      \item Erstellung verständlicher Challenge-Beschreibungen
+    \end{itemize} \\
+    \hline
+
+    Manuel Friedl & DevOps \& Infrastruktur & 
+    \begin{itemize}
+      \item Docker-Containerisierung mit Multi-Stage-Builds
+      \item CI/CD-Pipeline mit GitHub Actions
+      \item Security-Scanning und Linting-Integration
+      \item GitHub Container Registry Konfiguration
+    \end{itemize} \\
+    \hline
+    \end{longtable}
+
+\noindent Dabei wurde durch regelmäßige Abstimmungen und gemeinsame Review-Sessions sichergestellt, dass alle Komponenten nahtlos zusammenarbeiten. Die technische Dokumentation wurde gleichmäßig zwischen beiden Teammitgliedern aufgeteilt, wobei jeder etwa 50\% der Dokumentationsarbeit übernahm.
+
+\subsection{Kollaborative Arbeitsweise}
+
+\noindent Trotz der Spezialisierung arbeiteten beide Teammitglieder eng zusammen. Code-Reviews waren Standard, wobei jeder die Arbeit des anderen validierte. Die tägliche Kommunikation erfolgte über Matrix-Chat mit kurzen Standups, ergänzt durch wöchentliche Reviews mit dem Betreuer.
+
+\noindent Das Projektmanagement wurde über GitHub Project Board abgewickelt, was eine transparente Aufgabenverfolgung und effiziente Koordination ermöglichte. Besonders bei komplexen Implementierungen wurden Pair-Programming-Sessions durchgeführt.
+
+\subsection{Herausforderungen und Lösungsansätze}
+
+\noindent Die größten technischen Herausforderungen lagen in der Komplexität der elliptischen Kurven-Mathematik und der Anforderung, sichere Container für absichtlich unsichere Software zu erstellen. Organisatorisch mussten unterschiedliche Stundenpläne koordiniert und Abhängigkeiten zwischen den Arbeitspaketen geschickt gemanagt werden.
+
+\noindent Diese ausgewogene Arbeitsaufteilung führte zu einem erfolgreichen Projektergebnis und einem erheblichen Lernzuwachs für beide Teammitglieder.
+
+\section{Technische Implementierung}
+
+
+
+\subsection{Funktionsweise der Vulnerability}
+Windows validiert EC-Signaturen ohne sicherzustellen, dass der
+öffentliche Schlüssel \(Q\) und der Generator \(G\) wirklich
+zur deklarierten Kurve gehören.
+Angreifer ersetzen \(G\) durch einen Punkt mit
+kleiner Untergruppen-Order, sodass
+ECDSA trivial gebrochen wird.
+
+\section{Containerisierung}
+\subsection{Dockerfile}
+\begin{lstlisting}[language=bash,caption={Auszug aus dem finalen Dockerfile}]
+FROM python:3.12-slim AS build
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libssl-dev build-essential && rm -rf /var/lib/apt/lists/*
+COPY requirements.txt .
+RUN pip install --prefix=/install -r requirements.txt
+
+FROM python:3.12-slim
+COPY --from=build /install /usr/local
+COPY curveball-ctf /app
+WORKDIR /app
+USER 1001:1001
+ENTRYPOINT ["python", "-m", "http.server", "8080"]
+\end{lstlisting}
+
+\subsection{Architektur}
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+      service/.style={draw, rounded corners, minimum width=3.2cm, minimum height=1cm, align=center},
+      node distance=2cm
+    ]
+    \node[service] (browser) {Student\\Browser};
+    \node[service, right=of browser] (ctf) {CurveBall-CTF\\Container};
+    \node[service, right=of ctf] (registry) {GHCR\\Registry};
+
+    \draw[-Stealth] (browser) -- node[midway, above]{HTTP :8080} (ctf);
+    \draw[-Stealth, dashed] (ctf) -- node[midway, above]{Image-Pull} (registry);
+  \end{tikzpicture}
+  \caption{Container-Deployment in der Lehrumgebung}\label{fig:container}
+\end{figure}
+
+\section{CI/CD-Pipeline}
+GitHub Actions orchestriert
+\emph{Lint\,$\rightarrow$\,Build\,$\rightarrow$\,Test\,$\rightarrow$\,Scan\,$\rightarrow$\,Push}.
+
+\subsection{Workflow-Datei (gekürzt)}
+\begin{lstlisting}[language=python,caption={ci.yml – Kernschritte}]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+
+      - name: Ruff Lint
+        run: ruff check .
+
+      - name: Build Image
+        uses: docker/build-push-action@v5
+        with:
+          tags: curveball:ci
+          push: false
+
+      - name: Trivy Security Scan
+        uses: aquasecurity/trivy-action@v0.20.0
+        with:
+          image-ref: curveball:ci
+          severity: HIGH,CRITICAL
+\end{lstlisting}
+
+\subsection{Linting‐Tools}
+\begin{itemize}
+  \item \textbf{ruff}: Python-Lint inkl. Import-Sortierung
+  \item \textbf{markdown-lint}: prüft \texttt{README.md}
+  \item \textbf{hadolint}: Dockerfile-Best-Practices
+\end{itemize}
+
+\section{Nicht umgesetzte VM-Erweiterung}
+Ursprünglich war eine vorgefertigte Windows 10-VM (1909, ungepatcht) geplant,
+um den Angriff bis zum System-Rootstore zu demonstrieren.
+Dies scheiterte aus folgenden Gründen:
+\begin{description}
+  \item[Licensing] Weitergabe eines vorinstallierten Windows-Images verstößt gegen EULA.
+  \item[Storage] 8 GB-Image hätte Git LFS/Kosten gesprengt.
+  \item[CI-Runner] GitHub-Actions erlaubt keine Nested-Virtualisation.
+\end{description}
+Die Container-Variante ist mit rund 280 MB wesentlich leichter verteilbar.
+
+\section{Ausblick}
+\begin{enumerate}
+  \item \textbf{Windows-Live-Lab}: über Azure Lab Services echte, gepatchte und ungepatchte Hosts anbieten.
+  \item \textbf{Automatisierte Angriffskette}: Browser-Automation mit Playwright für einen End-to-End-Exploit.
+  \item \textbf{Gamification}: Flag-Server, Leaderboard und Achievements.
+\end{enumerate}
+
+\section{Fazit}
+Unser Projekt zeigt, wie sich ein kritischer Krypto-Bug in eine
+didaktisch wertvolle, aber dennoch sichere Übungsumgebung überführen lässt.
+Neben dem technischen Verständnis für CurveBall gewannen Studierende
+Einblicke in DevSecOps-Workflows, die heute in jeder Entwicklungsumgebung
+zum Standard gehören.
 
 \end{document}
