@@ -80,15 +80,59 @@ def challenge4():
     """Challenge 4: Kurvenparameter-Manipulation & Signaturvalidierung"""
     return render_template('challenge4.html')
 
-@app.route('/static/certs/<filename>')
-def download_cert(filename):
-    """Serviert Zertifikat-Dateien für Downloads"""
-    return send_from_directory(os.path.join(app.root_path, 'static', 'certs'), filename)
+@app.route('/downloads/<filename>')
+def download_file(filename):
+    """Serviert alle Download-Dateien"""
+    try:
+        downloads_path = os.path.join(app.root_path, 'static', 'downloads')
+        file_path = os.path.join(downloads_path, filename)
+        
+        # Debug-Informationen loggen
+        print(f"Download requested: {filename}")
+        print(f"Downloads path: {downloads_path}")
+        print(f"File path: {file_path}")
+        print(f"File exists: {os.path.exists(file_path)}")
+        
+        if os.path.exists(file_path):
+            return send_from_directory(downloads_path, filename, as_attachment=True)
+        else:
+            print(f"File not found: {file_path}")
+            return "File not found", 404
+    except Exception as e:
+        print(f"Error in download_file: {e}")
+        return "Internal server error", 500
+
+@app.route('/scripts/<filename>')
+def download_script(filename):
+    """Serviert Python-Skripte für Downloads"""
+    return send_from_directory(os.path.join(app.root_path, 'static', 'scripts'), filename, as_attachment=True)
+
+@app.route('/debug/files')
+def debug_files():
+    """Debug-Route um verfügbare Dateien zu überprüfen"""
+    try:
+        downloads_path = os.path.join(app.root_path, 'static', 'downloads')
+        scripts_path = os.path.join(app.root_path, 'static', 'scripts')
+        
+        downloads_files = os.listdir(downloads_path) if os.path.exists(downloads_path) else []
+        scripts_files = os.listdir(scripts_path) if os.path.exists(scripts_path) else []
+        
+        return jsonify({
+            'downloads_path': downloads_path,
+            'downloads_exists': os.path.exists(downloads_path),
+            'downloads_files': downloads_files,
+            'scripts_path': scripts_path,
+            'scripts_exists': os.path.exists(scripts_path),
+            'scripts_files': scripts_files,
+            'app_root_path': app.root_path
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/static/challenge4/<filename>')
 def download_challenge4_files(filename):
-    """Serviert Challenge 4 Dateien für Downloads"""
-    return send_from_directory(os.path.join(app.root_path, 'static', 'challenge4'), filename)
+    """Serviert Challenge 4 Dateien für Downloads - deprecated, use /downloads/ instead"""
+    return send_from_directory(os.path.join(app.root_path, 'static', 'downloads'), filename, as_attachment=True)
 
 @app.route('/explain/<topic>')
 def explain(topic):
