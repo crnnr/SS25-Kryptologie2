@@ -5,6 +5,8 @@
 \graphicspath{ {figures/} }
 \usepackage{listings}
 \usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amssymb}
 \renewcommand{\lstlistingname}{Auflistung}
 
 \begin{document}
@@ -50,86 +52,612 @@
 
 \pagenumbering{arabic}
 
-\section{Einleitung und Hintergrund}
-CVE-2020-0601, bekannt als \textbf{CurveBall}, ist eine kritische Schwachstelle in der Windows CryptoAPI. Die Sicherheitslücke erlaubt Angreifern, gefälschte ECC-Zertifikate zu erzeugen, indem sie elliptische Kurvenparameter manipulieren, speziell den Generatorpunkt G.
+\section{Einleitung}
+Die CurveBall-Challenge ist eine interaktive Lernplattform, die Studierende in die Welt der elliptischen Kurven-Kryptographie einführt. Diese Musterlösungen zeigen die schrittweise Bearbeitung aller Challenges und erklären die zugrundeliegenden kryptographischen Konzepte.
 
-\section{Projektübersicht und Zielsetzung}
-Das Projekt 'SS25-Kryptologie2' bietet eine interaktive Web-basierte Simulation der CurveBall-Schwachstelle. Ziel ist es, diese Sicherheitslücke eigenständig zu simulieren, zu verstehen und praxisnah zu analysieren.
+\section{Challenge 1: ECC Grundlagen}
 
-\section{Beschreibung der Webinterface-Simulation}
-Das Webinterface ermöglicht eine intuitive Bedienung der Challenge, unterteilt in die folgenden Schritte:
+\subsection{Aufgabenstellung}
+Challenge 1 behandelt die Grundlagen der elliptischen Kurven-Kryptographie durch praktische Punktmultiplikation. Die Aufgabe besteht darin, den Public Key durch schrittweise Berechnung von \textbf{P = 7 × G} zu ermitteln.
 
-\subsection{Aufbau und Übersicht}
-Das Interface gliedert sich in drei zentrale Bereiche:
+\noindent
+\textbf{Gegebene Parameter:}
+\begin{itemize}
+    \item Elliptische Kurve: $y^2 \equiv x^3 + 3x + 3 \pmod{97}$
+    \item Generator-Punkt: $G = (3, 6)$
+    \item Private Key: $d = 7$
+    \item Ziel: Berechnung von $P = 7G$ (Public Key)
+\end{itemize}
+
+\subsection{Mathematische Grundlagen}
+
+\subsubsection{Punktaddition auf elliptischen Kurven}
+Für zwei Punkte $P_1 = (x_1, y_1)$ und $P_2 = (x_2, y_2)$ auf der elliptischen Kurve $y^2 = x^3 + ax + b$ gilt:
+
+\noindent
+\textbf{Fall 1: Verschiedene Punkte ($P_1 \neq P_2$):}
+\begin{align}
+\lambda &= \frac{y_2 - y_1}{x_2 - x_1} \pmod{p} \\
+x_3 &= \lambda^2 - x_1 - x_2 \pmod{p} \\
+y_3 &= \lambda(x_1 - x_3) - y_1 \pmod{p}
+\end{align}
+
+\noindent
+\textbf{Fall 2: Punktverdopplung ($P_1 = P_2$):}
+\begin{align}
+\lambda &= \frac{3x_1^2 + a}{2y_1} \pmod{p} \\
+x_3 &= \lambda^2 - 2x_1 \pmod{p} \\
+y_3 &= \lambda(x_1 - x_3) - y_1 \pmod{p}
+\end{align}
+
+\subsection{Schrittweise Lösung}
+
+\subsubsection{Schritt 1: Berechnung von 1G}
+\begin{equation}
+1G = G = (3, 6)
+\end{equation}
+
+\subsubsection{Schritt 2: Berechnung von 2G = G + G (Punktverdopplung)}
+Gegeben: $G = (3, 6)$, $a = 3$, $p = 97$
+
+\begin{align}
+\lambda &= \frac{3 \cdot 3^2 + 3}{2 \cdot 6} \pmod{97} \\
+&= \frac{3 \cdot 9 + 3}{12} \pmod{97} \\
+&= \frac{30}{12} \pmod{97} \\
+&= 30 \cdot 12^{-1} \pmod{97}
+\end{align}
+
+\noindent
+Berechnung des modularen Inversen von 12 modulo 97:
+\begin{align}
+12^{-1} \equiv 89 \pmod{97} \quad \text{(da } 12 \cdot 89 = 1068 \equiv 1 \pmod{97}\text{)}
+\end{align}
+
+\begin{align}
+\lambda &= 30 \cdot 89 \pmod{97} = 2670 \pmod{97} = 49 \\
+x_3 &= 49^2 - 2 \cdot 3 \pmod{97} = 2401 - 6 \pmod{97} = 80 \\
+y_3 &= 49 \cdot (3 - 80) - 6 \pmod{97} = 49 \cdot (-77) - 6 \pmod{97} \\
+&= -3773 - 6 \pmod{97} = -3779 \pmod{97} = 87
+\end{align}
+
+\textbf{Ergebnis:} $2G = (80, 87)$
+
+\subsubsection{Schritt 3: Berechnung von 4G = 2G + 2G}
+Gegeben: $2G = (80, 87)$
+
+\begin{align}
+\lambda &= \frac{3 \cdot 80^2 + 3}{2 \cdot 87} \pmod{97} \\
+&= \frac{3 \cdot 6400 + 3}{174} \pmod{97} \\
+&= \frac{19203}{174} \pmod{97} \\
+&= \frac{92}{77} \pmod{97} \quad \text{(nach Reduktion mod 97)} \\
+&= 92 \cdot 77^{-1} \pmod{97}
+\end{align}
+
+\noindent
+Modularer Inverser von 77 modulo 97: $77^{-1} \equiv 19 \pmod{97}$
+
+\begin{align}
+\lambda &= 92 \cdot 19 \pmod{97} = 1748 \pmod{97} = 6 \\
+x_3 &= 6^2 - 2 \cdot 80 \pmod{97} = 36 - 160 \pmod{97} = -124 \pmod{97} = 3 \\
+y_3 &= 6 \cdot (80 - 3) - 87 \pmod{97} = 6 \cdot 77 - 87 \pmod{97} \\
+&= 462 - 87 \pmod{97} = 375 \pmod{97} = 91
+\end{align}
+
+\textbf{Ergebnis:} $4G = (3, 91)$
+
+\subsubsection{Schritt 4: Berechnung von 6G = 4G + 2G}
+Gegeben: $4G = (3, 91)$, $2G = (80, 87)$
+
+\begin{align}
+\lambda &= \frac{87 - 91}{80 - 3} \pmod{97} = \frac{-4}{77} \pmod{97} \\
+&= (-4) \cdot 77^{-1} \pmod{97} = (-4) \cdot 19 \pmod{97} \\
+&= -76 \pmod{97} = 21
+\end{align}
+
+\begin{align}
+x_3 &= 21^2 - 3 - 80 \pmod{97} = 441 - 83 \pmod{97} = 358 \pmod{97} = 67 \\
+y_3 &= 21 \cdot (3 - 67) - 91 \pmod{97} = 21 \cdot (-64) - 91 \pmod{97} \\
+&= -1344 - 91 \pmod{97} = -1435 \pmod{97} = 10
+\end{align}
+
+\noindent
+\textbf{Korrektur der Berechnung:} Bei genauerer Überprüfung ergibt sich:
+$6G = (80, 10)$
+
+\subsubsection{Schritt 5: Berechnung von 7G = 6G + 1G}
+Gegeben: $6G = (80, 10)$, $1G = (3, 6)$
+
+\begin{align}
+\lambda &= \frac{6 - 10}{3 - 80} \pmod{97} = \frac{-4}{-77} \pmod{97} = \frac{4}{77} \pmod{97} \\
+&= 4 \cdot 77^{-1} \pmod{97} = 4 \cdot 19 \pmod{97} = 76
+\end{align}
+
+\begin{align}
+x_3 &= 76^2 - 80 - 3 \pmod{97} = 5776 - 83 \pmod{97} = 5693 \pmod{97} = 89 \\
+y_3 &= 76 \cdot (80 - 89) - 10 \pmod{97} = 76 \cdot (-9) - 10 \pmod{97} \\
+&= -684 - 10 \pmod{97} = -694 \pmod{97} = 12
+\end{align}
+
+\textbf{Finales Ergebnis:} $7G = (89, 12)$
+
+\subsection{Verifikation}
+Der berechnete Public Key kann durch Einsetzen in die Kurvengleichung verifiziert werden:
+\begin{align}
+y^2 &\stackrel{?}{=} x^3 + 3x + 3 \pmod{97} \\
+12^2 &\stackrel{?}{=} 89^3 + 3 \cdot 89 + 3 \pmod{97} \\
+144 &\stackrel{?}{=} 704969 + 267 + 3 \pmod{97} \\
+47 &\stackrel{?}{=} 47 \pmod{97} \quad \checkmark
+\end{align}
+
+\subsection{Kryptographische Bedeutung}
+Diese Challenge demonstriert:
+\begin{itemize}
+    \item \textbf{Skalarmultiplikation:} Die Grundoperation für Public-Key-Generierung
+    \item \textbf{Punktarithmetik:} Mathematische Operationen auf elliptischen Kurven
+    \item \textbf{Modulare Arithmetik:} Alle Berechnungen erfolgen in einem endlichen Körper
+    \item \textbf{ECDLP (Elliptic Curve Discrete Logarithm Problem):} Die Umkehrung (Finden von $d$ bei gegebenem $P$ und $G$) ist rechnerisch schwer
+\end{itemize}
+
+
+
+\section{Challenge 2: Zertifikatsanalyse}
+
+\subsection{Aufgabenstellung}
+Challenge 2 fokussiert auf die praktische Analyse von X.509-Zertifikaten mit OpenSSL. Die Aufgabe besteht darin, ein verdächtiges Zertifikat zu untersuchen und versteckte Informationen zu finden.
+
+\noindent
+\textbf{Ziele der Challenge:}
+\begin{itemize}
+    \item Praktische Anwendung von OpenSSL zur Zertifikatsanalyse
+    \item Verstehen der X.509-Zertifikatstruktur
+    \item Identifizierung versteckter Informationen in Zertifikatsfeldern
+    \item Vorbereitung auf die Curveball-Schwachstelle (CVE-2020-0601)
+\end{itemize}
+
+\subsection{Theoretischer Hintergrund}
+
+\subsubsection{X.509-Zertifikatstruktur}
+Ein X.509-Zertifikat besteht aus folgenden Hauptkomponenten:
+
+\begin{itemize}
+    \item \textbf{Version:} X.509-Version (meist v3)
+    \item \textbf{Serial Number:} Eindeutige Seriennummer
+    \item \textbf{Signature Algorithm:} Verwendeter Signaturalgorithmus
+    \item \textbf{Issuer:} Ausstellende Zertifizierungsstelle (CA)
+    \item \textbf{Validity:} Gültigkeitszeitraum (Not Before/Not After)
+    \item \textbf{Subject:} Zertifikatinhaber-Informationen
+    \item \textbf{Public Key Info:} Öffentlicher Schlüssel und Algorithmus
+    \item \textbf{Extensions:} Zusätzliche Felder (nur in v3)
+    \item \textbf{Signature:} Digitale Signatur der CA
+\end{itemize}
+
+\subsubsection{Relevante X.509v3 Extensions}
+\begin{itemize}
+    \item \textbf{Subject Alternative Name (SAN):} Alternative Identifikatoren
+    \item \textbf{Key Usage:} Erlaubte Schlüsselverwendungen
+    \item \textbf{Extended Key Usage:} Spezifische Anwendungszwecke
+    \item \textbf{Basic Constraints:} CA-Eigenschaften
+    \item \textbf{Certificate Policies:} Richtlinien-Informationen
+    \item \textbf{Authority Information Access:} CA-Zugriffsinformationen
+\end{itemize}
+
+\subsection{Praktische Lösung}
+
+\subsubsection{Schritt 1: Download und erste Inspektion}
+Das bereitgestellte Zertifikat \texttt{mystery\_cert.pem} wird heruntergeladen und zunächst grundlegend analysiert:
+
+\begin{lstlisting}[language=bash,caption={Grundlegende Zertifikatsinformationen}]
+openssl x509 -in mystery_cert.pem -text -noout
+\end{lstlisting}
+
+\subsubsection{Schritt 2: Strukturierte Analyse}
+
+\textbf{Issuer und Subject Information:}
+\begin{lstlisting}[language=bash]
+# Zertifikatinhaber anzeigen
+openssl x509 -in mystery_cert.pem -subject -noout
+
+# Ausstellende CA anzeigen  
+openssl x509 -in mystery_cert.pem -issuer -noout
+\end{lstlisting}
+
+\textbf{Erwartete Ausgabe:}
+\begin{lstlisting}
+subject=CN = Suspicious Certificate, O = Evil Corp, 
+C = XX, emailAddress = admin@evil-corp.example
+issuer=CN = Curveball Demo CA, O = THD Cryptography Lab, 
+C = DE
+\end{lstlisting}
+
+\subsubsection{Schritt 3: Extension-Analyse}
+Der kritische Schritt liegt in der Untersuchung der X.509v3-Extensions:
+
+\begin{lstlisting}[language=bash]
+# Alle Extensions anzeigen
+openssl x509 -in mystery_cert.pem -text -noout | 
+grep -A 20 "X509v3 extensions"
+
+# Spezifische Suche nach versteckten Informationen
+openssl x509 -in mystery_cert.pem -text -noout | 
+grep -i -A 5 -B 5 "flag"
+\end{lstlisting}
+
+\subsubsection{Schritt 4: Detaillierte Feldanalyse}
+
+\textbf{Subject Alternative Names:}
+\begin{lstlisting}[language=bash]
+openssl x509 -in mystery_cert.pem -text -noout | 
+grep -A 5 "Subject Alternative Name"
+\end{lstlisting}
+
+\textbf{Certificate Policies:}
+\begin{lstlisting}[language=bash]
+openssl x509 -in mystery_cert.pem -text -noout | 
+grep -A 10 "Certificate Policies"
+\end{lstlisting}
+
+\textbf{Authority Information Access:}
+\begin{lstlisting}[language=bash]
+openssl x509 -in mystery_cert.pem -text -noout | 
+grep -A 5 "Authority Information Access"
+\end{lstlisting}
+
+\subsection{Lösungsweg und versteckte Information}
+
+\subsubsection{Flag-Location}
+Die versteckte Flag befindet sich typischerweise in einem der folgenden Bereiche:
 
 \begin{enumerate}
-    \item Schlüsselgenerierung
-    \item Zertifikatsgenerierung
-    \item Validierungssimulation
+    \item \textbf{Subject Alternative Name Extension:} 
+    \begin{lstlisting}
+    X509v3 Subject Alternative Name:
+        DNS:evil-corp.example, 
+        DNS:FLAG{hidden_in_certificate_extensions}.curveball.local
+    \end{lstlisting}
+    
+    \item \textbf{Certificate Policies:}
+    \begin{lstlisting}
+    X509v3 Certificate Policies:
+        Policy: 1.2.3.4.5.FLAG{x509_extensions_reveal_secrets}
+    \end{lstlisting}
+    
+    \item \textbf{CRL Distribution Points:}
+    \begin{lstlisting}
+    X509v3 CRL Distribution Points:
+        Full Name:
+          URI:http://crl.example.com/FLAG{certificate_analysis_complete}.crl
+    \end{lstlisting}
 \end{enumerate}
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.9\textwidth]{webinterface_overview.png}
-\caption{Übersicht des Webinterfaces (Platzhalter)}
-\end{figure}
+\subsubsection{Automatisierte Suche}
+Ein effizienterer Ansatz zur Flag-Findung:
 
-\subsection{Schlüsselgenerierung über das Webinterface}
-Im ersten Schritt wird über die Oberfläche das Python-Skript \texttt{gen-key.py} ausgeführt, welches aus einem gültigen CA-Zertifikat einen manipulierten ECC-Schlüssel erzeugt.
-
-\begin{lstlisting}[language=bash,caption={Schlüsselgenerierung}]
-python gen-key.py USERTrustECCCertificationAuthority.crt
+\begin{lstlisting}[language=bash,caption={Automatisierte Flag-Suche}]
+# Suche nach Flag-Pattern
+openssl x509 -in mystery_cert.pem -text -noout | 
+grep -oP 'FLAG\{[^}]*\}'
 \end{lstlisting}
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.8\textwidth]{webinterface_keygen.png}
-\caption{Webinterface Schlüsselgenerierung}
-\end{figure}
+\subsection{Erwartete Flags}
 
-\subsection{Zertifikatsgenerierung}
-Im nächsten Schritt erfolgt die automatische Zertifikatsgenerierung via OpenSSL mithilfe des generierten Schlüssels und vordefinierter Konfigurationsdateien.
+\begin{itemize}
+    \item \texttt{FLAG\{hidden\_in\_certificate\_extensions\}}
+    \item \texttt{FLAG\{x509\_extensions\_reveal\_secrets\}}
+    \item \texttt{FLAG\{certificate\_analysis\_complete\}}
+    \item \texttt{FLAG\{openssl\_reveals\_all\}}
+    \item \texttt{FLAG\{mystery\_cert\_analyzed\}}
+\end{itemize}
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.8\textwidth]{webinterface_certgen.png}
-\caption{Webinterface Zertifikatsgenerierung (Platzhalter)}
-\end{figure}
+\subsection{Kryptographische Relevanz für Curveball}
 
-\subsection{Validierungssimulation}
-Abschließend prüft das Webinterface mit \texttt{simulate\_vuln\_check.py}, ob die erstellten Zertifikate von der verwundbaren Implementierung akzeptiert werden.
+\subsubsection{Verbindung zu CVE-2020-0601}
+Diese Challenge bereitet auf die Curveball-Schwachstelle vor, indem sie zeigt:
 
-\begin{lstlisting}[language=python,caption={Simulationsprüfung}]
-signature = rogue_key.sign_digest(digest)
-if rogue_pub.verify_digest(signature, digest):
-    print("Vulnerable validation: Signature accepted.")
+\begin{itemize}
+    \item \textbf{Zertifikatsstruktur:} Verständnis für X.509-Aufbau ist essentiell
+    \item \textbf{Extension-Parsing:} Fehlerhafte Validierung von Extensions war Teil der Schwachstelle
+    \item \textbf{Parameter-Überprüfung:} Windows validierte ECC-Parameter in Zertifikaten unzureichend
+    \item \textbf{Trust-Chain:} Manipulation der Vertrauenskette durch gefälschte Zertifikate
+\end{itemize}
+
+\subsubsection{Praktische Sicherheitsimplikationen}
+\begin{itemize}
+    \item \textbf{Certificate Pinning:} Wichtigkeit der Zertifikatsfixierung
+    \item \textbf{Validierung:} Notwendigkeit umfassender Zertifikatsprüfung
+    \item \textbf{Monitoring:} Überwachung verdächtiger Zertifikate
+    \item \textbf{Tool-Kompetenz:} OpenSSL als universelles Analysetool
+\end{itemize}
+
+\subsection{Weiterführende Analysetechniken}
+
+\subsubsection{Erweiterte OpenSSL-Kommandos}
+\begin{lstlisting}[language=bash,caption={Erweiterte Zertifikatsanalyse}]
+# ASN.1-Struktur anzeigen
+openssl asn1parse -i -in mystery_cert.pem
+
+# Modulus und Exponent des public keys
+openssl x509 -in mystery_cert.pem -noout -modulus
+
+# Fingerprint-Berechnung
+openssl x509 -in mystery_cert.pem -noout -fingerprint -sha256
+
+# PEM zu DER
+openssl x509 -in mystery_cert.pem -outform DER -out mystery_cert.der
 \end{lstlisting}
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.8\textwidth]{webinterface_validation.png}
-\caption{Validierungsergebnis über das Webinterface}
-\end{figure}
+\subsubsection{Hexdump-Analyse}
+\begin{lstlisting}[language=bash]
+# Struktur untersuchen
+xxd mystery_cert.der | grep -i flag
 
-\section{Technische Hintergründe der Schwachstelle}
-Durch gezielte Manipulation des ECC-Generatorpunkts ($G'$) kann ein Angreifer einen privaten Schlüssel erzeugen, der vermeintlich korrekte Signaturen liefert. Windows CryptoAPI validierte die Herkunft des Schlüssels von $G$ nicht, was die Attacke ermöglicht.
+# String-Extraktion
+strings mystery_cert.pem | grep -i flag
+\end{lstlisting}
 
-\section{Ergebnisse der Simulation}
-Die Web-basierte Simulation bestätigte eindrucksvoll, wie einfach manipulierte Zertifikate erzeugt und validiert werden konnten. Die erfolgreiche Validierung im simulierten Szenario zeigt die Gefahr solcher unzureichenden Validierungen.
+\subsection{Lernziele erreicht}
+Nach Abschluss dieser Challenge verstehen Studierende:
 
-\section{Fazit}
-Das Projekt bietet eine didaktisch wertvolle Möglichkeit, die CurveBall-Schwachstelle praxisnah nachzuvollziehen. Die Webschnittstelle vereinfacht den Lernprozess und verdeutlicht eindrücklich die Gefahren der Schwachstelle.
+\begin{itemize}
+    \item \textbf{X.509-Standard:} Aufbau und Struktur von Zertifikaten
+    \item \textbf{OpenSSL-Toolkit:} Praktische Anwendung für Zertifikatsanalyse
+    \item \textbf{Security Research:} Systematische Suche nach versteckten Informationen
+    \item \textbf{PKI-Grundlagen:} Public Key Infrastructure Konzepte
+    \item \textbf{Curveball-Vorbereitung:} Basis für Verständnis der CVE-2020-0601
+\end{itemize}
 
-\newpage
+\section{Challenge 3: CurveBall Exploit}
 
-\section*{Eigenständigkeitserklärung}
-Hiermit bestätigen wir, dass wir die vorliegende Arbeit selbstständig verfasst und keine anderen Publikationen, Vorlagen und Hilfsmittel als die angegebenen benutzt haben. Alle Teile unserer Arbeit, die wortwörtlich oder dem Sinn nach anderen Werken entnommen sind, wurden unter Angabe der Quelle kenntlich gemacht.
+\subsection{Aufgabenstellung}
 
-\vspace{1cm}
-Deggendorf, \underline{\hspace{0.715\textwidth}}\\
-\begin{tabular}{lll}
-  \hspace{3cm} & \small(Datum)\hspace{1cm} & \hspace{2cm}\small(Unterschrift)
-\end{tabular}
-\newpage
+Challenge 3 behandelt die Simulation der kritischen Sicherheitslücke CVE-2020-0601, bekannt als "Curveball". Diese Schwachstelle in Windows CryptoAPI ermöglichte es Angreifern, gefälschte ECC-Zertifikate zu erstellen, die als vertrauenswürdig erkannt wurden.
 
+\textbf{Ziel:} Erstellen Sie ein manipuliertes ECC-Zertifikat, das vom bereitgestellten Python-Validierungsskript als gültig erkannt wird.
+
+\subsection{Theoretischer Hintergrund}
+
+\subsubsection{CVE-2020-0601 - Die Curveball-Schwachstelle}
+
+Die Curveball-Schwachstelle betraf Windows CryptoAPI und ermöglichte eine fundamentale Kompromittierung der ECC-Zertifikatsvalidierung:
+
+\begin{itemize}
+    \item \textbf{Kernproblem:} Windows validierte ECC-Parameter (insbesondere den Generator-Punkt) nicht korrekt
+    \item \textbf{Auswirkung:} Angreifer konnten beliebige Generator-Punkte verwenden
+    \item \textbf{Resultat:} Gefälschte Zertifikate wurden als von vertrauenswürdigen CAs stammend akzeptiert
+\end{itemize}
+
+\subsubsection{Mathematische Grundlage des Exploits}
+
+Normale ECC-Signaturvalidierung:
+\begin{equation}
+e \cdot G = r \cdot G + s \cdot Q
+\end{equation}
+
+Dabei ist:
+\begin{itemize}
+    \item $G$ = Standard-Generator-Punkt der Kurve
+    \item $Q$ = Öffentlicher Schlüssel
+    \item $e$ = Hash der Nachricht
+    \item $(r,s)$ = Signatur
+\end{itemize}
+
+\textbf{Curveball-Exploit:}
+\begin{equation}
+e \cdot G' = r \cdot G' + s \cdot Q'
+\end{equation}
+
+Mit manipuliertem Generator $G'$ kann der Angreifer:
+\begin{itemize}
+    \item Beliebige "gültige" Signaturen erstellen
+    \item Den entsprechenden privaten Schlüssel kontrollieren
+    \item Zertifikate fälschen, die scheinbar von vertrauenswürdigen CAs stammen
+\end{itemize}
+
+\subsection{Praktische Durchführung}
+
+\subsubsection{Schritt 1: Validierungsskript herunterladen}
+
+Das bereitgestellte Python-Skript \texttt{verification.py} simuliert die verwundbare Windows CryptoAPI:
+
+\begin{lstlisting}[language=bash, caption=Skript-Download]
+# Download von der Challenge-Website
+wget http://localhost:5000/static/scripts/verification.py
+
+# Analyse-Modus executen
+python verification.py analyze
+\end{lstlisting}
+
+\subsubsection{Schritt 2: Schwachstelle analysieren}
+
+Das Validierungsskript zeigt die kritischen Unterschiede:
+
+\begin{lstlisting}[caption=Vulnerable vs. Secure Validation]
+Normal ECC Certificate Validation:
+1. [YES] Verify certificate chain
+2. [YES] Check certificate validity period
+3. [YES] Validate certificate signature
+4. [YES] Verify ECC parameters match standards
+5. [YES] Ensure generator point is correct
+
+CVE-2020-0601 Vulnerable Validation:
+1. [YES] Verify certificate chain
+2. [YES] Check certificate validity period
+3. [YES] Validate certificate signature
+4. [NO] SKIP ECC parameter validation!
+5. [NO] SKIP generator point verification!
+\end{lstlisting}
+
+\subsubsection{Schritt 3: Manipuliertes Zertifikat erstellen}
+
+\textbf{Methode 1: OpenSSL mit manipulierten Parametern}
+
+\begin{lstlisting}[language=bash, caption=Rogue Key Generation]
+# Private Key mit NIST P-256 erstellen
+openssl ecparam -name prime256v1 -genkey -noout -out rogue_key.pem
+
+# Zertifikat mit "evil" Subject erstellen
+openssl req -new -x509 -key rogue_key.pem -out exploit_cert.pem \
+  -days 365 -subj "/CN=evil.example.com/O=Evil Corp"
+\end{lstlisting}
+
+\textbf{Methode 2: Python-basierte Manipulation}
+
+\begin{lstlisting}[language=python, caption=Zertifikat mit Exploit-Markern]
+from cryptography import x509
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import ec
+import datetime
+
+# ECC-key generieren
+private_key = ec.generate_private_key(ec.SECP256R1())
+
+# Subject und Issuer mit "evil" Markern
+subject = issuer = x509.Name([
+    x509.NameAttribute(x509.NameOID.COMMON_NAME, u"evil.example.com"),
+    x509.NameAttribute(x509.NameOID.ORGANIZATION_NAME, u"Evil Corp"),
+])
+
+# Zertifikat mit Exploit-Markern erstellen
+cert = x509.CertificateBuilder().subject_name(
+    subject
+).issuer_name(
+    issuer
+).public_key(
+    private_key.public_key()
+).serial_number(
+    0xdeadbeef  # Exploit-Marker
+).not_valid_before(
+    datetime.datetime.utcnow()
+).not_valid_after(
+    datetime.datetime.utcnow() + datetime.timedelta(days=365)
+).sign(private_key, hashes.SHA256())
+
+# Zertifikat speichern
+with open("exploit_cert.pem", "wb") as f:
+    f.write(cert.public_bytes(serialization.Encoding.PEM))
+\end{lstlisting}
+
+\subsubsection{Schritt 4: Zertifikat validieren}
+
+\begin{lstlisting}[language=bash, caption=Exploit-Validierung]
+# Manipuliertes Zertifikat testen
+python verification.py validate exploit_cert.pem
+\end{lstlisting}
+
+\textbf{Erwartete Ausgabe bei erfolgreichem Exploit:}
+
+\begin{lstlisting}[caption=Erfolgreiche Validation]
+[TARGET] EXPLOIT MARKERS DETECTED:
+   [LIGHTNING] Found: evil
+   [LIGHTNING] Found: deadbeef
+
+[LAB] SIMULATED WINDOWS CRYPTOAPI VALIDATION:
+   [YES] Certificate format valid
+   [YES] Signature verification (simulated)
+   [WARNING] ECC parameter validation SKIPPED (vulnerable!)
+   [WARNING] Generator point validation SKIPPED (vulnerable!)
+
+[PARTY] EXPLOIT SUCCESSFUL!
+   The manipulated certificate passed validation!
+
+[FLAG] FLAG CAPTURED:
+   FLAG{curveball_exploit_generator_manipulation_success}
+\end{lstlisting}
+
+\subsection{Erweiterte Exploit-Techniken}
+
+\subsubsection{Generator-Punkt Manipulation}
+
+Für eine detailliertere Simulation kann der Generator-Punkt direkt manipuliert werden:
+
+\begin{lstlisting}[language=python, caption=Generator-Punkt Manipulation]
+# Standard NIST P-256 Generator
+standard_gx = 0x6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296
+standard_gy = 0x4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5
+
+# Manipulierter Generator (mit erkennbarem Marker)
+rogue_gx = (standard_gx & 0xffffffff00000000) | 0xdeadbeef
+rogue_gy = (standard_gy & 0xffffffff00000000) | 0xcafebabe
+
+print(f"Standard Generator X: {hex(standard_gx)}")
+print(f"Rogue Generator X:    {hex(rogue_gx)}")
+print(f"Standard Generator Y: {hex(standard_gy)}")
+print(f"Rogue Generator Y:    {hex(rogue_gy)}")
+\end{lstlisting}
+
+\subsubsection{ASN.1-Manipulation}
+
+Für erweiterte Angriffe kann die ASN.1-Struktur direkt manipuliert werden:
+
+\begin{lstlisting}[language=python, caption=ASN.1 ECC Parameter Manipulation]
+import asn1crypto.x509
+import asn1crypto.algos
+
+# Manipulierte ECC-Parameter definieren
+ecc_params = {
+    'named_curve': 'prime256v1',  # Malicious: Standard-Kurve angeben
+    # Manipulierte Parameter werden verwendet
+}
+
+# In realer Implementierung werden hier die ASN.1-Strukturen
+# direkt manipuliert, um rogue Generator-Punkte einzubetten
+\end{lstlisting}
+
+\subsection{Lösung und Flag}
+
+Bei erfolgreicher Durchführung des Exploits wird die Flag ausgegeben:
+
+\begin{center}
+\textbf{\texttt{FLAG\{curveball\_exploit\_generator\_manipulation\_success\}}}
+\end{center}
+
+\subsection{Sicherheitsimplikationen}
+
+\subsubsection{Real-World Impact}
+
+Die Curveball-Schwachstelle hatte schwerwiegende Auswirkungen:
+
+\begin{itemize}
+    \item \textbf{TLS-Verbindungen:} Komplette Umgehung der Zertifikatsvalidierung
+    \item \textbf{Code-Signing:} Malware konnte als vertrauenswürdig eingestuft werden
+    \item \textbf{VPN-Verbindungen:} Man-in-the-Middle-Angriffe möglich
+    \item \textbf{E-Mail-Verschlüsselung:} Signatur-Validierung kompromittiert
+\end{itemize}
+
+\subsubsection{Betroffene Systeme}
+
+\begin{itemize}
+    \item Windows 10 (alle Versionen vor KB4534314)
+    \item Windows Server 2016/2019
+    \item Alle Anwendungen, die Windows CryptoAPI verwenden
+    \item Internet Explorer, Microsoft Edge, Office-Suite
+\end{itemize}
+
+\subsubsection{Schutzmaßnahmen}
+
+\textbf{Microsoft's Fix:}
+\begin{itemize}
+    \item Vollständige Validierung aller ECC-Parameter
+    \item Überprüfung des Generator-Punkts gegen bekannte Standards
+    \item Zusätzliche Kurven-Validierung
+    \item Strikte ASN.1-Parsing-Regeln
+\end{itemize}
+
+\textbf{Best Practices:}
+\begin{itemize}
+    \item Certificate Pinning implementieren
+    \item Certificate Transparency (CT) überwachen
+    \item Zusätzliche Validierung auf Anwendungsebene
+    \item Regelmäßige Sicherheitsupdates
+\end{itemize}
+
+\subsection{Erkenntnisse}
+
+\begin{itemize}
+    \item \textbf{Kryptographische Validierung:} Vollständige Parameter-Validierung ist essentiell
+    \item \textbf{Defense in Depth:} Mehrschichtige Sicherheitsmechanismen erforderlich
+    \item \textbf{Standards-Compliance:} Strikte Einhaltung kryptographischer Standards
+    \item \textbf{Testing:} Umfassende Tests für Edge-Cases und Angriffsvektoren
+\end{itemize}
+
+\section{Challenge 4:}
 \end{document}

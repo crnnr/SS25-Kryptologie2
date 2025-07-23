@@ -1,7 +1,7 @@
 FROM python:3.12-alpine
 
 # Pin Alpine package versions for reproducible builds
-RUN apk add --no-cache openssl~=3.1
+RUN apk add --no-cache openssl=3.5.1-r0
 
 WORKDIR /app
 COPY requirements.txt /app/
