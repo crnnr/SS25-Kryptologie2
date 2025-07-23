@@ -1,180 +1,235 @@
 <!DOCTYPE html>
 <html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Challenge 2 - Zertifikatsanalyse | Curveball CTF</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+  <body>
     <div class="background-particles">
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
     </div>
 
     <div class="container">
-        <div class="header-section">
-            <h1 class="challenge-title">Challenge 2</h1>
-            <h2 class="challenge-subtitle">Zertifikatsanalyse mit OpenSSL</h2>
-            <p class="challenge-description">
-                Analysieren Sie ein verdächtiges X.509-Zertifikat und finden Sie versteckte Informationen
-            </p>
+      <div class="header-section">
+        <h1 class="challenge-title">Challenge 2</h1>
+        <h2 class="challenge-subtitle">Zertifikatsanalyse mit OpenSSL</h2>
+        <p class="challenge-description">
+          Analysieren Sie ein verdächtiges X.509-Zertifikat und finden Sie
+          versteckte Informationen
+        </p>
+      </div>
+
+      <div class="challenge-content">
+        <!-- Story Introduction -->
+        <div class="story-section">
+          <h3>🕵️ Die Geschichte</h3>
+          <div class="story-content">
+            <div class="story-box">
+              <p>
+                Sie haben ein seltsames Zertifikat gefunden. Es sieht auf den
+                ersten Blick normal aus, aber irgendetwas daran ist...
+                merkwürdig.
+              </p>
+
+              <p>
+                Ihre Aufgabe ist es, das Zertifikat gründlich zu analysieren und
+                herauszufinden, welche Informationen darin verborgen sind. Nicht
+                alle Geheimnisse offenbaren sich beim ersten Blick!
+              </p>
+
+              <div class="hint-box">
+                💡 <strong>Tipp:</strong> X.509-Zertifikate können verschiedene
+                Felder und Extensions enthalten. Manchmal sind wichtige
+                Informationen in unerwarteten Bereichen versteckt...
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="challenge-content">
-            <!-- Story Introduction -->
-            <div class="story-section">
-                <h3>🕵️ Die Geschichte</h3>
-                <div class="story-content">
-                    <div class="story-box">
-                        <p>Sie haben ein seltsames Zertifikat gefunden. Es sieht auf den ersten Blick normal aus, aber irgendetwas daran ist... merkwürdig.</p>
+        <!-- Certificate Download Section -->
+        <div class="download-section">
+          <h3>📥 Zertifikat herunterladen</h3>
+          <div class="download-content">
+            <div class="certificate-info">
+              <h4>mystery_cert.pem</h4>
+              <p>Ein X.509-Zertifikat im PEM-Format zur Analyse</p>
 
-                        <p>Ihre Aufgabe ist es, das Zertifikat gründlich zu analysieren und herauszufinden, welche Informationen darin verborgen sind. Nicht alle Geheimnisse offenbaren sich beim ersten Blick!</p>
-
-                        <div class="hint-box">
-                            💡 <strong>Tipp:</strong> X.509-Zertifikate können verschiedene Felder und Extensions enthalten. Manchmal sind wichtige Informationen in unerwarteten Bereichen versteckt...
-                        </div>
-                    </div>
-                </div>
+              <div class="download-button-container">
+                <a
+                  href="{{ url_for('download_file', filename='mystery_cert.pem') }}"
+                  class="download-btn"
+                  download="mystery_cert.pem"
+                >
+                  📄 mystery_cert.pem herunterladen
+                </a>
+              </div>
             </div>
-
-            <!-- Certificate Download Section -->
-            <div class="download-section">
-                <h3>📥 Zertifikat herunterladen</h3>
-                <div class="download-content">
-                    <div class="certificate-info">
-                        <h4>mystery_cert.pem</h4>
-                        <p>Ein X.509-Zertifikat im PEM-Format zur Analyse</p>
-                        
-                        <div class="download-button-container">
-                            <a href="{{ url_for('download_file', filename='mystery_cert.pem') }}" 
-                               class="download-btn" 
-                               download="mystery_cert.pem">
-                                📄 mystery_cert.pem herunterladen
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Analysis Instructions -->
-            <div class="instructions-section">
-                <h3>🔍 Analyse-Anweisungen</h3>
-                <div class="instructions-content">
-                    <div class="openssl-commands">
-                        <h4>OpenSSL Befehle für die Zertifikatsanalyse:</h4>
-                        
-                        <div class="command-group">
-                            <h5>Grundlegende Zertifikatsinformationen anzeigen:</h5>
-                            <div class="code-block">
-                                <code>openssl x509 -in mystery_cert.pem -text -noout</code>
-                            </div>
-                        </div>
-
-                        <div class="command-group">
-                            <h5>Spezifische Felder extrahieren:</h5>
-                            <div class="code-block">
-                                <code>openssl x509 -in mystery_cert.pem -subject -noout</code><br>
-                                <code>openssl x509 -in mystery_cert.pem -issuer -noout</code>
-                            </div>
-                        </div>
-
-                        <div class="command-group">
-                            <h5>Extensions und erweiterte Informationen:</h5>
-                            <div class="code-block">
-                                <code>openssl x509 -in mystery_cert.pem -text -noout | grep -A 20 "X509v3 extensions"</code>
-                            </div>
-                        </div>
-
-                        <div class="command-group">
-                            <h5>Alle verfügbaren Informationen durchsuchen:</h5>
-                            <div class="code-block">
-                                <code>openssl x509 -in mystery_cert.pem -text -noout | grep -i flag</code><br>
-                                <code>openssl x509 -in mystery_cert.pem -text -noout | grep -i secret</code>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="analysis-tips">
-                        <h4>📋 Was Sie suchen sollten:</h4>
-                        <ul>
-                            <li><strong>Subject:</strong> Informationen über den Zertifikatinhaber</li>
-                            <li><strong>Issuer:</strong> Die ausstellende Zertifizierungsstelle</li>
-                            <li><strong>Extensions:</strong> Zusätzliche Zertifikatsfelder (X509v3)</li>
-                            <li><strong>Alternative Names:</strong> DNS-Namen oder andere Identifikatoren</li>
-                            <li><strong>Custom Fields:</strong> Ungewöhnliche oder benutzerdefinierte Felder</li>
-                            <li><strong>Comments:</strong> Versteckte Kommentare oder Beschreibungen</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Flag Submission -->
-            <div class="submission-section">
-                <h3>🚩 Flag eingeben</h3>
-                <div class="submission-content">
-                    <div class="flag-form">
-                        <p>Wenn Sie die versteckte Information gefunden haben, geben Sie die Flag hier ein:</p>
-                        
-                        <div class="input-group">
-                            <input type="text" 
-                                   id="flagInput" 
-                                   placeholder="FLAG{...}" 
-                                   class="flag-input">
-                            <button onclick="checkFlag()" class="submit-btn">
-                                ✓ Flag prüfen
-                            </button>
-                        </div>
-                        
-                        <div id="flagResult" class="result-message"></div>
-                    </div>
-
-                    <div class="progress-info">
-                        <div class="attempts-counter">
-                            Versuche: <span id="attemptCount">0</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Educational Content -->
-            <div class="education-section">
-                <h3>📚 Lerninhalt: X.509 Zertifikate</h3>
-                <div class="education-content">
-                    <div class="learning-box">
-                        <h4>Was sind X.509-Zertifikate?</h4>
-                        <p>X.509 ist ein Standard für Public-Key-Infrastrukturen (PKI). Diese Zertifikate enthalten:</p>
-                        <ul>
-                            <li>Öffentlichen Schlüssel des Inhabers</li>
-                            <li>Identitätsinformationen (Subject)</li>
-                            <li>Digitale Signatur der ausstellenden CA</li>
-                            <li>Gültigkeitszeitraum</li>
-                            <li>Verwendungszweck und Einschränkungen</li>
-                        </ul>
-                    </div>
-
-                    <div class="learning-box">
-                        <h4>Curveball und Zertifikate</h4>
-                        <p>CVE-2020-0601 betraf die Validierung von ECC-Parametern in X.509-Zertifikaten. Angreifer konnten:</p>
-                        <ul>
-                            <li>Manipulierte ECC-Parameter in Zertifikate einbetten</li>
-                            <li>Windows zur Akzeptanz gefälschter Zertifikate bringen</li>
-                            <li>TLS-Verbindungen und Code-Signing umgehen</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
 
-        <!-- Navigation -->
-        <div class="navigation-section">
-            <a href="/" class="nav-btn back-btn">← Zurück zur Übersicht</a>
-            <a href="/challenge3" class="nav-btn next-btn">Challenge 3 →</a>
+        <!-- Analysis Instructions -->
+        <div class="instructions-section">
+          <h3>🔍 Analyse-Anweisungen</h3>
+          <div class="instructions-content">
+            <div class="openssl-commands">
+              <h4>OpenSSL Befehle für die Zertifikatsanalyse:</h4>
+
+              <div class="command-group">
+                <h5>Grundlegende Zertifikatsinformationen anzeigen:</h5>
+                <div class="code-block">
+                  <code>openssl x509 -in mystery_cert.pem -text -noout</code>
+                </div>
+              </div>
+
+              <div class="command-group">
+                <h5>Spezifische Felder extrahieren:</h5>
+                <div class="code-block">
+                  <code>openssl x509 -in mystery_cert.pem -subject -noout</code
+                  ><br />
+                  <code>openssl x509 -in mystery_cert.pem -issuer -noout</code>
+                </div>
+              </div>
+
+              <div class="command-group">
+                <h5>Extensions und erweiterte Informationen:</h5>
+                <div class="code-block">
+                  <code
+                    >openssl x509 -in mystery_cert.pem -text -noout | grep -A 20
+                    "X509v3 extensions"</code
+                  >
+                </div>
+              </div>
+
+              <div class="command-group">
+                <h5>Alle verfügbaren Informationen durchsuchen:</h5>
+                <div class="code-block">
+                  <code
+                    >openssl x509 -in mystery_cert.pem -text -noout | grep -i
+                    flag</code
+                  ><br />
+                  <code
+                    >openssl x509 -in mystery_cert.pem -text -noout | grep -i
+                    secret</code
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="analysis-tips">
+              <h4>📋 Was Sie suchen sollten:</h4>
+              <ul>
+                <li>
+                  <strong>Subject:</strong> Informationen über den
+                  Zertifikatinhaber
+                </li>
+                <li>
+                  <strong>Issuer:</strong> Die ausstellende
+                  Zertifizierungsstelle
+                </li>
+                <li>
+                  <strong>Extensions:</strong> Zusätzliche Zertifikatsfelder
+                  (X509v3)
+                </li>
+                <li>
+                  <strong>Alternative Names:</strong> DNS-Namen oder andere
+                  Identifikatoren
+                </li>
+                <li>
+                  <strong>Custom Fields:</strong> Ungewöhnliche oder
+                  benutzerdefinierte Felder
+                </li>
+                <li>
+                  <strong>Comments:</strong> Versteckte Kommentare oder
+                  Beschreibungen
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
+
+        <!-- Flag Submission -->
+        <div class="submission-section">
+          <h3>🚩 Flag eingeben</h3>
+          <div class="submission-content">
+            <div class="flag-form">
+              <p>
+                Wenn Sie die versteckte Information gefunden haben, geben Sie
+                die Flag hier ein:
+              </p>
+
+              <div class="input-group">
+                <input
+                  type="text"
+                  id="flagInput"
+                  placeholder="FLAG{...}"
+                  class="flag-input"
+                />
+                <button onclick="checkFlag()" class="submit-btn">
+                  ✓ Flag prüfen
+                </button>
+              </div>
+
+              <div id="flagResult" class="result-message"></div>
+            </div>
+
+            <div class="progress-info">
+              <div class="attempts-counter">
+                Versuche: <span id="attemptCount">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Educational Content -->
+        <div class="education-section">
+          <h3>📚 Lerninhalt: X.509 Zertifikate</h3>
+          <div class="education-content">
+            <div class="learning-box">
+              <h4>Was sind X.509-Zertifikate?</h4>
+              <p>
+                X.509 ist ein Standard für Public-Key-Infrastrukturen (PKI).
+                Diese Zertifikate enthalten:
+              </p>
+              <ul>
+                <li>Öffentlichen Schlüssel des Inhabers</li>
+                <li>Identitätsinformationen (Subject)</li>
+                <li>Digitale Signatur der ausstellenden CA</li>
+                <li>Gültigkeitszeitraum</li>
+                <li>Verwendungszweck und Einschränkungen</li>
+              </ul>
+            </div>
+
+            <div class="learning-box">
+              <h4>Curveball und Zertifikate</h4>
+              <p>
+                CVE-2020-0601 betraf die Validierung von ECC-Parametern in
+                X.509-Zertifikaten. Angreifer konnten:
+              </p>
+              <ul>
+                <li>Manipulierte ECC-Parameter in Zertifikate einbetten</li>
+                <li>Windows zur Akzeptanz gefälschter Zertifikate bringen</li>
+                <li>TLS-Verbindungen und Code-Signing umgehen</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div class="navigation-section">
+        <a href="/" class="nav-btn back-btn">← Zurück zur Übersicht</a>
+        <a href="/challenge3" class="nav-btn next-btn">Challenge 3 →</a>
+      </div>
     </div>
 
     <script src="{{ url_for('static', filename='js/challenge2.js') }}"></script>
-</body>
+  </body>
 </html>

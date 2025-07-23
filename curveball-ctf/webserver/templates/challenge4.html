@@ -1,469 +1,659 @@
 <!DOCTYPE html>
 <html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Challenge 4 - Signaturvalidierung | Curveball CTF</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+  <body>
     <div class="background-particles">
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
     </div>
 
     <div class="container">
-        <div class="header-section">
-            <h1 class="challenge-title">Challenge 4</h1>
-            <h2 class="challenge-subtitle">Kurvenparameter & Signaturvalidierung</h2>
-            <p class="challenge-description">
-                Verstehen Sie das Herzstück von CVE-2020-0601: Wie manipulierte Kurvenparameter eine falsche Signatur "gültig" machen
-            </p>
+      <div class="header-section">
+        <h1 class="challenge-title">Challenge 4</h1>
+        <h2 class="challenge-subtitle">
+          Kurvenparameter & Signaturvalidierung
+        </h2>
+        <p class="challenge-description">
+          Verstehen Sie das Herzstück von CVE-2020-0601: Wie manipulierte
+          Kurvenparameter eine falsche Signatur "gültig" machen
+        </p>
+      </div>
+
+      <div class="challenge-content">
+        <!-- Challenge Mission -->
+        <div class="mission-section">
+          <h3>🎯 Die ultimative Mission</h3>
+          <div class="mission-content">
+            <div class="mission-box critical">
+              <h4>🔥 Das Herzstück der Curveball-Schwachstelle</h4>
+              <p>
+                Sie haben die Grundlagen gelernt, Zertifikate analysiert und
+                Exploits erstellt. Jetzt kommen wir zum kritischen Punkt:
+                <strong
+                  >Wie funktioniert die mathematische Manipulation, die
+                  CVE-2020-0601 so verheerend macht?</strong
+                >
+              </p>
+
+              <div class="core-vulnerability">
+                <h5>⚡ Der kritische Fehler:</h5>
+                <p>
+                  Windows verwendete die
+                  <strong>Kurvenparameter aus dem Zertifikat</strong> statt die
+                  vertrauenswürdigen Parameter der CA zur Signaturvalidierung.
+                  Das bedeutet:
+                </p>
+                <ul>
+                  <li>
+                    🔓 Angreifer können
+                    <strong>eigene Kurvenparameter</strong> definieren
+                  </li>
+                  <li>
+                    ⚡ Mit diesen Parametern wird
+                    <strong>jede beliebige Signatur "gültig"</strong>
+                  </li>
+                  <li>
+                    🎭 Das Zertifikat erscheint
+                    <strong>als von der echten CA signiert</strong>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="challenge-goal critical">
+                <h5>🏆 Ihre Mission:</h5>
+                <p>
+                  Manipulieren Sie die Kurvenparameter so, dass eine
+                  <strong
+                    >ungültige Signatur plötzlich als gültig erkannt
+                    wird</strong
+                  >. Sie erhalten:
+                </p>
+                <ol>
+                  <li>📜 Ein valides Zertifikat mit korrekten Parametern</li>
+                  <li>🔑 Einen Public Key und eine Signatur</li>
+                  <li>
+                    🧪 Ein Validierungsskript (simuliert Microsoft CryptoAPI)
+                  </li>
+                  <li>
+                    ⚡ <strong>Ziel:</strong> Manipulieren Sie die Parameter →
+                    Flag!
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="challenge-content">
-            <!-- Challenge Mission -->
-            <div class="mission-section">
-                <h3>🎯 Die ultimative Mission</h3>
-                <div class="mission-content">
-                    <div class="mission-box critical">
-                        <h4>🔥 Das Herzstück der Curveball-Schwachstelle</h4>
-                        <p>Sie haben die Grundlagen gelernt, Zertifikate analysiert und Exploits erstellt. Jetzt kommen wir zum kritischen Punkt: <strong>Wie funktioniert die mathematische Manipulation, die CVE-2020-0601 so verheerend macht?</strong></p>
-                        
-                        <div class="core-vulnerability">
-                            <h5>⚡ Der kritische Fehler:</h5>
-                            <p>Windows verwendete die <strong>Kurvenparameter aus dem Zertifikat</strong> statt die vertrauenswürdigen Parameter der CA zur Signaturvalidierung. Das bedeutet:</p>
-                            <ul>
-                                <li>🔓 Angreifer können <strong>eigene Kurvenparameter</strong> definieren</li>
-                                <li>⚡ Mit diesen Parametern wird <strong>jede beliebige Signatur "gültig"</strong></li>
-                                <li>🎭 Das Zertifikat erscheint <strong>als von der echten CA signiert</strong></li>
-                            </ul>
-                        </div>
-
-                        <div class="challenge-goal critical">
-                            <h5>🏆 Ihre Mission:</h5>
-                            <p>Manipulieren Sie die Kurvenparameter so, dass eine <strong>ungültige Signatur plötzlich als gültig erkannt wird</strong>. Sie erhalten:</p>
-                            <ol>
-                                <li>📜 Ein valides Zertifikat mit korrekten Parametern</li>
-                                <li>🔑 Einen Public Key und eine Signatur</li>
-                                <li>🧪 Ein Validierungsskript (simuliert Microsoft CryptoAPI)</li>
-                                <li>⚡ <strong>Ziel:</strong> Manipulieren Sie die Parameter → Flag!</li>
-                            </ol>
-                        </div>
-                    </div>
+        <!-- Mathematical Background -->
+        <div class="math-section">
+          <h3>🧮 Mathematische Grundlagen der Manipulation</h3>
+          <div class="math-content">
+            <div class="math-explanation">
+              <h4>Normale ECC-Signaturvalidierung:</h4>
+              <div class="math-steps">
+                <div class="math-step">
+                  <div class="step-label">1.</div>
+                  <div class="step-content">
+                    <strong>Parameter laden:</strong> Verwende
+                    <em>vertrauenswürdige</em> Kurvenparameter (p, a, b, G, n)
+                  </div>
                 </div>
+                <div class="math-step">
+                  <div class="step-label">2.</div>
+                  <div class="step-content">
+                    <strong>Signatur prüfen:</strong> Berechne u₁ = e·w mod n
+                    und u₂ = r·w mod n
+                  </div>
+                </div>
+                <div class="math-step">
+                  <div class="step-label">3.</div>
+                  <div class="step-content">
+                    <strong>Punkt berechnen:</strong> (x₁, y₁) = u₁·G + u₂·Q
+                  </div>
+                </div>
+                <div class="math-step">
+                  <div class="step-label">4.</div>
+                  <div class="step-content">
+                    <strong>Validierung:</strong> Signatur ist gültig wenn r ≡
+                    x₁ mod n
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <!-- Mathematical Background -->
-            <div class="math-section">
-                <h3>🧮 Mathematische Grundlagen der Manipulation</h3>
-                <div class="math-content">
-                    <div class="math-explanation">
-                        <h4>Normale ECC-Signaturvalidierung:</h4>
-                        <div class="math-steps">
-                            <div class="math-step">
-                                <div class="step-label">1.</div>
-                                <div class="step-content">
-                                    <strong>Parameter laden:</strong> Verwende <em>vertrauenswürdige</em> Kurvenparameter (p, a, b, G, n)
-                                </div>
-                            </div>
-                            <div class="math-step">
-                                <div class="step-label">2.</div>
-                                <div class="step-content">
-                                    <strong>Signatur prüfen:</strong> Berechne u₁ = e·w mod n und u₂ = r·w mod n
-                                </div>
-                            </div>
-                            <div class="math-step">
-                                <div class="step-label">3.</div>
-                                <div class="step-content">
-                                    <strong>Punkt berechnen:</strong> (x₁, y₁) = u₁·G + u₂·Q
-                                </div>
-                            </div>
-                            <div class="math-step">
-                                <div class="step-label">4.</div>
-                                <div class="step-content">
-                                    <strong>Validierung:</strong> Signatur ist gültig wenn r ≡ x₁ mod n
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="exploit-math">
-                        <h4>🔥 Curveball-Exploit:</h4>
-                        <div class="math-steps exploit">
-                            <div class="math-step">
-                                <div class="step-label">1.</div>
-                                <div class="step-content">
-                                    <strong>Parameter manipulieren:</strong> Verwende <em>manipulierte</em> Parameter (p', a', b', G', n')
-                                </div>
-                            </div>
-                            <div class="math-step">
-                                <div class="step-label">2.</div>
-                                <div class="step-content">
-                                    <strong>Generator wählen:</strong> Wähle G' so, dass u₁·G' + u₂·Q' = (r, y) für gewünschtes r
-                                </div>
-                            </div>
-                            <div class="math-step">
-                                <div class="step-label">3.</div>
-                                <div class="step-content">
-                                    <strong>Kurve anpassen:</strong> Definiere neue Kurve so, dass (r, y) darauf liegt
-                                </div>
-                            </div>
-                            <div class="math-step">
-                                <div class="step-label">4.</div>
-                                <div class="step-content">
-                                    <strong>Erfolg:</strong> ❌ Falsche Signatur wird als ✅ gültig erkannt!
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="vulnerability-highlight">
-                        <h4>💥 Warum das so gefährlich ist:</h4>
-                        <p>Durch Kontrolle über die Kurvenparameter kann ein Angreifer <strong>jede beliebige "Signatur" gültig machen</strong>. Das Opfer glaubt, die Signatur stamme von der vertrauenswürdigen CA, obwohl sie komplett gefälscht ist!</p>
-                    </div>
+            <div class="exploit-math">
+              <h4>🔥 Curveball-Exploit:</h4>
+              <div class="math-steps exploit">
+                <div class="math-step">
+                  <div class="step-label">1.</div>
+                  <div class="step-content">
+                    <strong>Parameter manipulieren:</strong> Verwende
+                    <em>manipulierte</em> Parameter (p', a', b', G', n')
+                  </div>
                 </div>
+                <div class="math-step">
+                  <div class="step-label">2.</div>
+                  <div class="step-content">
+                    <strong>Generator wählen:</strong> Wähle G' so, dass u₁·G' +
+                    u₂·Q' = (r, y) für gewünschtes r
+                  </div>
+                </div>
+                <div class="math-step">
+                  <div class="step-label">3.</div>
+                  <div class="step-content">
+                    <strong>Kurve anpassen:</strong> Definiere neue Kurve so,
+                    dass (r, y) darauf liegt
+                  </div>
+                </div>
+                <div class="math-step">
+                  <div class="step-label">4.</div>
+                  <div class="step-content">
+                    <strong>Erfolg:</strong> ❌ Falsche Signatur wird als ✅
+                    gültig erkannt!
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <!-- Challenge Materials -->
-            <div class="materials-section">
-                <h3>📁 Challenge-Materialien</h3>
-                <div class="materials-content">
-                    <div class="material-item">
-                        <h4>📜 Valides Zertifikat</h4>
-                        <p>Ein echtes Zertifikat mit korrekten ECC-Parametern als Ausgangspunkt:</p>
-                        <div class="download-container">
-                            <a href="/downloads/valid_certificate.pem" 
-                               class="download-btn certificate-btn" 
-                               download="valid_certificate.pem">
-                                📜 valid_certificate.pem herunterladen
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="material-item">
-                        <h4>🔑 Public Key & Signatur</h4>
-                        <p>Die zu validierende Signatur und der dazugehörige Public Key:</p>
-                        <div class="download-container">
-                            <a href="/downloads/signature_data.json" 
-                               class="download-btn data-btn" 
-                               download="signature_data.json">
-                                🔑 signature_data.json herunterladen
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="material-item">
-                        <h4>🧪 Validierungsskript</h4>
-                        <p>Simuliert die verwundbare Microsoft CryptoAPI Validierung:</p>
-                        <div class="download-container">
-                            <a href="/scripts/signature_validator.py" 
-                               class="download-btn script-btn" 
-                               download="signature_validator.py">
-                                🐍 signature_validator.py herunterladen
-                            </a>
-                        </div>
-                    </div>
-                </div>
+            <div class="vulnerability-highlight">
+              <h4>💥 Warum das so gefährlich ist:</h4>
+              <p>
+                Durch Kontrolle über die Kurvenparameter kann ein Angreifer
+                <strong>jede beliebige "Signatur" gültig machen</strong>. Das
+                Opfer glaubt, die Signatur stamme von der vertrauenswürdigen CA,
+                obwohl sie komplett gefälscht ist!
+              </p>
             </div>
-
-            <!-- Interactive Tools -->
-            <div class="tools-section">
-                <h3>🛠️ Manipulations-Tools</h3>
-                <div class="tools-content">
-                    <div class="tool-category">
-                        <h4>🔧 Kurvenparameter-Manipulator</h4>
-                        <p>Manipulieren Sie die ECC-Parameter, um die Signaturvalidierung zu umgehen:</p>
-                        
-                        <div class="parameter-manipulator">
-                            <div class="current-params">
-                                <h5>📋 Aktuelle Parameter (Standard P-256):</h5>
-                                <div class="param-display">
-                                    <div class="param-row">
-                                        <span class="param-label">p (Primzahl):</span>
-                                        <span class="param-value" id="currentP">0xffffffff00000001000000000000000000000000ffffffffffffffffffffffff</span>
-                                    </div>
-                                    <div class="param-row">
-                                        <span class="param-label">a (Koeffizient):</span>
-                                        <span class="param-value" id="currentA">0xffffffff00000001000000000000000000000000fffffffffffffffffffffffc</span>
-                                    </div>
-                                    <div class="param-row">
-                                        <span class="param-label">b (Koeffizient):</span>
-                                        <span class="param-value" id="currentB">0x5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b</span>
-                                    </div>
-                                    <div class="param-row">
-                                        <span class="param-label">Gx (Generator X):</span>
-                                        <span class="param-value" id="currentGx">0x6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296</span>
-                                    </div>
-                                    <div class="param-row">
-                                        <span class="param-label">Gy (Generator Y):</span>
-                                        <span class="param-value" id="currentGy">0x4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5</span>
-                                    </div>
-                                    <div class="param-row">
-                                        <span class="param-label">n (Ordnung):</span>
-                                        <span class="param-value" id="currentN">0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="manipulation-controls">
-                                <h5>⚡ Parameter manipulieren:</h5>
-                                <div class="manipulation-options">
-                                    <div class="manipulation-method">
-                                        <input type="radio" id="methodGenerator" name="method" value="generator" checked>
-                                        <label for="methodGenerator">🎯 Generator-Punkt manipulieren</label>
-                                        <p>Ändere den Generator-Punkt G zu einem kontrollierten Wert</p>
-                                    </div>
-                                    <div class="manipulation-method">
-                                        <input type="radio" id="methodCurve" name="method" value="curve">
-                                        <label for="methodCurve">📐 Kurvenparameter ändern</label>
-                                        <p>Modifiziere die Kurvenkoeffizienten a und b</p>
-                                    </div>
-                                    <div class="manipulation-method">
-                                        <input type="radio" id="methodOrder" name="method" value="order">
-                                        <label for="methodOrder">🔢 Ordnung manipulieren</label>
-                                        <p>Ändere die Gruppenordnung n der Kurve</p>
-                                    </div>
-                                    <div class="manipulation-method">
-                                        <input type="radio" id="methodCustom" name="method" value="custom">
-                                        <label for="methodCustom">🎨 Benutzerdefiniert</label>
-                                        <p>Vollständige Kontrolle über alle Parameter</p>
-                                    </div>
-                                </div>
-
-                                <div class="target-signature">
-                                    <h5>🎯 Ziel-Signatur:</h5>
-                                    <div class="signature-inputs">
-                                        <div class="input-group">
-                                            <label for="targetR">r-Wert:</label>
-                                            <input type="text" id="targetR" 
-                                                   placeholder="0x..." 
-                                                   class="hex-input"
-                                                   value="0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890">
-                                        </div>
-                                        <div class="input-group">
-                                            <label for="targetS">s-Wert:</label>
-                                            <input type="text" id="targetS" 
-                                                   placeholder="0x..." 
-                                                   class="hex-input"
-                                                   value="0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <button onclick="calculateManipulation()" class="tool-btn primary">
-                                    ⚡ Parameter berechnen
-                                </button>
-                            </div>
-
-                            <div id="manipulationResult" class="manipulation-output"></div>
-                        </div>
-                    </div>
-
-                    <div class="tool-category">
-                        <h4>🧪 Signatur-Tester</h4>
-                        <p>Testen Sie Ihre manipulierten Parameter gegen das Validierungsskript:</p>
-                        
-                        <div class="signature-tester">
-                            <div class="test-inputs">
-                                <div class="input-group">
-                                    <label for="testMessage">Nachricht (hex):</label>
-                                    <input type="text" id="testMessage" 
-                                           placeholder="48656c6c6f20576f726c64" 
-                                           class="hex-input"
-                                           value="48656c6c6f20437572766562616c6c">
-                                </div>
-                                <div class="input-group">
-                                    <label for="testPublicKey">Public Key (hex):</label>
-                                    <input type="text" id="testPublicKey" 
-                                           placeholder="04..." 
-                                           class="hex-input">
-                                </div>
-                                <div class="input-group">
-                                    <label for="testSignatureR">Signatur r:</label>
-                                    <input type="text" id="testSignatureR" 
-                                           placeholder="0x..." 
-                                           class="hex-input">
-                                </div>
-                                <div class="input-group">
-                                    <label for="testSignatureS">Signatur s:</label>
-                                    <input type="text" id="testSignatureS" 
-                                           placeholder="0x..." 
-                                           class="hex-input">
-                                </div>
-                            </div>
-
-                            <div class="test-controls">
-                                <button onclick="testSignature()" class="tool-btn">
-                                    🧪 Signatur testen
-                                </button>
-                                <button onclick="loadFromFiles()" class="tool-btn secondary">
-                                    📁 Aus Dateien laden
-                                </button>
-                            </div>
-
-                            <div id="testResult" class="test-output"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Manual Parameter Input -->
-            <div class="manual-input-section">
-                <h3>📝 Manuelle Parameter-Eingabe</h3>
-                <div class="manual-content">
-                    <p>Geben Sie Ihre manipulierten Parameter direkt ein:</p>
-                    
-                    <div class="parameter-form">
-                        <div class="form-row">
-                            <div class="input-group">
-                                <label for="manualP">p (Primzahl):</label>
-                                <input type="text" id="manualP" class="param-input" placeholder="0x...">
-                            </div>
-                            <div class="input-group">
-                                <label for="manualA">a (Koeffizient):</label>
-                                <input type="text" id="manualA" class="param-input" placeholder="0x...">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="input-group">
-                                <label for="manualB">b (Koeffizient):</label>
-                                <input type="text" id="manualB" class="param-input" placeholder="0x...">
-                            </div>
-                            <div class="input-group">
-                                <label for="manualN">n (Ordnung):</label>
-                                <input type="text" id="manualN" class="param-input" placeholder="0x...">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="input-group">
-                                <label for="manualGx">Gx (Generator X):</label>
-                                <input type="text" id="manualGx" class="param-input" placeholder="0x...">
-                            </div>
-                            <div class="input-group">
-                                <label for="manualGy">Gy (Generator Y):</label>
-                                <input type="text" id="manualGy" class="param-input" placeholder="0x...">
-                            </div>
-                        </div>
-                        
-                        <div class="form-actions">
-                            <button onclick="validateManualParameters()" class="tool-btn primary">
-                                ✅ Parameter validieren
-                            </button>
-                            <button onclick="exportParameters()" class="tool-btn secondary">
-                                📄 Parameter exportieren
-                            </button>
-                            <button onclick="resetParameters()" class="tool-btn">
-                                🔄 Zurücksetzen
-                            </button>
-                        </div>
-
-                        <div id="manualResult" class="manual-output"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Flag Submission -->
-            <div class="submission-section">
-                <h3>🚩 Flag eingeben</h3>
-                <div class="submission-content">
-                    <div class="flag-info">
-                        <p>Wenn Ihre manipulierten Parameter die Signaturvalidierung erfolgreich umgehen, erhalten Sie die Flag vom signature_validator.py Skript.</p>
-                        
-                        <div class="success-criteria">
-                            <h4>✅ Erfolgskriterien:</h4>
-                            <ul>
-                                <li>🎯 Das Validierungsskript akzeptiert Ihre manipulierten Parameter</li>
-                                <li>⚡ Eine ursprünglich ungültige Signatur wird als gültig erkannt</li>
-                                <li>🔓 Das Skript gibt die Flag aus: <code>FLAG{...}</code></li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="flag-form">
-                        <div class="input-group">
-                            <input type="text" 
-                                   id="flagInput" 
-                                   placeholder="FLAG{curve_parameter_manipulation_...}" 
-                                   class="flag-input">
-                            <button onclick="checkFlag()" class="submit-btn">
-                                ✓ Flag prüfen
-                            </button>
-                        </div>
-                        
-                        <div id="flagResult" class="result-message"></div>
-                        
-                        <div class="attempts-info">
-                            <span class="attempts-counter">Versuche: <span id="attemptCount">0</span></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Educational Summary -->
-            <div class="education-section">
-                <h3>📚 Lernzusammenfassung: Die Mathematik hinter Curveball</h3>
-                <div class="education-content">
-                    <div class="learning-summary">
-                        <h4>🎓 Was Sie in dieser Challenge lernen:</h4>
-                        <div class="learning-grid">
-                            <div class="learning-item">
-                                <h5>🧮 Mathematische Grundlagen</h5>
-                                <ul>
-                                    <li>ECC-Signaturvalidierung im Detail</li>
-                                    <li>Rolle der Kurvenparameter bei der Validierung</li>
-                                    <li>Wie Parameter-Manipulation funktioniert</li>
-                                </ul>
-                            </div>
-                            <div class="learning-item">
-                                <h5>🔓 Schwachstellen-Analyse</h5>
-                                <ul>
-                                    <li>Warum Parametervalidierung kritisch ist</li>
-                                    <li>Auswirkungen von vertrauenswürdigen vs. manipulierten Parametern</li>
-                                    <li>Real-World Angriffs-Szenarien</li>
-                                </ul>
-                            </div>
-                            <div class="learning-item">
-                                <h5>🛡️ Schutzmaßnahmen</h5>
-                                <ul>
-                                    <li>Parametervalidierung implementieren</li>
-                                    <li>Certificate Pinning verwenden</li>
-                                    <li>Zusätzliche Validierungsebenen</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="real-world-impact">
-                        <h4>🌍 Real-World Impact von CVE-2020-0601</h4>
-                        <div class="impact-scenarios">
-                            <div class="scenario">
-                                <h5>🎭 Man-in-the-Middle Angriffe</h5>
-                                <p>Angreifer können sich als vertrauenswürdige Websites ausgeben, indem sie gefälschte TLS-Zertifikate verwenden, die von Windows als gültig akzeptiert werden.</p>
-                            </div>
-                            <div class="scenario">
-                                <h5>🦠 Malware-Distribution</h5>
-                                <p>Schadsoftware kann mit gefälschten Code-Signing-Zertifikaten signiert werden, wodurch sie von Windows als vertrauenswürdig eingestuft wird.</p>
-                            </div>
-                            <div class="scenario">
-                                <h5>📧 E-Mail-Spoofing</h5>
-                                <p>Gefälschte S/MIME-Zertifikate können verwendet werden, um E-Mails zu signieren, die scheinbar von vertrauenswürdigen Quellen stammen.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
 
-        <!-- Navigation -->
-        <div class="navigation-section">
-            <a href="/challenge3" class="nav-btn back-btn">← Challenge 3</a>
-            <a href="/" class="nav-btn home-btn">🏠 Übersicht</a>
+        <!-- Challenge Materials -->
+        <div class="materials-section">
+          <h3>📁 Challenge-Materialien</h3>
+          <div class="materials-content">
+            <div class="material-item">
+              <h4>📜 Valides Zertifikat</h4>
+              <p>
+                Ein echtes Zertifikat mit korrekten ECC-Parametern als
+                Ausgangspunkt:
+              </p>
+              <div class="download-container">
+                <a
+                  href="/downloads/valid_certificate.pem"
+                  class="download-btn certificate-btn"
+                  download="valid_certificate.pem"
+                >
+                  📜 valid_certificate.pem herunterladen
+                </a>
+              </div>
+            </div>
+
+            <div class="material-item">
+              <h4>🔑 Public Key & Signatur</h4>
+              <p>
+                Die zu validierende Signatur und der dazugehörige Public Key:
+              </p>
+              <div class="download-container">
+                <a
+                  href="/downloads/signature_data.json"
+                  class="download-btn data-btn"
+                  download="signature_data.json"
+                >
+                  🔑 signature_data.json herunterladen
+                </a>
+              </div>
+            </div>
+
+            <div class="material-item">
+              <h4>🧪 Validierungsskript</h4>
+              <p>Simuliert die verwundbare Microsoft CryptoAPI Validierung:</p>
+              <div class="download-container">
+                <a
+                  href="/scripts/signature_validator.py"
+                  class="download-btn script-btn"
+                  download="signature_validator.py"
+                >
+                  🐍 signature_validator.py herunterladen
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
+
+        <!-- Interactive Tools -->
+        <div class="tools-section">
+          <h3>🛠️ Manipulations-Tools</h3>
+          <div class="tools-content">
+            <div class="tool-category">
+              <h4>🔧 Kurvenparameter-Manipulator</h4>
+              <p>
+                Manipulieren Sie die ECC-Parameter, um die Signaturvalidierung
+                zu umgehen:
+              </p>
+
+              <div class="parameter-manipulator">
+                <div class="current-params">
+                  <h5>📋 Aktuelle Parameter (Standard P-256):</h5>
+                  <div class="param-display">
+                    <div class="param-row">
+                      <span class="param-label">p (Primzahl):</span>
+                      <span class="param-value" id="currentP"
+                        >0xffffffff00000001000000000000000000000000ffffffffffffffffffffffff</span
+                      >
+                    </div>
+                    <div class="param-row">
+                      <span class="param-label">a (Koeffizient):</span>
+                      <span class="param-value" id="currentA"
+                        >0xffffffff00000001000000000000000000000000fffffffffffffffffffffffc</span
+                      >
+                    </div>
+                    <div class="param-row">
+                      <span class="param-label">b (Koeffizient):</span>
+                      <span class="param-value" id="currentB"
+                        >0x5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b</span
+                      >
+                    </div>
+                    <div class="param-row">
+                      <span class="param-label">Gx (Generator X):</span>
+                      <span class="param-value" id="currentGx"
+                        >0x6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296</span
+                      >
+                    </div>
+                    <div class="param-row">
+                      <span class="param-label">Gy (Generator Y):</span>
+                      <span class="param-value" id="currentGy"
+                        >0x4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5</span
+                      >
+                    </div>
+                    <div class="param-row">
+                      <span class="param-label">n (Ordnung):</span>
+                      <span class="param-value" id="currentN"
+                        >0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551</span
+                      >
+                    </div>
+                  </div>
+                </div>
+
+                <div class="manipulation-controls">
+                  <h5>⚡ Parameter manipulieren:</h5>
+                  <div class="manipulation-options">
+                    <div class="manipulation-method">
+                      <input
+                        type="radio"
+                        id="methodGenerator"
+                        name="method"
+                        value="generator"
+                        checked
+                      />
+                      <label for="methodGenerator"
+                        >🎯 Generator-Punkt manipulieren</label
+                      >
+                      <p>
+                        Ändere den Generator-Punkt G zu einem kontrollierten
+                        Wert
+                      </p>
+                    </div>
+                    <div class="manipulation-method">
+                      <input
+                        type="radio"
+                        id="methodCurve"
+                        name="method"
+                        value="curve"
+                      />
+                      <label for="methodCurve">📐 Kurvenparameter ändern</label>
+                      <p>Modifiziere die Kurvenkoeffizienten a und b</p>
+                    </div>
+                    <div class="manipulation-method">
+                      <input
+                        type="radio"
+                        id="methodOrder"
+                        name="method"
+                        value="order"
+                      />
+                      <label for="methodOrder">🔢 Ordnung manipulieren</label>
+                      <p>Ändere die Gruppenordnung n der Kurve</p>
+                    </div>
+                    <div class="manipulation-method">
+                      <input
+                        type="radio"
+                        id="methodCustom"
+                        name="method"
+                        value="custom"
+                      />
+                      <label for="methodCustom">🎨 Benutzerdefiniert</label>
+                      <p>Vollständige Kontrolle über alle Parameter</p>
+                    </div>
+                  </div>
+
+                  <div class="target-signature">
+                    <h5>🎯 Ziel-Signatur:</h5>
+                    <div class="signature-inputs">
+                      <div class="input-group">
+                        <label for="targetR">r-Wert:</label>
+                        <input
+                          type="text"
+                          id="targetR"
+                          placeholder="0x..."
+                          class="hex-input"
+                          value="0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
+                        />
+                      </div>
+                      <div class="input-group">
+                        <label for="targetS">s-Wert:</label>
+                        <input
+                          type="text"
+                          id="targetS"
+                          placeholder="0x..."
+                          class="hex-input"
+                          value="0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    onclick="calculateManipulation()"
+                    class="tool-btn primary"
+                  >
+                    ⚡ Parameter berechnen
+                  </button>
+                </div>
+
+                <div id="manipulationResult" class="manipulation-output"></div>
+              </div>
+            </div>
+
+            <div class="tool-category">
+              <h4>🧪 Signatur-Tester</h4>
+              <p>
+                Testen Sie Ihre manipulierten Parameter gegen das
+                Validierungsskript:
+              </p>
+
+              <div class="signature-tester">
+                <div class="test-inputs">
+                  <div class="input-group">
+                    <label for="testMessage">Nachricht (hex):</label>
+                    <input
+                      type="text"
+                      id="testMessage"
+                      placeholder="48656c6c6f20576f726c64"
+                      class="hex-input"
+                      value="48656c6c6f20437572766562616c6c"
+                    />
+                  </div>
+                  <div class="input-group">
+                    <label for="testPublicKey">Public Key (hex):</label>
+                    <input
+                      type="text"
+                      id="testPublicKey"
+                      placeholder="04..."
+                      class="hex-input"
+                    />
+                  </div>
+                  <div class="input-group">
+                    <label for="testSignatureR">Signatur r:</label>
+                    <input
+                      type="text"
+                      id="testSignatureR"
+                      placeholder="0x..."
+                      class="hex-input"
+                    />
+                  </div>
+                  <div class="input-group">
+                    <label for="testSignatureS">Signatur s:</label>
+                    <input
+                      type="text"
+                      id="testSignatureS"
+                      placeholder="0x..."
+                      class="hex-input"
+                    />
+                  </div>
+                </div>
+
+                <div class="test-controls">
+                  <button onclick="testSignature()" class="tool-btn">
+                    🧪 Signatur testen
+                  </button>
+                  <button onclick="loadFromFiles()" class="tool-btn secondary">
+                    📁 Aus Dateien laden
+                  </button>
+                </div>
+
+                <div id="testResult" class="test-output"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Manual Parameter Input -->
+        <div class="manual-input-section">
+          <h3>📝 Manuelle Parameter-Eingabe</h3>
+          <div class="manual-content">
+            <p>Geben Sie Ihre manipulierten Parameter direkt ein:</p>
+
+            <div class="parameter-form">
+              <div class="form-row">
+                <div class="input-group">
+                  <label for="manualP">p (Primzahl):</label>
+                  <input
+                    type="text"
+                    id="manualP"
+                    class="param-input"
+                    placeholder="0x..."
+                  />
+                </div>
+                <div class="input-group">
+                  <label for="manualA">a (Koeffizient):</label>
+                  <input
+                    type="text"
+                    id="manualA"
+                    class="param-input"
+                    placeholder="0x..."
+                  />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="input-group">
+                  <label for="manualB">b (Koeffizient):</label>
+                  <input
+                    type="text"
+                    id="manualB"
+                    class="param-input"
+                    placeholder="0x..."
+                  />
+                </div>
+                <div class="input-group">
+                  <label for="manualN">n (Ordnung):</label>
+                  <input
+                    type="text"
+                    id="manualN"
+                    class="param-input"
+                    placeholder="0x..."
+                  />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="input-group">
+                  <label for="manualGx">Gx (Generator X):</label>
+                  <input
+                    type="text"
+                    id="manualGx"
+                    class="param-input"
+                    placeholder="0x..."
+                  />
+                </div>
+                <div class="input-group">
+                  <label for="manualGy">Gy (Generator Y):</label>
+                  <input
+                    type="text"
+                    id="manualGy"
+                    class="param-input"
+                    placeholder="0x..."
+                  />
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button
+                  onclick="validateManualParameters()"
+                  class="tool-btn primary"
+                >
+                  ✅ Parameter validieren
+                </button>
+                <button onclick="exportParameters()" class="tool-btn secondary">
+                  📄 Parameter exportieren
+                </button>
+                <button onclick="resetParameters()" class="tool-btn">
+                  🔄 Zurücksetzen
+                </button>
+              </div>
+
+              <div id="manualResult" class="manual-output"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Flag Submission -->
+        <div class="submission-section">
+          <h3>🚩 Flag eingeben</h3>
+          <div class="submission-content">
+            <div class="flag-info">
+              <p>
+                Wenn Ihre manipulierten Parameter die Signaturvalidierung
+                erfolgreich umgehen, erhalten Sie die Flag vom
+                signature_validator.py Skript.
+              </p>
+
+              <div class="success-criteria">
+                <h4>✅ Erfolgskriterien:</h4>
+                <ul>
+                  <li>
+                    🎯 Das Validierungsskript akzeptiert Ihre manipulierten
+                    Parameter
+                  </li>
+                  <li>
+                    ⚡ Eine ursprünglich ungültige Signatur wird als gültig
+                    erkannt
+                  </li>
+                  <li>
+                    🔓 Das Skript gibt die Flag aus: <code>FLAG{...}</code>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="flag-form">
+              <div class="input-group">
+                <input
+                  type="text"
+                  id="flagInput"
+                  placeholder="FLAG{curve_parameter_manipulation_...}"
+                  class="flag-input"
+                />
+                <button onclick="checkFlag()" class="submit-btn">
+                  ✓ Flag prüfen
+                </button>
+              </div>
+
+              <div id="flagResult" class="result-message"></div>
+
+              <div class="attempts-info">
+                <span class="attempts-counter"
+                  >Versuche: <span id="attemptCount">0</span></span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Educational Summary -->
+        <div class="education-section">
+          <h3>📚 Lernzusammenfassung: Die Mathematik hinter Curveball</h3>
+          <div class="education-content">
+            <div class="learning-summary">
+              <h4>🎓 Was Sie in dieser Challenge lernen:</h4>
+              <div class="learning-grid">
+                <div class="learning-item">
+                  <h5>🧮 Mathematische Grundlagen</h5>
+                  <ul>
+                    <li>ECC-Signaturvalidierung im Detail</li>
+                    <li>Rolle der Kurvenparameter bei der Validierung</li>
+                    <li>Wie Parameter-Manipulation funktioniert</li>
+                  </ul>
+                </div>
+                <div class="learning-item">
+                  <h5>🔓 Schwachstellen-Analyse</h5>
+                  <ul>
+                    <li>Warum Parametervalidierung kritisch ist</li>
+                    <li>
+                      Auswirkungen von vertrauenswürdigen vs. manipulierten
+                      Parametern
+                    </li>
+                    <li>Real-World Angriffs-Szenarien</li>
+                  </ul>
+                </div>
+                <div class="learning-item">
+                  <h5>🛡️ Schutzmaßnahmen</h5>
+                  <ul>
+                    <li>Parametervalidierung implementieren</li>
+                    <li>Certificate Pinning verwenden</li>
+                    <li>Zusätzliche Validierungsebenen</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="real-world-impact">
+              <h4>🌍 Real-World Impact von CVE-2020-0601</h4>
+              <div class="impact-scenarios">
+                <div class="scenario">
+                  <h5>🎭 Man-in-the-Middle Angriffe</h5>
+                  <p>
+                    Angreifer können sich als vertrauenswürdige Websites
+                    ausgeben, indem sie gefälschte TLS-Zertifikate verwenden,
+                    die von Windows als gültig akzeptiert werden.
+                  </p>
+                </div>
+                <div class="scenario">
+                  <h5>🦠 Malware-Distribution</h5>
+                  <p>
+                    Schadsoftware kann mit gefälschten Code-Signing-Zertifikaten
+                    signiert werden, wodurch sie von Windows als
+                    vertrauenswürdig eingestuft wird.
+                  </p>
+                </div>
+                <div class="scenario">
+                  <h5>📧 E-Mail-Spoofing</h5>
+                  <p>
+                    Gefälschte S/MIME-Zertifikate können verwendet werden, um
+                    E-Mails zu signieren, die scheinbar von vertrauenswürdigen
+                    Quellen stammen.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div class="navigation-section">
+        <a href="/challenge3" class="nav-btn back-btn">← Challenge 3</a>
+        <a href="/" class="nav-btn home-btn">🏠 Übersicht</a>
+      </div>
     </div>
 
     <script src="{{ url_for('static', filename='js/challenge4.js') }}"></script>
-</body>
+  </body>
 </html>
