@@ -4,8 +4,7 @@
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Curveball CTF Main Page loaded');
-    
-    // Add any basic initialization code here if needed
+
 });
 
 // Easter eggs
@@ -22,8 +21,8 @@ document.addEventListener('keydown', function(e) {
         konami.every((code, index) => code === konamiCode[index])) {
         
         // Konami Code aktiviert!
-        alert("🎮 Konami Code aktiviert! Du hast den geheimen Code gefunden!");
-        
+        alert("🎮 Konami Code aktiviert! Sie haben den geheimen Code gefunden!");
+
         // Reset konami sequence
         konami = [];
         
