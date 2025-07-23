@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory
 import os
 
 app = Flask(__name__)
@@ -74,6 +74,21 @@ def challenge2():
 def challenge3():
     """Challenge 3: Curveball Exploit Simulation"""
     return render_template('challenge3.html')
+
+@app.route('/challenge4')
+def challenge4():
+    """Challenge 4: Kurvenparameter-Manipulation & Signaturvalidierung"""
+    return render_template('challenge4.html')
+
+@app.route('/static/certs/<filename>')
+def download_cert(filename):
+    """Serviert Zertifikat-Dateien für Downloads"""
+    return send_from_directory(os.path.join(app.root_path, 'static', 'certs'), filename)
+
+@app.route('/static/challenge4/<filename>')
+def download_challenge4_files(filename):
+    """Serviert Challenge 4 Dateien für Downloads"""
+    return send_from_directory(os.path.join(app.root_path, 'static', 'challenge4'), filename)
 
 @app.route('/explain/<topic>')
 def explain(topic):
