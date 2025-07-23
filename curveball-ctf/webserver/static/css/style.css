@@ -1759,9 +1759,9 @@ body {
 
 .generator-controls {
     display: grid;
-    grid-template-columns: 1fr 1fr auto;
+    grid-template-columns: 1fr;
     gap: 15px;
-    align-items: end;
+    align-items: stretch;
     margin-bottom: 20px;
 }
 
@@ -1927,9 +1927,9 @@ body {
 
 .builder-controls {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr auto;
+    grid-template-columns: 1fr;
     gap: 15px;
-    align-items: end;
+    align-items: stretch;
     margin-bottom: 20px;
 }
 

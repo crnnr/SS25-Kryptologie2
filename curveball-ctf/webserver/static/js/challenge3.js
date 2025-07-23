@@ -473,7 +473,7 @@ function displayCertificateOutput(cert, container) {
                     💾 Zertifikat herunterladen
                 </button>
                 <button onclick="testCertificate()" class="tool-btn primary">
-                    🧪 Gegen verification.py testen
+                    Gegen verification testen
                 </button>
             </div>
         </div>
