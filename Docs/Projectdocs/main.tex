@@ -156,6 +156,41 @@ Abbildung~\ref{fig:process} zeigt den iterativen Ablauf.
   \caption{Iterativer Projektablauf}\label{fig:process}
 \end{figure}
 
+\newpage
+
+\subsection{Technisches Design}
+Das technische Design der CurveBall-Challenge basiert auf einer modularen Web-Anwendung, die in Python mit Flask entwickelt wurde. Die Architektur folgt dem Model-View-Controller-Pattern und ist speziell darauf ausgelegt, kryptographische Konzepte interaktiv zu vermitteln.
+
+\noindent
+Die Anwendung besteht aus mehreren Kernkomponenten:
+
+\begin{itemize}
+  \item \textbf{Zertifikatsgenerator}: Python-Module zur Erstellung von X.509-Zertifikaten mit manipulierten ECC-Parametern
+  \item \textbf{Validierungsengine}: Simulation der Windows CryptoAPI-Schwachstelle zur Demonstration fehlerhafter Zertifikatsprüfung
+  \item \textbf{Web-Interface}: Interaktive Benutzeroberfläche für schrittweise Challenge-Durchführung
+  \item \textbf{Visualisierungstools}: Grafische Darstellung von Zertifikatsinhalten und kryptographischen Parametern
+\end{itemize}
+
+\noindent
+Die Challenge ist als Progressive Web Application konzipiert, die ohne Installation direkt im Browser läuft. Dabei wird besonderer Wert auf eine intuitive Benutzerführung gelegt, die auch Studierende ohne tiefgreifende Kryptographie-Kenntnisse abholt und schrittweise durch die komplexe Materie führt.
+
+\subsection{Spielweise}
+Die CurveBall-Challenge ist als interaktive Lernreise konzipiert, die Studierende spielerisch an das Thema heranführt.
+\begin{enumerate}
+  \item \textbf{Starten der Challenge}: Durch starten des Docker-Containers wird die Web-Anwendung bereitgestellt.
+  \item \textbf{Aufrufen der Web-Anwendung}: Die Studierenden öffnen die Web-App im Browser unter \texttt{https://localhost:8443} und erhalten eine Einführung in die Challenge.
+  \item \textbf{Einführung \& Theorie}: Vermittlung der Grundlagen zu elliptischen Kurven und X.509-Zertifikaten
+  \item \textbf{Challenges}: Danach folgen verschiedene Herausforderungen, die die Studierenden dazu anregen, das Gelernte anzuwenden und zu vertiefen.
+\end{enumerate}
+
+\noindent
+Jede Phase beinhaltet interaktive Elemente wie Code-Eingabefelder, Zertifikatsvisualisierungen und Validierungstools. Die Studierenden erhalten unmittelbares Feedback zu ihren Eingaben und können experimentell verschiedene Ansätze ausprobieren. Ein integriertes Hinweissystem bietet bei Bedarf gezielten Support, ohne die Lösung vorwegzunehmen.
+
+\noindent
+Die Challenge kann sowohl einzeln als auch in Kleingruppen bearbeitet werden und ist zeitlich flexibel gestaltbar – von kompakten 90-Minuten-Sessions bis zu mehrstündigen Vertiefungen.
+
+\newpage
+
 \section{Arbeitsaufteilung}
 
 \noindent Die Arbeitsaufteilung erfolgte pragmatisch basierend auf den individuellen Stärken der Teammitglieder, wobei gleichzeitig Wert auf Wissenstransfer und gemeinsames Lernen gelegt wurde.
@@ -411,9 +446,52 @@ Run metrics:
 		High: 5
 \end{lstlisting}
 
-\noindent
-Diese Schwachstellen wurden im Rahmen der Entwicklung behoben, um die Sicherheit des Projekts zu gewährleisten. \\
+\newpage
 
+\noindent
+Die identifizierten Schwachstellen sind folgendermassen verteilt:
+
+\begin{figure}[H]
+  \centering
+  \begin{tabular}{|l|l|l|l|}
+    \hline
+    \textbf{Severity} & \textbf{Confidence} & \textbf{Issue Type} & \textbf{Anzahl} \\
+    \hline
+    High & High & B105: hardcoded\_password\_string & 1 \\
+    \hline
+    Medium & High & B101: assert\_used & 1 \\
+    \hline
+    Low & High & B311: random & 3 \\
+    \hline
+    Low & Medium & B404: import\_subprocess & 1 \\
+    \hline
+    Low & Medium & B603: subprocess\_without\_shell\_equals\_true & 1 \\
+    \hline
+    Low & Medium & B607: start\_process\_with\_partial\_path & 1 \\
+    \hline
+  \end{tabular}
+  \caption{Bandit Security Scan Ergebnisse -- Identifizierte Schwachstellen nach Severity und Confidence}
+  \label{fig:bandit}
+\end{figure}
+
+Diese Schwachstellen wurden im Rahmen der Entwicklung analysiert und entsprechend dem Projektkontext bewertet:
+
+\begin{itemize}
+  \item \textbf{B404: import\_subprocess}: Die referenziert die Verwendung von \texttt{subprocess} in sicherheitskritischen Bereichen. Hier wurde sichergestellt, dass alle Eingaben validiert werden, um potenzielle Angriffe zu verhindern.
+
+  \item \textbf{B607: start\_process\_with\_partial\_path}: Diese Warnung bezieht sich auf die Verwendung von relativen Pfaden beim Starten von Prozessen. Um das Risiko von Pfadmanipulationen zu minimieren, wurde darauf geachtet, dass alle Pfade nicht relativ sind und keine Benutzereingaben direkt in Pfade einfließen.
+
+  \item \textbf{B603: subprocess\_without\_shell\_equals\_true}: Diese Warnung bezieht sich auf die Verwendung von \texttt{subprocess} ohne die Option \texttt{shell=True}. Hier wurde sichergestellt, dass alle Aufrufe von \texttt{subprocess} sicher sind und keine Shell-Injection-Angriffe möglich sind.
+
+  \item \textbf{B201: flask\_debug\_true}: Diese Warnung bezieht sich auf die Verwendung von \texttt{flask} im Debug-Modus. In einer produktiven Umgebung sollte der Debug-Modus deaktiviert werden, um potenzielle Sicherheitsrisiken zu minimieren.
+
+  \item \textbf{B104: hardcoded\_bind\_all\_interfaces}: Bezieht sich auf die Konfiguration des Flask-Servers, der auf allen Schnittstellen lauscht. Dies ist für die Challenge-Umgebung akzeptabel, da sie in einer kontrollierten Umgebung läuft und nicht öffentlich zugänglich ist.
+\end{itemize}
+
+\noindent
+Doppelte Warnungen wurden im Rahmen der Entwicklung analysiert und entsprechend dem Projektkontext bewertet.
+\noindent
+Die bewusste Entscheidung, bestimmte Bandit-Warnungen im Challenge-Kontext zu akzeptieren, wurde dokumentiert und entspricht dem Projektcharakter als kontrollierte Lernumgebung.
 \newpage
 
 \section{Nicht umgesetzte VM-Erweiterung}
