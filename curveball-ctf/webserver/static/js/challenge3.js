@@ -401,22 +401,22 @@ function generateRandomBase64Line() {
 function generateCertificateInstructions(exploitType) {
     const instructions = {
         'generator_spoofing': [
-            '1. Generiere manipulierten Generator-Punkt',
-            '2. Erstelle Private Key mit neuen Parametern',
-            '3. Generiere Zertifikat mit gefälschtem Issuer',
-            '4. Teste gegen verification.py'
+            'Generiere manipulierten Generator-Punkt',
+            'Erstelle Private Key mit neuen Parametern',
+            'Generiere Zertifikat mit gefälschtem Issuer',
+            'Teste gegen verification.py'
         ],
         'curve_manipulation': [
-            '1. Definiere benutzerdefinierte Kurvenparameter',
-            '2. Erstelle explizite Parameter-Definition',
-            '3. Generiere Schlüsselpaar mit neuen Parametern',
-            '4. Signiere Zertifikat mit manipulierten Parametern'
+            'Definiere benutzerdefinierte Kurvenparameter',
+            'Erstelle explizite Parameter-Definition',
+            'Generiere Schlüsselpaar mit neuen Parametern',
+            'Signiere Zertifikat mit manipulierten Parametern'
         ],
         'signature_forge': [
-            '1. Analysiere Ziel-CA-Zertifikat',
-            '2. Erstelle eigenes Schlüsselpaar',
-            '3. Fälsche Signatur mit kontrollierten Parametern',
-            '4. Validiere gegen verwundbare Implementierung'
+            'Analysiere Ziel-CA-Zertifikat',
+            'Erstelle eigenes Schlüsselpaar',
+            'Fälsche Signatur mit kontrollierten Parametern',
+            'Validiere gegen verwundbare Implementierung'
         ]
     };
     
