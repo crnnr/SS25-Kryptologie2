@@ -3,62 +3,57 @@
 \usepackage[hmargin=2.5cm,vmargin=3cm,bindingoffset=0.5cm]{geometry}
 \usepackage{graphicx}
 \graphicspath{ {figures/} }
-
-\usepackage{listings} 
-\renewcommand{\lstlistlistingname}{Auflistungsverzeichnis}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amssymb}
 \renewcommand{\lstlistingname}{Auflistung}
-
-\usepackage{todonotes}
 
 \begin{document}
 
-\pagenumbering{alph}  % numbering a, b, c
-
+\pagenumbering{alph}
 \begin{titlepage}
-	\begin{center}
-		
-        \includegraphics[width=\textwidth]{THD-Logo.pdf}
-	
-	    \vspace{1cm}
-	
-		\rule{1\textwidth}{1mm} \\[0.3cm]
-
-		\textsc{\scshape \huge Bachelor Cyber Security}\\
-		
-		\rule{1\textwidth}{1mm} \\[2cm] 
-		
-		{ 
-			 \vspace{1cm}
-			 
-			 \Large \textbf{Modulname}
-			 
-			 \vspace{3cm}
-			 \Large \textbf{Challenge instructions}}\\[0.5cm]
-			 \LARGE \textbf{CVE-2020-0601 CurveBall Challenge}\\[2cm]
-		\begin{minipage}[t]{0.4\textwidth}
-			\begin{flushleft} \normalsize
-				\emph{Autoren:}\\[0.3cm]
-				
-			    Vorname Name, Matrikelnummer \#1\\
-			    Vorname Name, Matrikelnummer \#2\\
-				
-			\end{flushleft}
-		\end{minipage}
-		\begin{minipage}[t]{0.5\textwidth}
-			\begin{flushright} \normalsize
-				\emph{Betreuer:}\\[0.3cm]
-				
-    			Vorname Name 
-				
-			\end{flushright}
-		\end{minipage}\\[3cm]
-		{\large Ort - \today\\}	
-		\vspace{3cm}
-	\end{center}
+  \begin{center}
+    \includegraphics[width=\textwidth]{THD-Logo.pdf}
+    \vspace{1cm}
+    \rule{1\textwidth}{1mm} \\[0.3cm]
+    \textsc{\scshape \huge Bachelor Cyber Security}\\
+    \rule{1\textwidth}{1mm} \\[2cm]
+    {
+      \vspace{1cm}
+      \Large \textbf{Kryptologie 2}
+      \vspace{3cm}
+      \Large \textbf{Projektbericht}
+    }\\[0.5cm]
+    \LARGE \textbf{Ausarbeitung Cryptochallenge: CurveBall}\\[2cm]
+    \begin{minipage}[t]{0.4\textwidth}
+      \begin{flushleft}
+        \normalsize \emph{Autor:}\\[0.3cm]
+        Manuel Friedl, Matrikel-Nr.: 1236626\\
+        Christof Renner, Matrikel-Nr.: 22301943
+      \end{flushleft}
+    \end{minipage}
+    \begin{minipage}[t]{0.5\textwidth}
+      \begin{flushright}
+        \normalsize \emph{Betreuer:}\\[0.3cm]
+        Prof. Dr. Martin Schramm
+      \end{flushright}
+    \end{minipage}\\[3cm]
+    {\large Deggendorf – \today\\}
+  \end{center}
 \end{titlepage}
 
-\pagenumbering{Roman} % numbering captial roman
+\newpage
+\pagenumbering{Roman}
+
+\newpage
+\tableofcontents
+\newpage
+
+\pagenumbering{arabic}
 
 \section{Einleitung}
+Die CurveBall-Challenge ist eine interaktive Lernplattform, die Studierende in die Welt der elliptischen Kurven-Kryptographie einführt. Diese Musterlösungen zeigen die schrittweise Bearbeitung aller Challenges und erklären die zugrundeliegenden kryptographischen Konzepte.
+
 
 \end{document}

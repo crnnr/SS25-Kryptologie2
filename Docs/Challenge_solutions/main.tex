@@ -405,12 +405,16 @@ Nach Abschluss dieser Challenge verstehen Studierende:
     \item \textbf{Curveball-Vorbereitung:} Basis für Verständnis der CVE-2020-0601
 \end{itemize}
 
+\newpage
+
 \section{Challenge 3: CurveBall Exploit}
 
 \subsection{Aufgabenstellung}
 
+\noindent
 Challenge 3 behandelt die Simulation der kritischen Sicherheitslücke CVE-2020-0601, bekannt als "Curveball". Diese Schwachstelle in Windows CryptoAPI ermöglichte es Angreifern, gefälschte ECC-Zertifikate zu erstellen, die als vertrauenswürdig erkannt wurden.
-
+\\
+\noindent
 \textbf{Ziel:} Erstellen Sie ein manipuliertes ECC-Zertifikat, das vom bereitgestellten Python-Validierungsskript als gültig erkannt wird.
 
 \subsection{Theoretischer Hintergrund}
@@ -460,7 +464,7 @@ Das bereitgestellte Python-Skript \texttt{verification.py} simuliert die verwund
 
 \begin{lstlisting}[language=bash, caption=Skript-Download]
 # Download von der Challenge-Website
-wget http://localhost:5000/static/scripts/verification.py
+wget http://localhost:8443/static/scripts/verification.py
 
 # Analyse-Modus executen
 python verification.py analyze
@@ -610,27 +614,7 @@ Bei erfolgreicher Durchführung des Exploits wird die Flag ausgegeben:
 \textbf{\texttt{FLAG\{curveball\_exploit\_generator\_manipulation\_success\}}}
 \end{center}
 
-\subsection{Sicherheitsimplikationen}
-
-\subsubsection{Real-World Impact}
-
-Die Curveball-Schwachstelle hatte schwerwiegende Auswirkungen:
-
-\begin{itemize}
-    \item \textbf{TLS-Verbindungen:} Komplette Umgehung der Zertifikatsvalidierung
-    \item \textbf{Code-Signing:} Malware konnte als vertrauenswürdig eingestuft werden
-    \item \textbf{VPN-Verbindungen:} Man-in-the-Middle-Angriffe möglich
-    \item \textbf{E-Mail-Verschlüsselung:} Signatur-Validierung kompromittiert
-\end{itemize}
-
-\subsubsection{Betroffene Systeme}
-
-\begin{itemize}
-    \item Windows 10 (alle Versionen vor KB4534314)
-    \item Windows Server 2016/2019
-    \item Alle Anwendungen, die Windows CryptoAPI verwenden
-    \item Internet Explorer, Microsoft Edge, Office-Suite
-\end{itemize}
+\newpage
 
 \section{Challenge 4: Kurvenparameter \& Signaturvalidierung}
 
@@ -641,16 +625,6 @@ Challenge 4 bildet den mathematischen Höhepunkt der CurveBall-Challenge-Serie u
 \textbf{Ziel:} Manipulieren Sie die Kurvenparameter so, dass eine ursprünglich ungültige Signatur plötzlich als gültig erkannt wird.
 
 \subsection{Theoretischer Hintergrund}
-
-\subsubsection{Das Kernproblem von CVE-2020-0601}
-
-Die kritische Schwachstelle lag in der Art, wie Windows CryptoAPI die Kurvenparameter zur Signaturvalidierung verwendete:
-
-\begin{itemize}
-    \item \textbf{Vertrauenswürdige Validierung:} Parameter aus CA-Root-Zertifikat verwenden
-    \item \textbf{Verwundbare Validierung:} Parameter aus zu validierendem Zertifikat verwenden
-    \item \textbf{Exploit:} Angreifer kontrolliert die Parameter im eigenen Zertifikat
-\end{itemize}
 
 \subsubsection{Mathematische Grundlage der ECC-Signaturvalidierung}
 
@@ -693,21 +667,6 @@ Mit manipulierten Parametern $G'$, $n'$, $a'$, $b'$ kann der Angreifer:
 \end{itemize}
 
 \subsection{Praktische Durchführung}
-
-\subsubsection{Schritt 1: Materialien herunterladen}
-
-Die Challenge stellt drei essenzielle Dateien bereit:
-
-\begin{lstlisting}[language=bash, caption=Download der Challenge-Materialien]
-# Valides Zertifikat mit Standard-Parametern
-wget http://localhost:5000/downloads/valid_certificate.pem
-
-# Signatur-Testdaten 
-wget http://localhost:5000/downloads/signature_data.json
-
-# Validierungsskript
-wget http://localhost:5000/scripts/signature_validator.py
-\end{lstlisting}
 
 \subsubsection{Schritt 2: Signatur-Testdaten analysieren}
 
@@ -912,99 +871,6 @@ def create_manipulated_certificate(original_cert_path, manipulated_params):
     print(f"Order: {manipulated_params['order']}")
     
     return "manipulated_certificate.pem"
-\end{lstlisting}
-
-\subsection{Sicherheitsimplikationen}
-
-\subsubsection{Real-World Attack Scenarios}
-
-\textbf{1. TLS-Certificate Spoofing:}
-\begin{itemize}
-    \item Angreifer erstellt gefälschtes TLS-Zertifikat für banking.example.com
-    \item Manipuliert ECC-Parameter so, dass falsche Signatur gültig wird
-    \item Windows-Clients akzeptieren das Zertifikat als vertrauenswürdig
-    \item Man-in-the-Middle-Angriff erfolgreich
-\end{itemize}
-
-\textbf{2. Code-Signing Bypass:}
-\begin{itemize}
-    \item Malware wird mit manipuliertem Code-Signing-Zertifikat signiert  
-    \item ECC-Parameter werden so gewählt, dass Windows die Signatur akzeptiert
-    \item Malware wird als vertrauenswürdig eingestuft und ausgeführt
-    \item Umgehung von Application Whitelisting
-\end{itemize}
-
-\textbf{3. E-Mail Signature Forgery:}
-\begin{itemize}
-    \item Gefälschte S/MIME-Zertifikate für E-Mail-Signierung
-    \item Manipulation ermöglicht "gültige" Signaturen ohne Private Key
-    \item Phishing-E-Mails erscheinen als von vertrauenswürdigen Absendern
-\end{itemize}
-
-\subsubsection{Betroffene Systeme}
-
-\begin{itemize}
-    \item \textbf{Windows 10:} Alle Versionen vor KB4534314 (Januar 2020)
-    \item \textbf{Windows Server:} 2016, 2019, 2008 R2 SP1
-    \item \textbf{Anwendungen:} Alle Software die Windows CryptoAPI verwendet
-    \item \textbf{Browser:} Internet Explorer, Microsoft Edge (legacy)
-    \item \textbf{E-Mail-Clients:} Outlook, Windows Mail
-    \item \textbf{Development Tools:} Visual Studio, PowerShell
-\end{itemize}
-
-\subsection{Schutzmaßnahmen}
-
-\subsubsection{Microsoft's Fix}
-
-\textbf{Validierungsverbesserungen:}
-\begin{itemize}
-    \item \textbf{Parameter-Validierung:} Vollständige Prüfung aller ECC-Parameter gegen bekannte Standards
-    \item \textbf{Generator-Verifikation:} Generator-Punkt wird gegen vertrauenswürdige CA-Parameter validiert
-    \item \textbf{Kurven-Validierung:} Zusätzliche Checks für Kurvenkoeffizienten und mathematische Eigenschaften
-    \item \textbf{Order-Verifikation:} Gruppenordnung wird gegen Standardwerte geprüft
-\end{itemize}
-
-\subsubsection{Best Practices für Entwickler}
-
-\begin{lstlisting}[language=python, caption=Sichere Parameter-Validierung]
-def validate_ecc_parameters(params, trusted_params):
-    """
-    Sichere Validierung von ECC-Parametern
-    """
-    # 1. Generator-Punkt validieren
-    if (params['generator_x'] != trusted_params['generator_x'] or 
-        params['generator_y'] != trusted_params['generator_y']):
-        raise ValueError("Generator-Punkt entspricht nicht trusted Standard")
-    
-    # 2. Kurvenparameter check  
-    if (params['a'] != trusted_params['a'] or 
-        params['b'] != trusted_params['b']):
-        raise ValueError("Kurvenparameter entsprechen nicht Standard")
-    
-    # 3. Ordnung validieren
-    if params['order'] != trusted_params['order']:
-        raise ValueError("Gruppenordnung entspricht nicht Standard")
-    
-    # 4. Primzahl checken
-    if params['p'] != trusted_params['p']:
-        raise ValueError("Grundkoerper entspricht nicht Standard")
-    
-    return True
-
-# Verwendung in Signatur-Validierung
-def secure_signature_validation(signature, message, public_key, cert_params):
-    """Sichere ECDSA-Validierung mit Parameter-check"""
-
-    # KRITISCH: Verwende trusted Parameter, nicht Zertifikat-Parameter
-    trusted_params = get_trusted_curve_parameters('secp256r1')
-    
-    # Parameter validieren
-    validate_ecc_parameters(cert_params, trusted_params)
-    
-    # Validierung mit trusted Parametern
-    validator = ECCSignatureValidator(trusted_params)  # NICHT cert_params!
-    return validator.validate_signature(message, signature.r, signature.s, 
-                                      public_key.x, public_key.y)
 \end{lstlisting}
 
 \end{document}
