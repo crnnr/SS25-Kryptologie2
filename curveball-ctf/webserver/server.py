@@ -77,7 +77,7 @@ def challenge3():
 
 @app.route('/challenge4')
 def challenge4():
-    """Challenge 4: Kurvenparameter-Manipulation & Signaturvalidierung"""
+    """Challenge 4: Kurvenparameter & Signaturvalidierung"""
     return render_template('challenge4.html')
 
 @app.route('/downloads/<filename>')

@@ -52,7 +52,7 @@
             "manipulation_type": "generator"
         },
         {
-            "name": "Kurvenparameter-Manipulation Test",
+            "name": "Kurvenparameter Test",
             "description": "Signatur wird mit manipulierten Kurvenparametern validiert",
             "expected_result": "exploit_possible",
             "use_original_params": false,

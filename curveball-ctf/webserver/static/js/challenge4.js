@@ -1,5 +1,5 @@
 /**
- * Challenge 4: Kurvenparameter-Manipulation & Signaturvalidierung
+ * Challenge 4: Kurvenparameter & Signaturvalidierung
  * JavaScript für ECC-Parameter-Manipulation und Signatur-Testing
  */
 
@@ -677,7 +677,7 @@ function showFinalSuccess(container) {
                     <h6>🎓 Sie haben gemeistert:</h6>
                     <ul>
                         <li>✅ ECC-Mathematik und Signaturvalidierung</li>
-                        <li>✅ Kurvenparameter-Manipulation</li>
+                        <li>✅ Kurvenparameter</li>
                         <li>✅ Generator-Punkt-Spoofing</li>
                         <li>✅ Die mathematischen Grundlagen von CVE-2020-0601</li>
                         <li>✅ Praktische Anwendung von Kryptographie-Schwachstellen</li>
