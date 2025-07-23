@@ -12,14 +12,8 @@ const correctFlags = [
     'FLAG{certs_reveal_secrets_in_san}',
     'flag{certs_reveal_secrets_in_san}',
     'FLAG{CERTS_REVEAL_SECRETS_IN_SAN}',
-    'FLAG{certs_reveal_secrets}',
-    'flag{certs_reveal_secrets}',
-    'FLAG{CERTS_REVEAL_SECRETS}',
-    'FLAG{hidden_in_certificate_extensions}',
-    'FLAG{x509_extensions_reveal_secrets}',
-    'FLAG{certificate_analysis_complete}',
-    'FLAG{openssl_reveals_all}',
-    'FLAG{mystery_cert_analyzed}'
+    'flag{CERTS_REVEAL_SECRETS_IN_SAN}',
+    'FLAG{Certs_Reveal_Secrets_In_SAN}'
 ];
 
 /**
