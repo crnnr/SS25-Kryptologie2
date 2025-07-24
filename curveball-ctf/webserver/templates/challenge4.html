@@ -655,5 +655,50 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/challenge4.js') }}"></script>
+    
+    <!-- Add download debugging script -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add click event listener to all download links for custom download handling
+        const downloadLinks = document.querySelectorAll('a[download]');
+        downloadLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Prevent the default download to avoid filename conflicts
+                e.preventDefault();
+                
+                const filename = this.getAttribute('download');
+                const url = this.href;
+                
+                console.log('Download initiated via fetch for:', filename);
+                
+                // Use fetch to download the file
+                fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok: ' + response.statusText);
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    // Create download link and trigger download
+                    const downloadUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = downloadUrl;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(downloadUrl);
+                    document.body.removeChild(a);
+                    console.log('Download completed successfully for:', filename);
+                })
+                .catch(error => {
+                    console.error('Download failed for', filename, ':', error);
+                    alert('Download failed for ' + filename + ': ' + error.message);
+                });
+            });
+        });
+    });
+    </script>
   </body>
 </html>

@@ -696,7 +696,7 @@ function showFinalSuccess(container) {
                 </div>
                 
                 <div class="next-steps">
-                    <p><strong>🚀 Herzlichen Glückwunsch!</strong> Sie haben alle verfügbaren Challenges abgeschlossen!</p>
+                    <p><strong>🚀 Herzlichen Glückwunsch!</strong> Sie haben die vorletzte Challenge erfolgreich abgeschlossen!</p>
                 </div>
             </div>
         </div>

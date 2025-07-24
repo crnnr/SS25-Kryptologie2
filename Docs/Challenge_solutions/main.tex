@@ -120,7 +120,7 @@
         Prof. Dr. Martin Schramm
       \end{flushright}
     \end{minipage}\\[3cm]
-    {\large Deggendorf – \today\\}
+    {\large Deggendorf – 28.07.2025\\}
   \end{center}
 \end{titlepage}
 
@@ -502,18 +502,6 @@ Ein effizienterer Ansatz zur Flag-Findung:
 openssl x509 -in mystery_cert.pem -text -noout | 
 grep -oP 'FLAG\{[^}]*\}'
 \end{lstlisting}
-
-\subsection{Erweiterte Flags}
-
-\begin{tcolorbox}[colback=solution-bg,colframe=green!70!black,title=\textbf{Mögliche Challenge-Flags}]
-\begin{itemize}[leftmargin=1.5cm]
-    \item \texttt{FLAG\{hidden\_in\_certificate\_extensions\}}
-    \item \texttt{FLAG\{x509\_extensions\_reveal\_secrets\}}
-    \item \texttt{FLAG\{certificate\_analysis\_complete\}}
-    \item \texttt{FLAG\{openssl\_reveals\_all\}}
-    \item \texttt{FLAG\{mystery\_cert\_analyzed\}}
-\end{itemize}
-\end{tcolorbox}
 
 \subsection{Kryptographische Relevanz für Curveball}
 

@@ -4,6 +4,16 @@ import os
 app = Flask(__name__)
 app.secret_key = 'curveball_ctf_secret_key_for_session_management_2025'  # Für Session-Management
 
+# Add security headers
+@app.after_request
+def after_request(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+    response.headers['Cross-Origin-Embedder-Policy'] = 'unsafe-none'
+    response.headers['Cross-Origin-Opener-Policy'] = 'unsafe-none'
+    return response
+
 @app.route('/')
 def index():
     """Hauptseite mit Curveball-Einführung und Challenge-Übersicht"""
@@ -94,7 +104,21 @@ def download_file(filename):
         print(f"File exists: {os.path.exists(file_path)}")
         
         if os.path.exists(file_path):
-            return send_from_directory(downloads_path, filename, as_attachment=True)
+            # Check file size to ensure it's not empty
+            file_size = os.path.getsize(file_path)
+            print(f"File size: {file_size} bytes")
+            
+            if file_size == 0:
+                print(f"File is empty: {file_path}")
+                return "File is empty", 404
+            
+            response = send_from_directory(downloads_path, filename, as_attachment=True)
+            # Add additional headers for browser compatibility
+            response.headers['Content-Description'] = 'File Transfer'
+            response.headers['Content-Transfer-Encoding'] = 'binary'
+            response.headers['Cache-Control'] = 'must-revalidate'
+            response.headers['Pragma'] = 'public'
+            return response
         else:
             print(f"File not found: {file_path}")
             return "File not found", 404
@@ -105,7 +129,39 @@ def download_file(filename):
 @app.route('/scripts/<filename>')
 def download_script(filename):
     """Serviert Python-Skripte für Downloads"""
-    return send_from_directory(os.path.join(app.root_path, 'static', 'scripts'), filename, as_attachment=True)
+    try:
+        scripts_path = os.path.join(app.root_path, 'static', 'scripts')
+        file_path = os.path.join(scripts_path, filename)
+        
+        # Debug-Informationen loggen
+        print(f"Script download requested: {filename}")
+        print(f"Scripts path: {scripts_path}")
+        print(f"File path: {file_path}")
+        print(f"File exists: {os.path.exists(file_path)}")
+        
+        if os.path.exists(file_path):
+            # Check file size to ensure it's not empty
+            file_size = os.path.getsize(file_path)
+            print(f"File size: {file_size} bytes")
+            
+            if file_size == 0:
+                print(f"File is empty: {file_path}")
+                return "File is empty", 404
+            
+            response = send_from_directory(scripts_path, filename, as_attachment=True)
+            # Add additional headers for browser compatibility
+            response.headers['Content-Description'] = 'File Transfer'
+            response.headers['Content-Transfer-Encoding'] = 'binary'
+            response.headers['Cache-Control'] = 'must-revalidate'
+            response.headers['Pragma'] = 'public'
+            response.headers['Content-Type'] = 'text/x-python'
+            return response
+        else:
+            print(f"File not found: {file_path}")
+            return "File not found", 404
+    except Exception as e:
+        print(f"Error in download_script: {e}")
+        return "Internal server error", 500
 
 @app.route('/debug/files')
 def debug_files():
@@ -128,6 +184,28 @@ def debug_files():
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/static/downloads/<filename>')
+def serve_static_download(filename):
+    """Alternative route for serving downloads directly from static folder"""
+    try:
+        downloads_path = os.path.join(app.root_path, 'static', 'downloads')
+        file_path = os.path.join(downloads_path, filename)
+        
+        print(f"Static download requested: {filename}")
+        print(f"File path: {file_path}")
+        print(f"File exists: {os.path.exists(file_path)}")
+        
+        if os.path.exists(file_path):
+            response = send_from_directory(downloads_path, filename, as_attachment=False)
+            response.headers['Content-Type'] = 'application/octet-stream'
+            response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
+            return response
+        else:
+            return "File not found", 404
+    except Exception as e:
+        print(f"Error in serve_static_download: {e}")
+        return "Internal server error", 500
 
 @app.route('/static/challenge4/<filename>')
 def download_challenge4_files(filename):
@@ -157,3 +235,4 @@ def explain(topic):
 if __name__ == '__main__':
     context = ('certs/server.crt', 'certs/server.key')
     app.run(host='0.0.0.0', port=8443, ssl_context=context, debug=False)
+ 
