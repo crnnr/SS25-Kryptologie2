@@ -7,7 +7,88 @@
 \usepackage{hyperref}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
 \renewcommand{\lstlistingname}{Auflistung}
+
+% Define colors
+\definecolor{thd-blue}{RGB}{0,82,147}
+\definecolor{code-bg}{RGB}{245,245,245}
+\definecolor{warning-bg}{RGB}{255,243,205}
+\definecolor{info-bg}{RGB}{217,237,247}
+\definecolor{solution-bg}{RGB}{230,255,230}
+
+% Configure listings
+\lstset{
+    backgroundcolor=\color{code-bg},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    commentstyle=\color{gray},
+    frame=single,
+    frameround=tttt,
+    framesep=5pt,
+    numbers=left,
+    numbersep=5pt,
+    numberstyle=\tiny\color{gray},
+    rulecolor=\color{black},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    stepnumber=1,
+    stringstyle=\color{thd-blue},
+    tabsize=2,
+    title=\lstname
+}
+
+% Configure tcolorbox
+\tcbuselibrary{skins,breakable}
+
+% Define custom boxes
+\newtcolorbox{infobox}{
+    colback=info-bg,
+    colframe=thd-blue,
+    arc=3mm,
+    breakable,
+    left=5mm,
+    right=5mm,
+    top=3mm,
+    bottom=3mm
+}
+
+\newtcolorbox{warningbox}{
+    colback=warning-bg,
+    colframe=orange,
+    arc=3mm,
+    breakable,
+    left=5mm,
+    right=5mm,
+    top=3mm,
+    bottom=3mm
+}
+
+\newtcolorbox{solutionbox}{
+    colback=solution-bg,
+    colframe=green!70!black,
+    arc=3mm,
+    breakable,
+    left=5mm,
+    right=5mm,
+    top=3mm,
+    bottom=3mm
+}
+
+% Configure headers and footers
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textcolor{thd-blue}{\textbf{CurveBall CTF - Musterlösungen}}}
+\fancyhead[R]{\textcolor{thd-blue}{\thepage}}
+\fancyfoot[C]{\textcolor{gray}{\small Kryptologie 2 - THD Deggendorf}}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{thd-blue}\leaders\hrule height \headrulewidth\hfill}}
 
 \begin{document}
 
@@ -45,59 +126,93 @@
 
 \newpage
 \pagenumbering{Roman}
+\thispagestyle{empty}
 
 \newpage
 \tableofcontents
+\thispagestyle{empty}
 \newpage
 
 \pagenumbering{arabic}
+\setcounter{page}{1}
 
 \section{Einleitung}
+
+\begin{infobox}
+\textbf{Musterlösungen zur CurveBall CTF Challenge}
+
+Diese Musterlösungen zeigen die schrittweise Bearbeitung aller Challenges und erklären die zugrundeliegenden kryptographischen Konzepte. Die Lösungen dienen als Referenz für Lehrende und zur Selbstkontrolle für Studierende.
+\end{infobox}
+
 Die CurveBall-Challenge ist eine interaktive Lernplattform, die Studierende in die Welt der elliptischen Kurven-Kryptographie einführt. Diese Musterlösungen zeigen die schrittweise Bearbeitung aller Challenges und erklären die zugrundeliegenden kryptographischen Konzepte.
 
+\vspace{0.5cm}
+
 \section{Challenge 1: ECC Grundlagen}
+
+\begin{solutionbox}
+\textbf{Challenge 1 - Übersicht}
+
+Diese Challenge behandelt die Grundlagen der elliptischen Kurven-Kryptographie durch praktische Punktmultiplikation. Ziel ist die Berechnung des Public Keys durch schrittweise Ermittlung von \textbf{P = 7 × G}.
+\end{solutionbox}
 
 \subsection{Aufgabenstellung}
 Challenge 1 behandelt die Grundlagen der elliptischen Kurven-Kryptographie durch praktische Punktmultiplikation. Die Aufgabe besteht darin, den Public Key durch schrittweise Berechnung von \textbf{P = 7 × G} zu ermitteln.
 
-\noindent
-\textbf{Gegebene Parameter:}
-\begin{itemize}
-    \item Elliptische Kurve: $y^2 \equiv x^3 + 3x + 3 \pmod{97}$
-    \item Generator-Punkt: $G = (3, 6)$
-    \item Private Key: $d = 7$
-    \item Ziel: Berechnung von $P = 7G$ (Public Key)
+\begin{tcolorbox}[colback=thd-blue!10,colframe=thd-blue,title=\textbf{Gegebene Parameter}]
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Elliptische Kurve:} $y^2 \equiv x^3 + 3x + 3 \pmod{97}$
+    \item \textbf{Generator-Punkt:} $G = (3, 6)$
+    \item \textbf{Private Key:} $d = 7$
+    \item \textbf{Ziel:} Berechnung von $P = 7G$ (Public Key)
 \end{itemize}
+\end{tcolorbox}
 
 \subsection{Mathematische Grundlagen}
 
 \subsubsection{Punktaddition auf elliptischen Kurven}
+
+\begin{infobox}
+\textbf{Grundlagen der Punktarithmetik}
+
+Für zwei Punkte $P_1 = (x_1, y_1)$ und $P_2 = (x_2, y_2)$ auf der elliptischen Kurve $y^2 = x^3 + ax + b$ gelten verschiedene Additionsregeln je nach Punktkonstellation.
+\end{infobox}
+
 Für zwei Punkte $P_1 = (x_1, y_1)$ und $P_2 = (x_2, y_2)$ auf der elliptischen Kurve $y^2 = x^3 + ax + b$ gilt:
 
-\noindent
-\textbf{Fall 1: Verschiedene Punkte ($P_1 \neq P_2$):}
+\begin{tcolorbox}[colback=thd-blue!10,colframe=thd-blue,title=\textbf{Fall 1: Verschiedene Punkte ($P_1 \neq P_2$)}]
 \begin{align}
 \lambda &= \frac{y_2 - y_1}{x_2 - x_1} \pmod{p} \\
 x_3 &= \lambda^2 - x_1 - x_2 \pmod{p} \\
 y_3 &= \lambda(x_1 - x_3) - y_1 \pmod{p}
 \end{align}
+\end{tcolorbox}
 
-\noindent
-\textbf{Fall 2: Punktverdopplung ($P_1 = P_2$):}
+\begin{tcolorbox}[colback=green!10,colframe=green!70!black,title=\textbf{Fall 2: Punktverdopplung ($P_1 = P_2$)}]
 \begin{align}
 \lambda &= \frac{3x_1^2 + a}{2y_1} \pmod{p} \\
 x_3 &= \lambda^2 - 2x_1 \pmod{p} \\
 y_3 &= \lambda(x_1 - x_3) - y_1 \pmod{p}
 \end{align}
+\end{tcolorbox}
 
 \subsection{Schrittweise Lösung}
 
 \subsubsection{Schritt 1: Berechnung von 1G}
+
+\begin{solutionbox}
+\textbf{Lösung Schritt 1}
 \begin{equation}
 1G = G = (3, 6)
 \end{equation}
+\end{solutionbox}
 
 \subsubsection{Schritt 2: Berechnung von 2G = G + G (Punktverdopplung)}
+
+\begin{warningbox}
+\textbf{Wichtiger Hinweis:} Bei der Punktverdopplung muss die spezielle Formel für $P_1 = P_2$ verwendet werden.
+\end{warningbox}
+
 Gegeben: $G = (3, 6)$, $a = 3$, $p = 97$
 
 \begin{align}
@@ -107,7 +222,6 @@ Gegeben: $G = (3, 6)$, $a = 3$, $p = 97$
 &= 30 \cdot 12^{-1} \pmod{97}
 \end{align}
 
-\noindent
 Berechnung des modularen Inversen von 12 modulo 97:
 \begin{align}
 12^{-1} \equiv 89 \pmod{97} \quad \text{(da } 12 \cdot 89 = 1068 \equiv 1 \pmod{97}\text{)}
@@ -120,7 +234,9 @@ y_3 &= 49 \cdot (3 - 80) - 6 \pmod{97} = 49 \cdot (-77) - 6 \pmod{97} \\
 &= -3773 - 6 \pmod{97} = -3779 \pmod{97} = 87
 \end{align}
 
-\textbf{Ergebnis:} $2G = (80, 87)$
+\begin{solutionbox}
+\textbf{Ergebnis Schritt 2:} $2G = (80, 87)$
+\end{solutionbox}
 
 \subsubsection{Schritt 3: Berechnung von 4G = 2G + 2G}
 Gegeben: $2G = (80, 87)$
@@ -133,7 +249,6 @@ Gegeben: $2G = (80, 87)$
 &= 92 \cdot 77^{-1} \pmod{97}
 \end{align}
 
-\noindent
 Modularer Inverser von 77 modulo 97: $77^{-1} \equiv 19 \pmod{97}$
 
 \begin{align}
@@ -143,7 +258,9 @@ y_3 &= 6 \cdot (80 - 3) - 87 \pmod{97} = 6 \cdot 77 - 87 \pmod{97} \\
 &= 462 - 87 \pmod{97} = 375 \pmod{97} = 91
 \end{align}
 
-\textbf{Ergebnis:} $4G = (3, 91)$
+\begin{solutionbox}
+\textbf{Ergebnis Schritt 3:} $4G = (3, 91)$
+\end{solutionbox}
 
 \subsubsection{Schritt 4: Berechnung von 6G = 4G + 2G}
 Gegeben: $4G = (3, 91)$, $2G = (80, 87)$
@@ -160,9 +277,9 @@ y_3 &= 21 \cdot (3 - 67) - 91 \pmod{97} = 21 \cdot (-64) - 91 \pmod{97} \\
 &= -1344 - 91 \pmod{97} = -1435 \pmod{97} = 10
 \end{align}
 
-\noindent
-\textbf{Korrektur der Berechnung:} Bei genauerer Überprüfung ergibt sich:
-$6G = (80, 10)$
+\begin{warningbox}
+\textbf{Korrektur der Berechnung:} Bei genauerer Überprüfung ergibt sich: $6G = (80, 10)$
+\end{warningbox}
 
 \subsubsection{Schritt 5: Berechnung von 7G = 6G + 1G}
 Gegeben: $6G = (80, 10)$, $1G = (3, 6)$
@@ -178,9 +295,18 @@ y_3 &= 76 \cdot (80 - 89) - 10 \pmod{97} = 76 \cdot (-9) - 10 \pmod{97} \\
 &= -684 - 10 \pmod{97} = -694 \pmod{97} = 12
 \end{align}
 
+\begin{solutionbox}
 \textbf{Finales Ergebnis:} $7G = (89, 12)$
+\end{solutionbox}
 
 \subsection{Verifikation}
+
+\begin{infobox}
+\textbf{Verifikationsprozess}
+
+Der berechnete Public Key muss die Kurvengleichung erfüllen, um die Korrektheit der Berechnung zu bestätigen.
+\end{infobox}
+
 Der berechnete Public Key kann durch Einsetzen in die Kurvengleichung verifiziert werden:
 \begin{align}
 y^2 &\stackrel{?}{=} x^3 + 3x + 3 \pmod{97} \\
@@ -190,36 +316,54 @@ y^2 &\stackrel{?}{=} x^3 + 3x + 3 \pmod{97} \\
 \end{align}
 
 \subsection{Kryptographische Bedeutung}
+
+\begin{tcolorbox}[colback=thd-blue!10,colframe=thd-blue,title=\textbf{Kryptographische Erkenntnisse}]
 Diese Challenge demonstriert:
-\begin{itemize}
+\begin{itemize}[leftmargin=1.5cm]
     \item \textbf{Skalarmultiplikation:} Die Grundoperation für Public-Key-Generierung
     \item \textbf{Punktarithmetik:} Mathematische Operationen auf elliptischen Kurven
     \item \textbf{Modulare Arithmetik:} Alle Berechnungen erfolgen in einem endlichen Körper
     \item \textbf{ECDLP (Elliptic Curve Discrete Logarithm Problem):} Die Umkehrung (Finden von $d$ bei gegebenem $P$ und $G$) ist rechnerisch schwer
 \end{itemize}
+\end{tcolorbox}
+
+\clearpage
 
 
 
 \section{Challenge 2: Zertifikatsanalyse}
 
+\begin{solutionbox}
+\textbf{Challenge 2 - Übersicht}
+
+Diese Challenge fokussiert auf die praktische Analyse von X.509-Zertifikaten mit OpenSSL. Ziel ist die Untersuchung eines verdächtigen Zertifikats und das Auffinden versteckter Informationen.
+\end{solutionbox}
+
 \subsection{Aufgabenstellung}
 Challenge 2 fokussiert auf die praktische Analyse von X.509-Zertifikaten mit OpenSSL. Die Aufgabe besteht darin, ein verdächtiges Zertifikat zu untersuchen und versteckte Informationen zu finden.
 
-\noindent
-\textbf{Ziele der Challenge:}
-\begin{itemize}
+\begin{tcolorbox}[colback=thd-blue!10,colframe=thd-blue,title=\textbf{Ziele der Challenge}]
+\begin{itemize}[leftmargin=1.5cm]
     \item Praktische Anwendung von OpenSSL zur Zertifikatsanalyse
     \item Verstehen der X.509-Zertifikatstruktur
     \item Identifizierung versteckter Informationen in Zertifikatsfeldern
     \item Vorbereitung auf die Curveball-Schwachstelle (CVE-2020-0601)
 \end{itemize}
+\end{tcolorbox}
 
 \subsection{Theoretischer Hintergrund}
 
 \subsubsection{X.509-Zertifikatstruktur}
+
+\begin{infobox}
+\textbf{X.509-Standard}
+
+X.509 ist der internationale Standard für Public-Key-Zertifikate und definiert das Format für Zertifikate in Public-Key-Infrastrukturen (PKI).
+\end{infobox}
+
 Ein X.509-Zertifikat besteht aus folgenden Hauptkomponenten:
 
-\begin{itemize}
+\begin{itemize}[leftmargin=1.5cm]
     \item \textbf{Version:} X.509-Version (meist v3)
     \item \textbf{Serial Number:} Eindeutige Seriennummer
     \item \textbf{Signature Algorithm:} Verwendeter Signaturalgorithmus
@@ -232,7 +376,9 @@ Ein X.509-Zertifikat besteht aus folgenden Hauptkomponenten:
 \end{itemize}
 
 \subsubsection{Relevante X.509v3 Extensions}
-\begin{itemize}
+
+\begin{tcolorbox}[colback=thd-blue!10,colframe=thd-blue,title=\textbf{Wichtige Extensions}]
+\begin{itemize}[leftmargin=1cm]
     \item \textbf{Subject Alternative Name (SAN):} Alternative Identifikatoren
     \item \textbf{Key Usage:} Erlaubte Schlüsselverwendungen
     \item \textbf{Extended Key Usage:} Spezifische Anwendungszwecke
@@ -240,10 +386,16 @@ Ein X.509-Zertifikat besteht aus folgenden Hauptkomponenten:
     \item \textbf{Certificate Policies:} Richtlinien-Informationen
     \item \textbf{Authority Information Access:} CA-Zugriffsinformationen
 \end{itemize}
+\end{tcolorbox}
 
 \subsection{Praktische Lösung}
 
 \subsubsection{Schritt 1: Download und erste Inspektion}
+
+\begin{warningbox}
+\textbf{Vorbereitung:} Stellen Sie sicher, dass OpenSSL auf Ihrem System installiert ist und die Challenge-Umgebung läuft.
+\end{warningbox}
+
 Das bereitgestellte Zertifikat \texttt{mystery\_cert.pem} wird heruntergeladen und zunächst grundlegend analysiert:
 
 \begin{lstlisting}[language=bash,caption={Grundlegende Zertifikatsinformationen}]
@@ -251,6 +403,12 @@ openssl x509 -in mystery_cert.pem -text -noout
 \end{lstlisting}
 
 \subsubsection{Schritt 2: Strukturierte Analyse}
+
+\begin{infobox}
+\textbf{Analysestrategie}
+
+Eine systematische Herangehensweise ist entscheidend für die erfolgreiche Zertifikatsanalyse. Beginnen Sie mit den Grundinformationen und arbeiten Sie sich zu den Extensions vor.
+\end{infobox}
 
 \textbf{Issuer und Subject Information:}
 \begin{lstlisting}[language=bash]
@@ -262,7 +420,7 @@ openssl x509 -in mystery_cert.pem -issuer -noout
 \end{lstlisting}
 
 \textbf{Erwartete Ausgabe:}
-\begin{lstlisting}
+\begin{lstlisting}[caption=Zertifikatsinformationen]
 subject=CN = Suspicious Certificate, O = Evil Corp, 
 C = XX, emailAddress = admin@evil-corp.example
 issuer=CN = Curveball Demo CA, O = THD Cryptography Lab, 
@@ -305,24 +463,31 @@ grep -A 5 "Authority Information Access"
 \subsection{Lösungsweg und versteckte Information}
 
 \subsubsection{Flag-Location}
+
+\begin{solutionbox}
+\textbf{Versteckte Flags}
+
+Die versteckten Flags befinden sich typischerweise in den X.509v3-Extensions, speziell in Feldern, die normalerweise für legitime Zwecke verwendet werden.
+\end{solutionbox}
+
 Die versteckte Flag befindet sich typischerweise in einem der folgenden Bereiche:
 
-\begin{enumerate}
+\begin{enumerate}[leftmargin=1.5cm]
     \item \textbf{Subject Alternative Name Extension:} 
-    \begin{lstlisting}
+    \begin{lstlisting}[caption=SAN Extension mit Flag]
     X509v3 Subject Alternative Name:
         DNS:evil-corp.example, 
         DNS:FLAG{hidden_in_certificate_extensions}.curveball.local
     \end{lstlisting}
     
     \item \textbf{Certificate Policies:}
-    \begin{lstlisting}
+    \begin{lstlisting}[caption=Certificate Policies mit Flag]
     X509v3 Certificate Policies:
         Policy: 1.2.3.4.5.FLAG{x509_extensions_reveal_secrets}
     \end{lstlisting}
     
     \item \textbf{CRL Distribution Points:}
-    \begin{lstlisting}
+    \begin{lstlisting}[caption=CRL Distribution Points mit Flag]
     X509v3 CRL Distribution Points:
         Full Name:
           URI:http://crl.example.com/FLAG{certificate_analysis_complete}.crl
@@ -338,15 +503,17 @@ openssl x509 -in mystery_cert.pem -text -noout |
 grep -oP 'FLAG\{[^}]*\}'
 \end{lstlisting}
 
-\subsection{Erwartete Flags}
+\subsection{Erweiterte Flags}
 
-\begin{itemize}
+\begin{tcolorbox}[colback=solution-bg,colframe=green!70!black,title=\textbf{Mögliche Challenge-Flags}]
+\begin{itemize}[leftmargin=1.5cm]
     \item \texttt{FLAG\{hidden\_in\_certificate\_extensions\}}
     \item \texttt{FLAG\{x509\_extensions\_reveal\_secrets\}}
     \item \texttt{FLAG\{certificate\_analysis\_complete\}}
     \item \texttt{FLAG\{openssl\_reveals\_all\}}
     \item \texttt{FLAG\{mystery\_cert\_analyzed\}}
 \end{itemize}
+\end{tcolorbox}
 
 \subsection{Kryptographische Relevanz für Curveball}
 
@@ -405,25 +572,37 @@ Nach Abschluss dieser Challenge verstehen Studierende:
     \item \textbf{Curveball-Vorbereitung:} Basis für Verständnis der CVE-2020-0601
 \end{itemize}
 
-\newpage
+\clearpage
 
 \section{Challenge 3: CurveBall Exploit}
 
+\begin{solutionbox}
+\textbf{Challenge 3 - Übersicht}
+
+Diese Challenge behandelt die Simulation der kritischen Sicherheitslücke CVE-2020-0601, bekannt als "Curveball". Ziel ist die Erstellung eines manipulierten ECC-Zertifikats, das von einem verwundbaren Validierungsskript als vertrauenswürdig erkannt wird.
+\end{solutionbox}
+
 \subsection{Aufgabenstellung}
 
-\noindent
 Challenge 3 behandelt die Simulation der kritischen Sicherheitslücke CVE-2020-0601, bekannt als "Curveball". Diese Schwachstelle in Windows CryptoAPI ermöglichte es Angreifern, gefälschte ECC-Zertifikate zu erstellen, die als vertrauenswürdig erkannt wurden.
-\\
-\noindent
-\textbf{Ziel:} Erstellen Sie ein manipuliertes ECC-Zertifikat, das vom bereitgestellten Python-Validierungsskript als gültig erkannt wird.
+
+\begin{tcolorbox}[colback=red!10,colframe=red,title=\textbf{Ziel}]
+Erstellen Sie ein manipuliertes ECC-Zertifikat, das vom bereitgestellten Python-Validierungsskript als gültig erkannt wird.
+\end{tcolorbox}
 
 \subsection{Theoretischer Hintergrund}
 
 \subsubsection{CVE-2020-0601 - Die Curveball-Schwachstelle}
 
+\begin{warningbox}
+\textbf{Kritische Schwachstelle}
+
+Die Curveball-Schwachstelle war eine der kritischsten Sicherheitslücken in der Windows-Geschichte und betraf die grundlegenden kryptographischen Validierungsmechanismen.
+\end{warningbox}
+
 Die Curveball-Schwachstelle betraf Windows CryptoAPI und ermöglichte eine fundamentale Kompromittierung der ECC-Zertifikatsvalidierung:
 
-\begin{itemize}
+\begin{itemize}[leftmargin=1.5cm]
     \item \textbf{Kernproblem:} Windows validierte ECC-Parameter (insbesondere den Generator-Punkt) nicht korrekt
     \item \textbf{Auswirkung:} Angreifer konnten beliebige Generator-Punkte verwenden
     \item \textbf{Resultat:} Gefälschte Zertifikate wurden als von vertrauenswürdigen CAs stammend akzeptiert
@@ -614,15 +793,23 @@ Bei erfolgreicher Durchführung des Exploits wird die Flag ausgegeben:
 \textbf{\texttt{FLAG\{curveball\_exploit\_generator\_manipulation\_success\}}}
 \end{center}
 
-\newpage
+\clearpage
 
 \section{Challenge 4: Kurvenparameter \& Signaturvalidierung}
+
+\begin{solutionbox}
+\textbf{Challenge 4 - Übersicht}
+
+Challenge 4 bildet den mathematischen Höhepunkt der CurveBall-Challenge-Serie und fokussiert auf das Herzstück der CVE-2020-0601-Schwachstelle: die Manipulation von ECC-Kurvenparametern zur Umgehung der Signaturvalidierung.
+\end{solutionbox}
 
 \subsection{Aufgabenstellung}
 
 Challenge 4 bildet den mathematischen Höhepunkt der CurveBall-Challenge-Serie und fokussiert auf das Herzstück der CVE-2020-0601-Schwachstelle: die Manipulation von ECC-Kurvenparametern zur Umgehung der Signaturvalidierung.
 
-\textbf{Ziel:} Manipulieren Sie die Kurvenparameter so, dass eine ursprünglich ungültige Signatur plötzlich als gültig erkannt wird.
+\begin{tcolorbox}[colback=red!10,colframe=red,title=\textbf{Ziel}]
+Manipulieren Sie die Kurvenparameter so, dass eine ursprünglich ungültige Signatur plötzlich als gültig erkannt wird.
+\end{tcolorbox}
 
 \subsection{Theoretischer Hintergrund}
 
@@ -800,6 +987,12 @@ for example in sig_data['manipulated_examples']:
 \end{lstlisting}
 
 \subsection{Erwartete Ausgabe und Flag}
+
+\begin{solutionbox}
+\textbf{Erfolgreicher Exploit}
+
+Bei erfolgreicher Durchführung des Exploits wird eine spezielle Flag ausgegeben, die den erfolgreichen Angriff bestätigt.
+\end{solutionbox}
 
 Bei erfolgreichem Exploit gibt das Validierungsskript die Flag aus:
 
