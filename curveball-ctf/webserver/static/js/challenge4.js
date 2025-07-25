@@ -19,13 +19,18 @@ const STANDARD_P256 = {
     n: '0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551'
 };
 
-// Korrekte Flags für verschiedene Manipulationsmethoden
+// Korrekte Flags für verschiedene Manipulationsmethoden (beide Formate unterstützt)
 const correctFlags = [
     'FLAG{curve_parameter_manipulation_signature_bypass}',
+    'flag{curve_parameter_manipulation_signature_bypass}',
     'FLAG{ecc_generator_spoofing_validation_defeated}',
+    'flag{ecc_generator_spoofing_validation_defeated}',
     'FLAG{curveball_mathematical_exploitation_complete}',
+    'flag{curveball_mathematical_exploitation_complete}',
     'FLAG{signature_validation_compromised_by_parameters}',
-    'FLAG{microsoft_cryptoapi_vulnerability_exploited}'
+    'flag{signature_validation_compromised_by_parameters}',
+    'FLAG{microsoft_cryptoapi_vulnerability_exploited}',
+    'flag{microsoft_cryptoapi_vulnerability_exploited}'
 ];
 
 /**
@@ -639,8 +644,11 @@ function checkFlag() {
         return;
     }
     
-    if (!userFlag.startsWith('FLAG{') || !userFlag.endsWith('}')) {
-        showResult('❌ Falsches Flag-Format! Verwenden Sie: FLAG{...}', 'error', flagResult);
+    if (
+        !(userFlag.startsWith('FLAG{') || userFlag.startsWith('flag{')) ||
+        !userFlag.endsWith('}')
+    ) {
+        showResult('❌ Falsches Flag-Format! Verwenden Sie: FLAG{...} oder flag{...}', 'error', flagResult);
         return;
     }
     

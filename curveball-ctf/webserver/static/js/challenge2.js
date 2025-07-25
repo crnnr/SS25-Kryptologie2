@@ -13,7 +13,8 @@ const correctFlags = [
     'flag{certs_reveal_secrets_in_san}',
     'FLAG{CERTS_REVEAL_SECRETS_IN_SAN}',
     'flag{CERTS_REVEAL_SECRETS_IN_SAN}',
-    'FLAG{Certs_Reveal_Secrets_In_SAN}'
+    'FLAG{Certs_Reveal_Secrets_In_SAN}',
+    'flag{certs_reveal_secrets_in_san}'
 ];
 
 /**
@@ -34,8 +35,11 @@ function checkFlag() {
     }
     
     // Flag-Format prüfen
-    if (!userFlag.startsWith('FLAG{') || !userFlag.endsWith('}')) {
-        showResult('❌ Falsches Flag-Format! Verwenden Sie: FLAG{...}', 'error');
+    if (
+        !(userFlag.startsWith('FLAG{') || userFlag.startsWith('flag{')) ||
+        !userFlag.endsWith('}')
+    ) {
+        showResult('❌ Falsches Flag-Format! Verwenden Sie: FLAG{...} oder flag{...}', 'error');
         return;
     }
     

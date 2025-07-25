@@ -41,13 +41,18 @@ const ECC_CURVES = {
     }
 };
 
-// Korrekte Flags für verschiedene Exploit-Methoden
+// Korrekte Flags für verschiedene Exploit-Methoden (beide Formate unterstützt)
 const correctFlags = [
     'FLAG{curveball_exploit_generator_manipulation_success}',
+    'flag{curveball_exploit_generator_manipulation_success}',
     'FLAG{cve_2020_0601_certificate_spoofing_complete}',
+    'flag{cve_2020_0601_certificate_spoofing_complete}',
     'FLAG{ecc_parameter_manipulation_attack_successful}',
+    'flag{ecc_parameter_manipulation_attack_successful}',
     'FLAG{windows_cryptoapi_bypass_achieved}',
-    'FLAG{rogue_generator_point_exploit_works}'
+    'flag{windows_cryptoapi_bypass_achieved}',
+    'FLAG{rogue_generator_point_exploit_works}',
+    'flag{rogue_generator_point_exploit_works}'
 ];
 
 /**
@@ -645,8 +650,11 @@ function checkFlag() {
         return;
     }
     
-    if (!userFlag.startsWith('FLAG{') || !userFlag.endsWith('}')) {
-        showResult('❌ Falsches Flag-Format! Verwenden Sie: FLAG{...}', 'error', flagResult);
+    if (
+        !(userFlag.startsWith('FLAG{') || userFlag.startsWith('flag{')) ||
+        !userFlag.endsWith('}')
+    ) {
+        showResult('❌ Falsches Flag-Format! Verwenden Sie: FLAG{...} oder flag{...}', 'error', flagResult);
         return;
     }
     
