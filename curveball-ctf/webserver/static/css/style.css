@@ -1237,6 +1237,23 @@ body {
     margin-bottom: 25px;
 }
 
+.command-line {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(79, 172, 254, 0.2);
+    border-radius: 6px;
+    padding: 10px 15px;
+    margin: 8px 0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    color: #e2e8f0;
+}
+
+.command-line code {
+    background: none;
+    padding: 0;
+    color: inherit;
+}
+
 .command-group {
     margin: 20px 0;
 }

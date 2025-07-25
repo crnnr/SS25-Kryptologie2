@@ -189,45 +189,48 @@ function generateRandomHex(length) {
  * Generates OpenSSL parameters for the exploit
  */
 function generateOpenSSLParams(type, curveInfo, param1, param2) {
-    const curveName = curveInfo.name.toLowerCase().replace(' ', '_').replace('-', '_');
+    // Map curve names to actual OpenSSL curve names
+    const opensslCurveNames = {
+        'NIST P-256': 'prime256v1',
+        'NIST P-384': 'secp384r1', 
+        'NIST P-521': 'secp521r1'
+    };
+    
+    const curveName = opensslCurveNames[curveInfo.name] || 'prime256v1';
     
     switch (type) {
         case 'generator':
             return {
                 command: 'openssl ecparam',
                 params: [
-                    `-name ${curveName}`,
-                    `-param_enc explicit`,
-                    `-genkey`,
-                    `-out rogue_key.pem`,
-                    `-custom_generator "${param1},${param2}"`
+                    `Schritt 1: openssl ecparam -name ${curveName} -genkey -noout -out private_key.pem`,
+                    `Schritt 2: openssl ec -in private_key.pem -pubout -out public_key.pem`,
+                    `Schritt 3: openssl req -new -x509 -key private_key.pem -out exploit_cert.pem -days 365 -subj "/CN=evil.example.com"`,
+                    `Hinweis: Manipulierte Generator-Parameter sind in realen Exploits komplexer umzusetzen`
                 ],
-                fullCommand: `openssl ecparam -name ${curveName} -param_enc explicit -genkey -out rogue_key.pem`
+                fullCommand: `openssl ecparam -name ${curveName} -genkey -noout -out private_key.pem && openssl req -new -x509 -key private_key.pem -out exploit_cert.pem -days 365 -subj "/CN=evil.example.com"`
             };
         case 'parameters':
             return {
                 command: 'openssl ecparam',
                 params: [
-                    `-custom_curve`,
-                    `-p ${curveInfo.p}`,
-                    `-a ${param1}`,
-                    `-b ${param2}`,
-                    `-G "${curveInfo.gx},${curveInfo.gy}"`
+                    `Schritt 1: openssl ecparam -name ${curveName} -param_enc explicit -out custom_params.pem`,
+                    `Schritt 2: openssl ecparam -in custom_params.pem -genkey -noout -out private_key.pem`,
+                    `Schritt 3: openssl req -new -x509 -key private_key.pem -out exploit_cert.pem -days 365`,
+                    `Hinweis: Explizite Parameter können für Curveball-ähnliche Angriffe verwendet werden`
                 ],
-                fullCommand: `openssl ecparam -custom_curve -p ${curveInfo.p} -a ${param1} -b ${param2}`
+                fullCommand: `openssl ecparam -name ${curveName} -param_enc explicit -genkey -noout -out private_key.pem && openssl req -new -x509 -key private_key.pem -out exploit_cert.pem -days 365 -subj "/CN=evil.example.com"`
             };
         default:
             return {
                 command: 'openssl req',
                 params: [
-                    `-new`,
-                    `-x509`,
-                    `-key rogue_key.pem`,
-                    `-out exploit_cert.pem`,
-                    `-days 365`,
-                    `-custom_ecc_params`
+                    `Schritt 1: openssl genrsa -out rsa_key.pem 2048`,
+                    `Schritt 2: openssl req -new -x509 -key rsa_key.pem -out standard_cert.pem -days 365`,
+                    `Alternativ: openssl ecparam -name ${curveName} -genkey -noout -out ec_key.pem`,
+                    `Schritt 3: openssl req -new -x509 -key ec_key.pem -out ec_cert.pem -days 365`
                 ],
-                fullCommand: `openssl req -new -x509 -key rogue_key.pem -out exploit_cert.pem -days 365`
+                fullCommand: `openssl ecparam -name ${curveName} -genkey -noout -out private_key.pem && openssl req -new -x509 -key private_key.pem -out exploit_cert.pem -days 365 -subj "/CN=evil.example.com"`
             };
     }
 }
@@ -268,7 +271,15 @@ function displayExploitParameters(params, container) {
         html += `
             <div class="param-section">
                 <h6>OpenSSL Befehle:</h6>
-                <div class="code-command" onclick="copyToClipboard('${params.opensslParams.fullCommand}')">
+                <div class="openssl-commands">
+                    ${params.opensslParams.params.map(param => `
+                        <div class="command-line">
+                            <code>${param}</code>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="code-command" onclick="copyToClipboard('${params.opensslParams.fullCommand.replace(/'/g, "\\'")}')">
+                    <strong>Vollständiger Befehl:</strong>
                     <code>${params.opensslParams.fullCommand}</code>
                     <span class="copy-hint">📋 Klicken zum Kopieren</span>
                 </div>
@@ -406,26 +417,31 @@ function generateRandomBase64Line() {
 function generateCertificateInstructions(exploitType) {
     const instructions = {
         'generator_spoofing': [
-            'Generiere manipulierten Generator-Punkt',
-            'Erstelle Private Key mit neuen Parametern',
-            'Generiere Zertifikat mit gefälschtem Issuer',
-            'Teste gegen verification.py'
+            'Erstelle ECC-Schlüsselpaar: openssl ecparam -name prime256v1 -genkey -noout -out private_key.pem',
+            'Generiere self-signed Zertifikat: openssl req -new -x509 -key private_key.pem -out cert.pem -days 365',
+            'Lade das Zertifikat in das Validierungstool hoch',
+            'Bei erfolgreichem Test wird automatisch die Flag angezeigt'
         ],
         'curve_manipulation': [
-            'Definiere benutzerdefinierte Kurvenparameter',
-            'Erstelle explizite Parameter-Definition',
-            'Generiere Schlüsselpaar mit neuen Parametern',
-            'Signiere Zertifikat mit manipulierten Parametern'
+            'Erstelle explizite Kurvenparameter: openssl ecparam -name prime256v1 -param_enc explicit -out params.pem',
+            'Generiere Schlüssel mit expliziten Parametern: openssl ecparam -in params.pem -genkey -noout -out key.pem', 
+            'Erstelle Zertifikat: openssl req -new -x509 -key key.pem -out cert.pem -days 365 -subj "/CN=test.local"',
+            'Validiere das Zertifikat mit dem Upload-Tool unten'
         ],
         'signature_forge': [
-            'Analysiere Ziel-CA-Zertifikat',
-            'Erstelle eigenes Schlüsselpaar',
-            'Fälsche Signatur mit kontrollierten Parametern',
-            'Validiere gegen verwundbare Implementierung'
+            'Generiere RSA-Schlüssel als Alternative: openssl genrsa -out rsa_key.pem 2048',
+            'Erstelle Zertifikat: openssl req -new -x509 -key rsa_key.pem -out rsa_cert.pem -days 365',
+            'Oder verwende ECC: openssl ecparam -name prime256v1 -genkey -noout -out ec_key.pem',
+            'Teste verschiedene Zertifikatstypen im Validierungstool'
         ]
     };
     
-    return instructions[exploitType] || ['Allgemeine Exploit-Schritte'];
+    return instructions[exploitType] || [
+        'Erstelle ein beliebiges Zertifikat mit OpenSSL',
+        'Lade es in das Validierungstool hoch',
+        'Das System erkennt verschiedene Zertifikatsformate',
+        'Bei erfolgreicher Simulation wird die Flag angezeigt'
+    ];
 }
 
 /**
@@ -549,11 +565,7 @@ function performValidation(certData, outputDiv) {
     outputDiv.innerHTML = '<div class="loading">🔍 Validiere Zertifikat...</div>';
     
     setTimeout(() => {
-        // Simulate validation
-        const hasExploitMarkers = certData.includes('deadbeef') || 
-                                 certData.includes('evil') || 
-                                 certData.includes('rogue');
-        
+        // Check for valid certificate format
         const isValidFormat = certData.includes('BEGIN CERTIFICATE') && 
                              certData.includes('END CERTIFICATE');
         
@@ -562,7 +574,23 @@ function performValidation(certData, outputDiv) {
             return;
         }
         
-        if (hasExploitMarkers) {
+        // For realistic simulation: Accept any valid certificate format
+        // This simulates the CVE-2020-0601 vulnerability where the validation was bypassed
+        const hasValidStructure = certData.includes('BEGIN CERTIFICATE') && 
+                                 certData.includes('END CERTIFICATE') &&
+                                 certData.length > 100; // Basic size check
+        
+        // Check for specific exploit markers (optional - for generated certificates)
+        const hasExploitMarkers = certData.includes('deadbeef') || 
+                                 certData.includes('evil') || 
+                                 certData.includes('rogue');
+        
+        // Accept various certificate types that could exploit CVE-2020-0601
+        const hasECCSignature = certData.includes('EC') || certData.includes('ECDSA');
+        const hasRSASignature = certData.includes('RSA');
+        const isX509Certificate = certData.includes('BEGIN CERTIFICATE');
+        
+        if (hasValidStructure && (hasExploitMarkers || hasECCSignature || hasRSASignature || isX509Certificate)) {
             showValidationSuccess(outputDiv);
             // Show flag automatically
             setTimeout(() => {
@@ -583,16 +611,21 @@ function showValidationSuccess(container = null) {
         <div class="success-message">
             ✅ <strong>Zertifikat erfolgreich validiert!</strong>
             <div class="validation-details">
-                <p>🎯 Das manipulierte Zertifikat wurde von der simulierten CryptoAPI als gültig erkannt!</p>
-                <p>🔥 CVE-2020-0601 Exploit erfolgreich ausgeführt!</p>
+                <p>🎯 Das Zertifikat wurde von der simulierten CryptoAPI als gültig akzeptiert!</p>
+                <p>🔥 CVE-2020-0601 Vulnerability erfolgreich demonstriert!</p>
                 <div class="exploit-confirmation">
-                    <h6>Erkannte Exploit-Merkmale:</h6>
+                    <h6>Simulation erfolgreich:</h6>
                     <ul>
-                        <li>✓ Manipulierte ECC-Parameter</li>
-                        <li>✓ Rogue Generator-Punkt</li>
-                        <li>✓ Gefälschte CA-Signatur</li>
-                        <li>✓ Umgehung der Validierung</li>
+                        <li>✓ Zertifikat im korrekten PEM-Format</li>
+                        <li>✓ Gültige X.509-Struktur erkannt</li>
+                        <li>✓ Cryptographic API Bypass simuliert</li>
+                        <li>✓ Zertifikat als "vertrauenswürdig" eingestuft</li>
                     </ul>
+                </div>
+                <div class="educational-note">
+                    <p><strong>📚 Lernziel erreicht:</strong> Sie haben verstanden, wie CVE-2020-0601 funktioniert. 
+                    In der Realität würde diese Schwachstelle es Angreifern ermöglichen, gefälschte Zertifikate 
+                    zu erstellen, die von Windows als gültig akzeptiert werden.</p>
                 </div>
             </div>
         </div>
@@ -613,17 +646,21 @@ function showValidationFailure(container = null) {
         <div class="error-message">
             ❌ <strong>Validierung fehlgeschlagen</strong>
             <div class="validation-details">
-                <p>Das Zertifikat konnte nicht als gültiger Exploit erkannt werden.</p>
+                <p>Das Zertifikat konnte nicht geladen oder ist ungültig.</p>
                 <div class="failure-hints">
                     <h6>💡 Mögliche Probleme:</h6>
                     <ul>
-                        <li>ECC-Parameter nicht korrekt manipuliert</li>
-                        <li>Generator-Punkt entspricht Standard</li>
-                        <li>Keine erkennbaren Exploit-Marker</li>
-                        <li>Signatur-Algorithmus nicht angreifbar</li>
+                        <li>Zertifikat ist nicht im PEM-Format</li>
+                        <li>Datei ist beschädigt oder leer</li>
+                        <li>Verwenden Sie: -----BEGIN CERTIFICATE----- / -----END CERTIFICATE-----</li>
+                        <li>Erstellen Sie ein gültiges Zertifikat mit OpenSSL</li>
                     </ul>
                 </div>
-                <p><strong>Tipp:</strong> Verwenden Sie die Parameter-Generator-Tools oben!</p>
+                <div class="example-commands">
+                    <h6>📝 Beispiel-Befehle:</h6>
+                    <code>openssl ecparam -name prime256v1 -genkey -noout -out key.pem</code><br>
+                    <code>openssl req -new -x509 -key key.pem -out cert.pem -days 365 -subj "/CN=test"</code>
+                </div>
             </div>
         </div>
     `;
@@ -728,10 +765,10 @@ function showFinalSuccess(container) {
  */
 function showExploitHint(container) {
     const hints = [
-        '💡 Verwenden Sie die Parameter-Generator-Tools auf dieser Seite',
-        '💡 Achten Sie auf "deadbeef" Marker in den generierten Parametern',
-        '💡 Das verification.py Skript erwartet spezifische Exploit-Merkmale',
-        '💡 Versuchen Sie Generator-Point-Spoofing als Angriffsmethode'
+        '💡 Erstellen Sie ein gültiges X.509-Zertifikat mit OpenSSL',
+        '💡 Verwenden Sie: openssl req -new -x509 -key key.pem -out cert.pem -days 365',
+        '💡 Laden Sie das generierte .pem Zertifikat in das Upload-Tool hoch',
+        '💡 Alle gültigen Zertifikate simulieren erfolgreich CVE-2020-0601'
     ];
     
     const hint = hints[Math.min(attemptCount - 3, hints.length - 1)];
