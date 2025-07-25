@@ -20,7 +20,7 @@ document.addEventListener('keydown', function(e) {
     if (konami.length === konamiCode.length && 
         konami.every((code, index) => code === konamiCode[index])) {
         
-        // Konami Code aktiviert!
+        // Konami Code activated!
         alert("🎮 Konami Code aktiviert! Sie haben den geheimen Code gefunden!");
 
         // Reset konami sequence

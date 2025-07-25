@@ -1,13 +1,13 @@
 /**
- * Challenge 2: Zertifikatsanalyse
- * JavaScript für Flag-Validierung und interaktive Elemente
+ * Challenge 2: Certificate Analysis
+ * JavaScript for flag validation and interactive elements
  */
 
-// Globale Variablen
+// Global variables
 let attemptCount = 0;
 const maxAttempts = 10;
 
-// Korrekte Flags (verschiedene Varianten für Flexibilität)
+// Correct flags (various variants for flexibility)
 const correctFlags = [
     'FLAG{certs_reveal_secrets_in_san}',
     'flag{certs_reveal_secrets_in_san}',
@@ -18,7 +18,7 @@ const correctFlags = [
 ];
 
 /**
- * Prüft die eingegebene Flag
+ * Checks the entered flag
  */
 function checkFlag() {
     const flagInput = document.getElementById('flagInput');
@@ -28,13 +28,13 @@ function checkFlag() {
     attemptCount++;
     updateAttemptCounter();
     
-    // Leere Eingabe prüfen
+    // Check for empty input
     if (!userFlag) {
         showResult('Bitte geben Sie eine Flag ein!', 'error');
         return;
     }
     
-    // Flag-Format prüfen
+    // Check flag format
     if (
         !(userFlag.startsWith('FLAG{') || userFlag.startsWith('flag{')) ||
         !userFlag.endsWith('}')
@@ -43,7 +43,7 @@ function checkFlag() {
         return;
     }
     
-    // Flag-Validierung
+    // Flag validation
     const isCorrect = correctFlags.some(flag => 
         flag.toLowerCase() === userFlag.toLowerCase()
     );
@@ -53,7 +53,7 @@ function checkFlag() {
     } else {
         showResult(`❌ Falsche Flag! (Versuch ${attemptCount}/${maxAttempts})`, 'error');
         
-        // Hints nach mehreren Versuchen
+        // Hints after multiple attempts
         if (attemptCount >= 3) {
             showHint();
         }
@@ -65,7 +65,7 @@ function checkFlag() {
 }
 
 /**
- * Zeigt Erfolg an
+ * Shows success message
  */
 function showSuccess() {
     const result = `
@@ -83,13 +83,13 @@ function showSuccess() {
     
     document.getElementById('flagResult').innerHTML = result;
     
-    // Eingabefeld deaktivieren
+    // Disable input field
     document.getElementById('flagInput').disabled = true;
     
-    // Konfetti-Effekt
+    // Confetti effect
     createConfetti();
     
-    // Erfolg im Local Storage speichern
+    // Save success in local storage
     localStorage.setItem('challenge2_completed', 'true');
     localStorage.setItem('challenge2_completion_time', new Date().toISOString());
     
@@ -100,7 +100,7 @@ function showSuccess() {
 }
 
 /**
- * Zeigt Fehlermeldungen und Ergebnisse an
+ * Shows error messages and results
  */
 function showResult(message, type) {
     const flagResult = document.getElementById('flagResult');
@@ -108,7 +108,7 @@ function showResult(message, type) {
     
     flagResult.innerHTML = `<div class="${className}">${message}</div>`;
     
-    // Automatisch ausblenden nach 5 Sekunden bei Fehlern
+    // Auto-hide after 5 seconds for errors
     if (type === 'error') {
         setTimeout(() => {
             if (flagResult.innerHTML.includes(message)) {
@@ -119,7 +119,7 @@ function showResult(message, type) {
 }
 
 /**
- * Zeigt progressive Hints
+ * Shows progressive hints
  */
 function showHint() {
     const hints = [
@@ -133,7 +133,7 @@ function showHint() {
     const hintIndex = Math.min(attemptCount - 3, hints.length - 1);
     const hint = hints[hintIndex];
     
-    // Hint unterhalb der Fehlermeldung anzeigen
+    // Show hint below error message
     setTimeout(() => {
         const currentContent = document.getElementById('flagResult').innerHTML;
         document.getElementById('flagResult').innerHTML = currentContent + 
@@ -142,7 +142,7 @@ function showHint() {
 }
 
 /**
- * Zeigt Meldung bei maximalen Versuchen
+ * Shows message when maximum attempts reached
  */
 function showMaxAttemptsReached() {
     const maxMessage = `
@@ -164,14 +164,14 @@ function showMaxAttemptsReached() {
 }
 
 /**
- * Aktualisiert den Versuchszähler
+ * Updates the attempt counter
  */
 function updateAttemptCounter() {
     document.getElementById('attemptCount').textContent = attemptCount;
 }
 
 /**
- * Setzt die Challenge zurück
+ * Resets the challenge
  */
 function resetChallenge() {
     attemptCount = 0;
@@ -182,7 +182,7 @@ function resetChallenge() {
 }
 
 /**
- * Erstellt Konfetti-Effekt bei Erfolg
+ * Creates confetti effect on success
  */
 function createConfetti() {
     for (let i = 0; i < 50; i++) {
@@ -194,7 +194,7 @@ function createConfetti() {
             confetti.style.animationDelay = Math.random() * 3 + 's';
             document.body.appendChild(confetti);
             
-            // Entfernen nach Animation
+            // Remove after animation
             setTimeout(() => {
                 confetti.remove();
             }, 3000);
@@ -203,7 +203,7 @@ function createConfetti() {
 }
 
 /**
- * Generiert zufällige Farben für Konfetti
+ * Generates random colors for confetti
  */
 function getRandomColor() {
     const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3'];
@@ -211,7 +211,7 @@ function getRandomColor() {
 }
 
 /**
- * Enter-Taste für Flag-Eingabe
+ * Enter key for flag input
  */
 document.addEventListener('DOMContentLoaded', function() {
     const flagInput = document.getElementById('flagInput');
@@ -222,12 +222,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Lade vorherigen Fortschritt
+    // Load previous progress
     loadProgress();
 });
 
 /**
- * Lädt vorherigen Fortschritt
+ * Loads previous progress
  */
 function loadProgress() {
     const completed = localStorage.getItem('challenge2_completed');
@@ -238,11 +238,11 @@ function loadProgress() {
 }
 
 /**
- * Kopiert OpenSSL-Befehle in die Zwischenablage
+ * Copies OpenSSL commands to clipboard
  */
 function copyCommand(command) {
     navigator.clipboard.writeText(command).then(() => {
-        // Kurze Bestätigung anzeigen
+        // Show brief confirmation
         const notification = document.createElement('div');
         notification.textContent = '📋 Befehl kopiert!';
         notification.style.cssText = `
@@ -264,7 +264,7 @@ function copyCommand(command) {
     });
 }
 
-// Füge Click-Handler für Code-Blöcke hinzu
+// Add click handlers for code blocks
 document.addEventListener('DOMContentLoaded', function() {
     const codeBlocks = document.querySelectorAll('.code-block code');
     codeBlocks.forEach(block => {

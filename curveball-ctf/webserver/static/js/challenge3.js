@@ -1,13 +1,13 @@
 /**
  * Challenge 3: Curveball Exploit Simulation
- * JavaScript für ECC-Parameter-Generation, Zertifikat-Building und Validierung
+ * JavaScript for ECC parameter generation, certificate building and validation
  */
 
-// Globale Variablen
+// Global variables
 let attemptCount = 0;
 const maxAttempts = 5;
 
-// ECC-Kurven-Definitionen (vereinfacht für Demo)
+// ECC curve definitions (simplified for demo)
 const ECC_CURVES = {
     'P256': {
         name: 'NIST P-256',
@@ -41,7 +41,7 @@ const ECC_CURVES = {
     }
 };
 
-// Korrekte Flags für verschiedene Exploit-Methoden (beide Formate unterstützt)
+// Correct flags for different exploit methods (both formats supported)
 const correctFlags = [
     'FLAG{curveball_exploit_generator_manipulation_success}',
     'flag{curveball_exploit_generator_manipulation_success}',
@@ -56,7 +56,7 @@ const correctFlags = [
 ];
 
 /**
- * Generiert manipulierte ECC-Parameter für den Exploit
+ * Generates manipulated ECC parameters for the exploit
  */
 function generateExploitParameters() {
     const curve = document.getElementById('curveSelect').value;
@@ -81,7 +81,7 @@ function generateExploitParameters() {
     
     displayExploitParameters(exploitParams, outputDiv);
     
-    // Erfolgs-Animation
+    // Success animation
     outputDiv.style.opacity = '0';
     setTimeout(() => {
         outputDiv.style.opacity = '1';
@@ -89,10 +89,10 @@ function generateExploitParameters() {
 }
 
 /**
- * Generiert einen manipulierten Generator-Punkt
+ * Generates a manipulated generator point
  */
 function generateRogueGenerator(curveInfo) {
-    // Simuliere die Generierung eines "rogue" Generator-Punkts
+    // Simulate generation of a "rogue" generator point
     const rogueGx = manipulateCoordinate(curveInfo.gx);
     const rogueGy = manipulateCoordinate(curveInfo.gy);
     
@@ -114,7 +114,7 @@ function generateRogueGenerator(curveInfo) {
 }
 
 /**
- * Generiert Parameter-Spoofing Attack
+ * Generates parameter spoofing attack
  */
 function generateParameterSpoofing(curveInfo) {
     const spoofedA = manipulateCoordinate(curveInfo.a);
@@ -138,7 +138,7 @@ function generateParameterSpoofing(curveInfo) {
 }
 
 /**
- * Generiert benutzerdefinierten Exploit
+ * Generates custom exploit
  */
 function generateCustomExploit(curveInfo) {
     const customGx = generateRandomHex(curveInfo.size / 4);
@@ -160,21 +160,21 @@ function generateCustomExploit(curveInfo) {
 }
 
 /**
- * Manipuliert eine Koordinate für den Exploit
+ * Manipulates a coordinate for the exploit
  */
 function manipulateCoordinate(original) {
-    // Entferne 0x prefix
+    // Remove 0x prefix
     let hex = original.replace('0x', '');
     
-    // Ändere die letzten 8 Zeichen für "rogue" Eigenschaften
+    // Change the last 8 characters for "rogue" properties
     const prefix = hex.substring(0, hex.length - 8);
-    const rogueEnding = 'deadbeef'; // Erkennbarer "Evil" Marker
+    const rogueEnding = 'deadbeef'; // Recognizable "Evil" marker
     
     return '0x' + prefix + rogueEnding;
 }
 
 /**
- * Generiert zufällige Hex-Strings
+ * Generates random hex strings
  */
 function generateRandomHex(length) {
     const chars = '0123456789abcdef';
@@ -186,7 +186,7 @@ function generateRandomHex(length) {
 }
 
 /**
- * Generiert OpenSSL-Parameter für den Exploit
+ * Generates OpenSSL parameters for the exploit
  */
 function generateOpenSSLParams(type, curveInfo, param1, param2) {
     const curveName = curveInfo.name.toLowerCase().replace(' ', '_').replace('-', '_');
@@ -233,7 +233,7 @@ function generateOpenSSLParams(type, curveInfo, param1, param2) {
 }
 
 /**
- * Zeigt die generierten Exploit-Parameter an
+ * Displays the generated exploit parameters
  */
 function displayExploitParameters(params, container) {
     let html = `
@@ -288,7 +288,7 @@ function displayExploitParameters(params, container) {
 }
 
 /**
- * Erstellt ein manipuliertes Zertifikat
+ * Creates a manipulated certificate
  */
 function buildExploitCertificate() {
     const subjectName = document.getElementById('subjectName').value || 'CN=evil.example.com,O=Evil Corp';
@@ -301,14 +301,14 @@ function buildExploitCertificate() {
 }
 
 /**
- * Generiert Exploit-Zertifikat basierend auf Parametern
+ * Generates exploit certificate based on parameters
  */
 function generateExploitCertificate(subject, issuer, exploitType) {
     const now = new Date();
-    const validFrom = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000); // 30 Tage zurück
-    const validUntil = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000); // 1 Jahr voraus
+    const validFrom = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000); // 30 days back
+    const validUntil = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000); // 1 year ahead
     
-    // Simuliere Zertifikatsdaten
+    // Simulate certificate data
     const serialNumber = generateRandomHex(16);
     const publicKey = generateRandomHex(64);
     
@@ -370,26 +370,26 @@ function generateExploitCertificate(subject, issuer, exploitType) {
 }
 
 /**
- * Generiert Mock-PEM-Daten für Demonstration
+ * Generates mock PEM data for demonstration
  */
 function generateMockPEM(subject, issuer, exploitDetails) {
     const header = '-----BEGIN CERTIFICATE-----';
     const footer = '-----END CERTIFICATE-----';
     
-    // Generiere base64-ähnliche Daten (nicht real, nur für Demo)
+    // Generate base64-like data (not real, just for demo)
     const lines = [];
     for (let i = 0; i < 20; i++) {
         lines.push(generateRandomBase64Line());
     }
     
-    // Füge "Exploit-Marker" hinzu
-    lines[10] = 'deadbeef' + lines[10].substring(8); // Erkennbarer Marker
+    // Add "exploit marker"
+    lines[10] = 'deadbeef' + lines[10].substring(8); // Recognizable marker
     
     return header + '\n' + lines.join('\n') + '\n' + footer;
 }
 
 /**
- * Generiert zufällige Base64-ähnliche Zeilen
+ * Generates random base64-like lines
  */
 function generateRandomBase64Line() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
@@ -401,7 +401,7 @@ function generateRandomBase64Line() {
 }
 
 /**
- * Generiert Anweisungen für Zertifikat-Erstellung
+ * Generates instructions for certificate creation
  */
 function generateCertificateInstructions(exploitType) {
     const instructions = {
@@ -429,7 +429,7 @@ function generateCertificateInstructions(exploitType) {
 }
 
 /**
- * Zeigt das generierte Zertifikat an
+ * Displays the generated certificate
  */
 function displayCertificateOutput(cert, container) {
     const html = `
@@ -488,7 +488,7 @@ function displayCertificateOutput(cert, container) {
 }
 
 /**
- * Lädt das generierte Zertifikat herunter
+ * Downloads the generated certificate
  */
 function downloadCertificate(pemData) {
     const blob = new Blob([pemData], { type: 'application/x-pem-file' });
@@ -503,13 +503,13 @@ function downloadCertificate(pemData) {
 }
 
 /**
- * Testet ein Zertifikat gegen die Validierung
+ * Tests a certificate against validation
  */
 function testCertificate() {
     showNotification('🧪 Teste Zertifikat... (Simulation)');
     
     setTimeout(() => {
-        const success = Math.random() > 0.3; // 70% Erfolgswahrscheinlichkeit für Demo
+        const success = Math.random() > 0.3; // 70% success probability for demo
         
         if (success) {
             showValidationSuccess();
@@ -520,7 +520,7 @@ function testCertificate() {
 }
 
 /**
- * Validiert hochgeladenes Zertifikat
+ * Validates uploaded certificate
  */
 function validateCertificate() {
     const fileInput = document.getElementById('certificateFile');
@@ -543,13 +543,13 @@ function validateCertificate() {
 }
 
 /**
- * Führt die Zertifikats-Validierung durch
+ * Performs certificate validation
  */
 function performValidation(certData, outputDiv) {
     outputDiv.innerHTML = '<div class="loading">🔍 Validiere Zertifikat...</div>';
     
     setTimeout(() => {
-        // Simuliere Validierung
+        // Simulate validation
         const hasExploitMarkers = certData.includes('deadbeef') || 
                                  certData.includes('evil') || 
                                  certData.includes('rogue');
@@ -564,7 +564,7 @@ function performValidation(certData, outputDiv) {
         
         if (hasExploitMarkers) {
             showValidationSuccess(outputDiv);
-            // Zeige Flag automatisch an
+            // Show flag automatically
             setTimeout(() => {
                 const flag = correctFlags[Math.floor(Math.random() * correctFlags.length)];
                 showResult(`🎉 <strong>EXPLOIT ERFOLGREICH!</strong><br>Flag: <code>${flag}</code>`, 'success', outputDiv);
@@ -576,7 +576,7 @@ function performValidation(certData, outputDiv) {
 }
 
 /**
- * Zeigt erfolgreiche Validierung an
+ * Shows successful validation
  */
 function showValidationSuccess(container = null) {
     const message = `
@@ -606,7 +606,7 @@ function showValidationSuccess(container = null) {
 }
 
 /**
- * Zeigt fehlgeschlagene Validierung an
+ * Shows failed validation
  */
 function showValidationFailure(container = null) {
     const message = `
@@ -636,7 +636,7 @@ function showValidationFailure(container = null) {
 }
 
 /**
- * Prüft die manuell eingegebene Flag
+ * Checks the manually entered flag
  */
 function checkFlag() {
     const flagInput = document.getElementById('flagInput');
@@ -674,7 +674,7 @@ function checkFlag() {
 }
 
 /**
- * Zeigt finalen Erfolg an
+ * Shows final success
  */
 function showFinalSuccess(container) {
     const html = `
@@ -713,7 +713,7 @@ function showFinalSuccess(container) {
     container.innerHTML = html;
     createConfetti();
     
-    // Erfolg speichern
+    // Save success
     localStorage.setItem('challenge3_completed', 'true');
     localStorage.setItem('all_challenges_completed', 'true');
     
@@ -724,7 +724,7 @@ function showFinalSuccess(container) {
 }
 
 /**
- * Zeigt Exploit-Hints an
+ * Shows exploit hints
  */
 function showExploitHint(container) {
     const hints = [
@@ -743,7 +743,7 @@ function showExploitHint(container) {
 }
 
 /**
- * Zeigt Ergebnisse in einem Container an
+ * Shows results in a container
  */
 function showResult(message, type, container) {
     const className = type === 'error' ? 'error-message' : 
@@ -753,7 +753,7 @@ function showResult(message, type, container) {
 }
 
 /**
- * Kopiert Text in die Zwischenablage
+ * Copies text to clipboard
  */
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(() => {
@@ -762,7 +762,7 @@ function copyToClipboard(text) {
 }
 
 /**
- * Zeigt Benachrichtigungen an
+ * Shows notifications
  */
 function showNotification(message) {
     const notification = document.createElement('div');
@@ -787,7 +787,7 @@ function showNotification(message) {
 }
 
 /**
- * Erstellt Konfetti-Effekt
+ * Creates confetti effect
  */
 function createConfetti() {
     for (let i = 0; i < 100; i++) {
@@ -807,7 +807,7 @@ function createConfetti() {
 }
 
 /**
- * Generiert zufällige Farben
+ * Generates random colors
  */
 function getRandomColor() {
     const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3', '#a78bfa'];
@@ -816,7 +816,7 @@ function getRandomColor() {
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', function() {
-    // Enter-Taste für Flag-Eingabe
+    // Enter key for flag input
     const flagInput = document.getElementById('flagInput');
     if (flagInput) {
         flagInput.addEventListener('keypress', function(e) {
@@ -826,7 +826,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // File-Upload-Styling
+    // File upload styling
     const fileInput = document.getElementById('certificateFile');
     if (fileInput) {
         fileInput.addEventListener('change', function() {
@@ -838,12 +838,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Lade Fortschritt
+    // Load progress
     loadProgress();
 });
 
 /**
- * Lädt gespeicherten Fortschritt
+ * Loads saved progress
  */
 function loadProgress() {
     const completed = localStorage.getItem('challenge3_completed');

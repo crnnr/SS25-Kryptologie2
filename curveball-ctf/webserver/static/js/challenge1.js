@@ -1,5 +1,5 @@
-// Challenge 1: ECC Grundlagen - Punktmultiplikation
-// Kurve: y² ≡ x³ + 3x + 3 (mod 97)
+// Challenge 1: ECC Fundamentals - Point Multiplication
+// Curve: y² ≡ x³ + 3x + 3 (mod 97)
 // Generator: G = (3, 6)
 // Private Key: d = 7
 
@@ -8,7 +8,7 @@ const CURVE_B = 3;
 const MODULUS = 97;
 const GENERATOR = { x: 3, y: 6 };
 
-// Korrekte Antworten für die Schritte
+// Correct answers for the steps
 const CORRECT_ANSWERS = {
     '2G': { x: 80, y: 87 },
     '4G': { x: 3, y: 91 },
@@ -16,7 +16,7 @@ const CORRECT_ANSWERS = {
     '7G': { x: 89, y: 12 }
 };
 
-// Hilfsfunktionen für modulare Arithmetik
+// Helper functions for modular arithmetic
 function modInverse(a, m) {
     a = ((a % m) + m) % m;
     for (let x = 1; x < m; x++) {
@@ -29,14 +29,14 @@ function mod(n, m) {
     return ((n % m) + m) % m;
 }
 
-// Prüfe ob ein Punkt auf der Kurve liegt
+// Check if a point lies on the curve
 function isOnCurve(x, y) {
     const leftSide = mod(y * y, MODULUS);
     const rightSide = mod(x * x * x + CURVE_A * x + CURVE_B, MODULUS);
     return leftSide === rightSide;
 }
 
-// Punktaddition auf elliptischen Kurven
+// Point addition on elliptic curves
 function pointAdd(P, Q) {
     if (P === null) return Q;
     if (Q === null) return P;
@@ -48,16 +48,16 @@ function pointAdd(P, Q) {
     
     if (x1 === x2) {
         if (y1 === y2) {
-            // Punktverdopplung
+            // Point doubling
             const numerator = mod(3 * x1 * x1 + CURVE_A, MODULUS);
             const denominator = mod(2 * y1, MODULUS);
             lambda = mod(numerator * modInverse(denominator, MODULUS), MODULUS);
         } else {
-            // Punkte sind invers zueinander
-            return null; // Punkt im Unendlichen
+            // Points are inverse to each other
+            return null; // Point at infinity
         }
     } else {
-        // Normale Punktaddition
+        // Normal point addition
         const numerator = mod(y2 - y1, MODULUS);
         const denominator = mod(x2 - x1, MODULUS);
         lambda = mod(numerator * modInverse(denominator, MODULUS), MODULUS);
@@ -69,7 +69,7 @@ function pointAdd(P, Q) {
     return { x: x3, y: y3 };
 }
 
-// Skalarmultiplikation (nur für Verifikation)
+// Scalar multiplication (for verification only)
 function scalarMult(k, point) {
     if (k === 0) return null;
     if (k === 1) return point;
@@ -88,7 +88,7 @@ function scalarMult(k, point) {
     return result;
 }
 
-// Challenge-spezifische Prüffunktionen
+// Challenge-specific check functions
 function check2G() {
     const x = parseInt(document.getElementById('x2g').value);
     const y = parseInt(document.getElementById('y2g').value);
@@ -183,7 +183,7 @@ function check7G() {
     }
 }
 
-// Zeige detaillierte Berechnungsschritte
+// Show detailed calculation steps
 function showCalculationDetails(step) {
     if (step === '2G') {
         const details = `
@@ -229,7 +229,7 @@ function showHint2G() {
     document.getElementById('feedback2g').innerHTML += hint;
 }
 
-// Hilfsmittel-Funktionen
+// Helper functions
 function calculateModInverse() {
     const a = parseInt(document.getElementById('modInvA').value);
     const p = parseInt(document.getElementById('modInvP').value);
@@ -243,7 +243,7 @@ function calculateModInverse() {
     const inverse = modInverse(a, p);
     result.innerHTML = `<span class="success">${a}⁻¹ ≡ ${inverse} (mod ${p})</span>`;
     
-    // Verifikation anzeigen
+    // Show verification
     const verification = mod(a * inverse, p);
     result.innerHTML += `<br><small>Verifikation: ${a} × ${inverse} ≡ ${verification} (mod ${p})</small>`;
 }
@@ -264,19 +264,19 @@ function verifyPoint() {
         result.innerHTML = `<span class="error">❌ Punkt (${x}, ${y}) liegt NICHT auf der Kurve.</span>`;
     }
     
-    // Zeige die Berechnung
+    // Show the calculation
     const leftSide = mod(y * y, MODULUS);
     const rightSide = mod(x * x * x + CURVE_A * x + CURVE_B, MODULUS);
     result.innerHTML += `<br><small>y² mod 97 = ${leftSide}, x³ + 3x + 3 mod 97 = ${rightSide}</small>`;
 }
 
-// Initialisierung
+// Initialization
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Challenge 1: ECC Grundlagen geladen');
     console.log('Kurve: y² ≡ x³ + 3x + 3 (mod 97)');
     console.log('Generator G =', GENERATOR);
     
-    // Verifikation der korrekten Antworten (nur für Entwicklung)
+    // Verification of correct answers (for development only)
     console.log('Verifikation der Antworten:');
     console.log('2G =', scalarMult(2, GENERATOR));
     console.log('4G =', scalarMult(4, GENERATOR));

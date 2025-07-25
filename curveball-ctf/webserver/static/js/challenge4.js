@@ -1,15 +1,15 @@
 /**
- * Challenge 4: Kurvenparameter & Signaturvalidierung
- * JavaScript für ECC-Parameter-Manipulation und Signatur-Testing
+ * Challenge 4: Curve Parameters & Signature Validation
+ * JavaScript for ECC parameter manipulation and signature testing
  */
 
-// Globale Variablen
+// Global variables
 let attemptCount = 0;
 const maxAttempts = 8;
 let currentParameters = {};
 let originalParameters = {};
 
-// Standard P-256 Parameter
+// Standard P-256 parameters
 const STANDARD_P256 = {
     p: '0xffffffff00000001000000000000000000000000ffffffffffffffffffffffff',
     a: '0xffffffff00000001000000000000000000000000fffffffffffffffffffffffc',
@@ -19,7 +19,7 @@ const STANDARD_P256 = {
     n: '0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551'
 };
 
-// Korrekte Flags für verschiedene Manipulationsmethoden (beide Formate unterstützt)
+// Correct flags for different manipulation methods (both formats supported)
 const correctFlags = [
     'FLAG{curve_parameter_manipulation_signature_bypass}',
     'flag{curve_parameter_manipulation_signature_bypass}',
@@ -34,7 +34,7 @@ const correctFlags = [
 ];
 
 /**
- * Initialisierung beim Laden der Seite
+ * Initialization when page loads
  */
 document.addEventListener('DOMContentLoaded', function() {
     initializeParameters();
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 /**
- * Initialisiert die Parameter-Anzeige
+ * Initializes the parameter display
  */
 function initializeParameters() {
     currentParameters = { ...STANDARD_P256 };
@@ -55,7 +55,7 @@ function initializeParameters() {
  * Setup Event Listeners
  */
 function setupEventListeners() {
-    // Enter-Taste für Flag-Eingabe
+    // Enter key for flag input
     const flagInput = document.getElementById('flagInput');
     if (flagInput) {
         flagInput.addEventListener('keypress', function(e) {
@@ -65,7 +65,7 @@ function setupEventListeners() {
         });
     }
 
-    // Manipulation Method Change
+    // Manipulation method change
     const methodRadios = document.querySelectorAll('input[name="method"]');
     methodRadios.forEach(radio => {
         radio.addEventListener('change', function() {
@@ -73,7 +73,7 @@ function setupEventListeners() {
         });
     });
 
-    // Parameter Input Validation
+    // Parameter input validation
     const hexInputs = document.querySelectorAll('.hex-input, .param-input');
     hexInputs.forEach(input => {
         input.addEventListener('input', function() {
@@ -83,7 +83,7 @@ function setupEventListeners() {
 }
 
 /**
- * Aktualisiert die Parameter-Anzeige
+ * Updates the parameter display
  */
 function updateParameterDisplay() {
     document.getElementById('currentP').textContent = currentParameters.p;
@@ -95,7 +95,7 @@ function updateParameterDisplay() {
 }
 
 /**
- * Aktualisiert die Manipulations-UI basierend auf gewählter Methode
+ * Updates the manipulation UI based on selected method
  */
 function updateManipulationUI() {
     const selectedMethod = document.querySelector('input[name="method"]:checked').value;
@@ -122,7 +122,7 @@ function updateManipulationUI() {
 }
 
 /**
- * Berechnet manipulierte Parameter
+ * Calculates manipulated parameters
  */
 function calculateManipulation() {
     const method = document.querySelector('input[name="method"]:checked').value;
@@ -140,7 +140,7 @@ function calculateManipulation() {
         return;
     }
     
-    // Animation zeigen
+    // Show animation
     resultDiv.innerHTML = '<div class="calculating">🔄 Berechne manipulierte Parameter...</div>';
     
     setTimeout(() => {
@@ -150,7 +150,7 @@ function calculateManipulation() {
 }
 
 /**
- * Führt die tatsächliche Parameter-Manipulation durch
+ * Performs the actual parameter manipulation
  */
 function performManipulation(method, targetR, targetS) {
     let manipulatedParams = { ...currentParameters };
@@ -206,12 +206,12 @@ function performManipulation(method, targetR, targetS) {
 }
 
 /**
- * Manipuliert den Generator-Punkt
+ * Manipulates the generator point
  */
 function manipulateGenerator(targetR, targetS) {
     const params = { ...currentParameters };
     
-    // Berechne einen "rogue" Generator basierend auf der Ziel-Signatur
+    // Calculate a "rogue" generator based on target signature
     const rogueGx = manipulateHexValue(params.gx, targetR);
     const rogueGy = manipulateHexValue(params.gy, targetS);
     
@@ -222,12 +222,12 @@ function manipulateGenerator(targetR, targetS) {
 }
 
 /**
- * Manipuliert die Kurvenparameter
+ * Manipulates the curve parameters
  */
 function manipulateCurve(targetR, targetS) {
     const params = { ...currentParameters };
     
-    // Modifiziere a und b so, dass der Ziel-Punkt auf der neuen Kurve liegt
+    // Modify a and b so that the target point lies on the new curve
     params.a = manipulateHexValue(params.a, targetR);
     params.b = manipulateHexValue(params.b, targetS);
     
@@ -235,24 +235,24 @@ function manipulateCurve(targetR, targetS) {
 }
 
 /**
- * Manipuliert die Gruppenordnung
+ * Manipulates the group order
  */
 function manipulateOrder(targetR, targetS) {
     const params = { ...currentParameters };
     
-    // Ändere die Ordnung strategisch
+    // Change the order strategically
     params.n = manipulateHexValue(params.n, targetR);
     
     return params;
 }
 
 /**
- * Benutzerdefinierte Manipulation
+ * Custom manipulation
  */
 function manipulateCustom(targetR, targetS) {
     const params = { ...currentParameters };
     
-    // Kombinierte Manipulation für maximale Kontrolle
+    // Combined manipulation for maximum control
     params.gx = manipulateHexValue(params.gx, targetR);
     params.gy = manipulateHexValue(params.gy, targetS);
     params.a = manipulateHexValue(params.a, targetR.substring(0, 10));
@@ -262,14 +262,14 @@ function manipulateCustom(targetR, targetS) {
 }
 
 /**
- * Manipuliert einen Hex-Wert basierend auf einem Zielwert
+ * Manipulates a hex value based on a target value
  */
 function manipulateHexValue(original, target) {
-    // Entferne 0x prefix
+    // Remove 0x prefix
     let origHex = original.replace('0x', '');
     let targetHex = target.replace('0x', '');
     
-    // Verwende Teile des Zielwerts zur Manipulation
+    // Use parts of the target value for manipulation
     const targetPart = targetHex.padStart(8, '0').substring(0, 8);
     const manipulated = origHex.substring(0, origHex.length - 8) + targetPart;
     
@@ -277,31 +277,31 @@ function manipulateHexValue(original, target) {
 }
 
 /**
- * Berechnet das Exploit-Potenzial
+ * Calculates the exploit potential
  */
 function calculateExploitPotential(params) {
     let score = 0;
     let factors = [];
     
-    // Generator-Punkt-Änderung
+    // Generator point change
     if (params.gx !== originalParameters.gx || params.gy !== originalParameters.gy) {
         score += 40;
         factors.push('Generator-Punkt manipuliert');
     }
     
-    // Kurvenparameter-Änderung
+    // Curve parameter change
     if (params.a !== originalParameters.a || params.b !== originalParameters.b) {
         score += 30;
         factors.push('Kurvenparameter verändert');
     }
     
-    // Ordnungs-Änderung
+    // Order change
     if (params.n !== originalParameters.n) {
         score += 20;
         factors.push('Gruppenordnung modifiziert');
     }
     
-    // Primzahl-Änderung (sehr gefährlich)
+    // Prime change (very dangerous)
     if (params.p !== originalParameters.p) {
         score += 50;
         factors.push('Primzahl manipuliert (extrem gefährlich!)');
@@ -315,7 +315,7 @@ function calculateExploitPotential(params) {
 }
 
 /**
- * Zeigt das Manipulationsergebnis an
+ * Shows the manipulation result
  */
 function displayManipulationResult(result, container) {
     const html = `
@@ -376,7 +376,7 @@ function displayManipulationResult(result, container) {
     
     container.innerHTML = html;
     
-    // Success-Animation wenn hohes Exploit-Potenzial
+    // Success animation if high exploit potential
     if (result.exploitPotential.score >= 70) {
         container.style.border = '2px solid #10b981';
         setTimeout(() => {
@@ -386,17 +386,17 @@ function displayManipulationResult(result, container) {
 }
 
 /**
- * Kopiert Parameter zum Signatur-Tester
+ * Copies parameters to signature tester
  */
 function copyParametersToTester() {
-    // Fülle die Tester-Eingabefelder mit aktuellen Parametern
+    // Fill tester input fields with current parameters
     document.getElementById('testPublicKey').value = '04' + currentParameters.gx.replace('0x', '') + currentParameters.gy.replace('0x', '');
     
     showNotification('📋 Parameter zum Tester kopiert!');
 }
 
 /**
- * Exportiert Parameter als JSON
+ * Exports parameters as JSON
  */
 function exportParametersAsJSON() {
     const exportData = {
@@ -415,7 +415,7 @@ function exportParametersAsJSON() {
 }
 
 /**
- * Füllt die manuellen Eingabefelder
+ * Fills manual input fields
  */
 function fillManualInputs() {
     document.getElementById('manualP').value = currentParameters.p;
@@ -429,7 +429,7 @@ function fillManualInputs() {
 }
 
 /**
- * Testet eine Signatur mit den aktuellen Parametern
+ * Tests a signature with current parameters
  */
 function testSignature() {
     const message = document.getElementById('testMessage').value;
@@ -448,7 +448,7 @@ function testSignature() {
         return;
     }
     
-    // Simuliere Signatur-Test
+    // Simulate signature test
     resultDiv.innerHTML = '<div class="testing">🧪 Teste Signatur mit manipulierten Parametern...</div>';
     
     setTimeout(() => {
@@ -458,13 +458,13 @@ function testSignature() {
 }
 
 /**
- * Simuliert die Signatur-Validierung
+ * Simulates signature validation
  */
 function simulateSignatureValidation(message, publicKey, signatureR, signatureS) {
-    // Prüfe ob Parameter manipuliert wurden
+    // Check if parameters were manipulated
     const isManipulated = JSON.stringify(currentParameters) !== JSON.stringify(originalParameters);
     
-    // Simuliere verschiedene Validierungsschritte
+    // Simulate different validation steps
     const validationSteps = [
         { step: 'Message Hash', status: 'success', details: 'SHA-256 Hash berechnet' },
         { step: 'Public Key Check', status: 'success', details: 'Public Key Format validiert' },
@@ -489,7 +489,7 @@ function simulateSignatureValidation(message, publicKey, signatureR, signatureS)
 }
 
 /**
- * Zeigt das Test-Ergebnis an
+ * Shows the test result
  */
 function displayTestResult(result, container) {
     let stepsHtml = result.steps.map(step => {
@@ -547,14 +547,14 @@ function displayTestResult(result, container) {
 }
 
 /**
- * Lädt Daten aus den heruntergeladenen Dateien
+ * Loads data from downloaded files
  */
 function loadFromFiles() {
     showNotification('📁 Implementierung: Laden Sie die Challenge-Dateien herunter und verwenden Sie die darin enthaltenen Daten.');
 }
 
 /**
- * Validiert manuelle Parameter-Eingaben
+ * Validates manual parameter inputs
  */
 function validateManualParameters() {
     const params = {
@@ -568,7 +568,7 @@ function validateManualParameters() {
     
     const resultDiv = document.getElementById('manualResult');
     
-    // Validiere alle Parameter
+    // Validate all parameters
     const validation = validateParameterSet(params);
     
     if (validation.valid) {
@@ -581,7 +581,7 @@ function validateManualParameters() {
 }
 
 /**
- * Validiert einen Parameter-Satz
+ * Validates a parameter set
  */
 function validateParameterSet(params) {
     const errors = [];
@@ -601,7 +601,7 @@ function validateParameterSet(params) {
 }
 
 /**
- * Exportiert die aktuellen Parameter
+ * Exports current parameters
  */
 function exportParameters() {
     const paramString = Object.entries(currentParameters)
@@ -613,13 +613,13 @@ function exportParameters() {
 }
 
 /**
- * Setzt Parameter zurück
+ * Resets parameters
  */
 function resetParameters() {
     currentParameters = { ...originalParameters };
     updateParameterDisplay();
     
-    // Leere auch die manuellen Eingabefelder
+    // Also clear manual input fields
     ['manualP', 'manualA', 'manualB', 'manualN', 'manualGx', 'manualGy'].forEach(id => {
         document.getElementById(id).value = '';
     });
@@ -629,7 +629,7 @@ function resetParameters() {
 }
 
 /**
- * Prüft die eingegebene Flag
+ * Checks the entered flag
  */
 function checkFlag() {
     const flagInput = document.getElementById('flagInput');
@@ -672,7 +672,7 @@ function checkFlag() {
 }
 
 /**
- * Zeigt finalen Erfolg an
+ * Shows final success
  */
 function showFinalSuccess(container) {
     const html = `
@@ -709,7 +709,7 @@ function showFinalSuccess(container) {
     container.innerHTML = html;
     createMasteryConfetti();
     
-    // Erfolg speichern
+    // Save success
     localStorage.setItem('challenge4_completed', 'true');
     localStorage.setItem('curveball_master', 'true');
     localStorage.setItem('final_completion_time', new Date().toISOString());
@@ -721,7 +721,7 @@ function showFinalSuccess(container) {
 }
 
 /**
- * Zeigt Parameter-Hints an
+ * Shows parameter hints
  */
 function showParameterHint(container) {
     const hints = [
@@ -740,7 +740,7 @@ function showParameterHint(container) {
 }
 
 /**
- * Zeigt maximale Versuche erreicht
+ * Shows maximum attempts reached
  */
 function showMaxAttemptsReached(container) {
     const maxMessage = `
@@ -763,14 +763,14 @@ function showMaxAttemptsReached(container) {
 }
 
 /**
- * Aktualisiert den Versuchszähler
+ * Updates the attempt counter
  */
 function updateAttemptCounter() {
     document.getElementById('attemptCount').textContent = attemptCount;
 }
 
 /**
- * Setzt Challenge 4 zurück
+ * Resets Challenge 4
  */
 function resetChallenge4() {
     attemptCount = 0;
@@ -781,7 +781,7 @@ function resetChallenge4() {
 }
 
 /**
- * Erstellt Mastery-Konfetti-Effekt
+ * Creates mastery confetti effect
  */
 function createMasteryConfetti() {
     for (let i = 0; i < 150; i++) {
@@ -803,7 +803,7 @@ function createMasteryConfetti() {
 }
 
 /**
- * Generiert Mastery-Farben
+ * Generates mastery colors
  */
 function getRandomMasteryColor() {
     const colors = ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3', '#a78bfa', '#10b981'];
@@ -811,7 +811,7 @@ function getRandomMasteryColor() {
 }
 
 /**
- * Hilfsfunktionen
+ * Helper functions
  */
 
 function isValidHex(value) {
