@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Challenge {{ challenge_number }} - Gesperrt | Curveball CTF</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="background-particles">
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+    </div>
+
+    <div class="container">
+      <div class="locked-challenge">
+        <div class="lock-icon">🔒</div>
+        <h1>Challenge {{ challenge_number }} ist gesperrt</h1>
+        <p class="lock-message">
+          Diese Challenge ist noch nicht freigeschaltet. Schließen Sie zunächst 
+          Challenge {{ challenge_number - 1 }} ab, um diese Challenge zu öffnen.
+        </p>
+        
+        <div class="progress-info">
+          <h3>📊 Ihr Fortschritt</h3>
+          <div class="progress-details">
+            <p>Sie müssen die Challenges in der richtigen Reihenfolge abschließen:</p>
+            <ol class="challenge-progress-list">
+              <li class="completed">Challenge 1: ECC Grundlagen ✅</li>
+              {% if challenge_number > 2 %}
+              <li class="{% if challenge_number > 3 %}completed{% else %}current{% endif %}">
+                Challenge 2: Zertifikatsanalyse 
+                {% if challenge_number > 3 %}✅{% else %}⏳{% endif %}
+              </li>
+              {% endif %}
+              {% if challenge_number > 3 %}
+              <li class="current">Challenge 3: Curveball Exploit ⏳</li>
+              {% endif %}
+              {% if challenge_number == 4 %}
+              <li class="locked">Challenge 4: Kurvenparameter 🔒</li>
+              {% endif %}
+            </ol>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <a href="/" class="btn btn-primary">
+            ← Zurück zur Übersicht
+          </a>
+          {% if challenge_number > 1 %}
+          <a href="/challenge{{ challenge_number - 1 }}" class="btn btn-secondary">
+            Challenge {{ challenge_number - 1 }} bearbeiten
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <style>
+      .locked-challenge {
+        text-align: center;
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .lock-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.8;
+      }
+
+      .lock-message {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        color: #e0e0e0;
+        line-height: 1.6;
+      }
+
+      .progress-info {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 2rem 0;
+        text-align: left;
+      }
+
+      .progress-info h3 {
+        margin-bottom: 1rem;
+        color: #4fc3f7;
+        text-align: center;
+      }
+
+      .challenge-progress-list {
+        list-style: none;
+        padding: 0;
+      }
+
+      .challenge-progress-list li {
+        padding: 0.5rem 0;
+        font-size: 1.1rem;
+        border-left: 3px solid transparent;
+        padding-left: 1rem;
+        margin: 0.5rem 0;
+      }
+
+      .challenge-progress-list li.completed {
+        color: #4caf50;
+        border-left-color: #4caf50;
+        background: rgba(76, 175, 80, 0.1);
+      }
+
+      .challenge-progress-list li.current {
+        color: #ff9800;
+        border-left-color: #ff9800;
+        background: rgba(255, 152, 0, 0.1);
+      }
+
+      .challenge-progress-list li.locked {
+        color: #757575;
+        border-left-color: #757575;
+        background: rgba(117, 117, 117, 0.1);
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+      }
+
+      .btn {
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        display: inline-block;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: #e0e0e0;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      }
+    </style>
+  </body>
+</html>

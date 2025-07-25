@@ -708,6 +708,11 @@ function showFinalSuccess(container) {
     // Erfolg speichern
     localStorage.setItem('challenge3_completed', 'true');
     localStorage.setItem('all_challenges_completed', 'true');
+    
+    // Mark challenge as completed
+    if (typeof markChallengeCompleted === 'function') {
+        markChallengeCompleted(3);
+    }
 }
 
 /**

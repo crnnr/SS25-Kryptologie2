@@ -172,6 +172,11 @@ function check7G() {
         setTimeout(() => {
             document.getElementById('successSection').style.display = 'block';
             document.getElementById('successSection').scrollIntoView({ behavior: 'smooth' });
+            
+            // Mark challenge as completed
+            if (typeof markChallengeCompleted === 'function') {
+                markChallengeCompleted(1);
+            }
         }, 1000);
     } else {
         feedback.innerHTML = '<span class="error">❌ Nicht korrekt. Addieren Sie 6G + 1G.</span>';

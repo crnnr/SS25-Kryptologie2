@@ -705,6 +705,11 @@ function showFinalSuccess(container) {
     localStorage.setItem('challenge4_completed', 'true');
     localStorage.setItem('curveball_master', 'true');
     localStorage.setItem('final_completion_time', new Date().toISOString());
+    
+    // Mark challenge as completed
+    if (typeof markChallengeCompleted === 'function') {
+        markChallengeCompleted(4);
+    }
 }
 
 /**

@@ -88,6 +88,11 @@ function showSuccess() {
     // Erfolg im Local Storage speichern
     localStorage.setItem('challenge2_completed', 'true');
     localStorage.setItem('challenge2_completion_time', new Date().toISOString());
+    
+    // Mark challenge as completed
+    if (typeof markChallengeCompleted === 'function') {
+        markChallengeCompleted(2);
+    }
 }
 
 /**

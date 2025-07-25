@@ -129,7 +129,7 @@
         <p>Wählen Sie eine Challenge aus, um mit dem Lernen zu beginnen:</p>
 
         <div class="challenges-grid">
-          <div class="challenge-card">
+          <div class="challenge-card {% if 1 not in challenge_status.unlocked %}locked{% endif %}">
             <h4>Challenge 1: ECC Grundlagen</h4>
             <p>
               Lernen Sie die Grundlagen der elliptischen Kurven-Kryptographie
@@ -138,11 +138,18 @@
             <div class="challenge-meta">
               <span class="difficulty beginner">Anfänger</span>
               <span class="duration">15-20 Min</span>
+              {% if 1 in challenge_status.completed %}
+              <span class="status completed">✅ Abgeschlossen</span>
+              {% endif %}
             </div>
+            {% if 1 in challenge_status.unlocked %}
             <a href="/challenge1" class="challenge-btn">Challenge starten →</a>
+            {% else %}
+            <button class="challenge-btn locked" disabled>🔒 Gesperrt</button>
+            {% endif %}
           </div>
 
-          <div class="challenge-card">
+          <div class="challenge-card {% if 2 not in challenge_status.unlocked %}locked{% endif %}">
             <h4>Challenge 2: Zertifikatsanalyse</h4>
             <p>
               Analysieren Sie X.509-Zertifikate mit OpenSSL und finden Sie
@@ -151,11 +158,20 @@
             <div class="challenge-meta">
               <span class="difficulty intermediate">Fortgeschritten</span>
               <span class="duration">20-30 Min</span>
+              {% if 2 in challenge_status.completed %}
+              <span class="status completed">✅ Abgeschlossen</span>
+              {% elif 2 not in challenge_status.unlocked %}
+              <span class="status locked">🔒 Gesperrt</span>
+              {% endif %}
             </div>
+            {% if 2 in challenge_status.unlocked %}
             <a href="/challenge2" class="challenge-btn">Challenge starten →</a>
+            {% else %}
+            <button class="challenge-btn locked" disabled>🔒 Gesperrt</button>
+            {% endif %}
           </div>
 
-          <div class="challenge-card">
+          <div class="challenge-card {% if 3 not in challenge_status.unlocked %}locked{% endif %}">
             <h4>Challenge 3: Curveball Exploit</h4>
             <p>
               Simulieren Sie CVE-2020-0601 und erstellen Sie ein gefälschtes
@@ -164,11 +180,20 @@
             <div class="challenge-meta">
               <span class="difficulty advanced">Experte</span>
               <span class="duration">45-60 Min</span>
+              {% if 3 in challenge_status.completed %}
+              <span class="status completed">✅ Abgeschlossen</span>
+              {% elif 3 not in challenge_status.unlocked %}
+              <span class="status locked">🔒 Gesperrt</span>
+              {% endif %}
             </div>
+            {% if 3 in challenge_status.unlocked %}
             <a href="/challenge3" class="challenge-btn">Challenge starten →</a>
+            {% else %}
+            <button class="challenge-btn locked" disabled>🔒 Gesperrt</button>
+            {% endif %}
           </div>
 
-          <div class="challenge-card">
+          <div class="challenge-card {% if 4 not in challenge_status.unlocked %}locked{% endif %}">
             <h4>Challenge 4: Kurvenparameter</h4>
             <p>
               Manipulieren Sie ECC-Parameter um Signaturen zu fälschen und
@@ -177,11 +202,22 @@
             <div class="challenge-meta">
               <span class="difficulty advanced">Experte</span>
               <span class="duration">60-75 Min</span>
+              {% if 4 in challenge_status.completed %}
+              <span class="status completed">✅ Abgeschlossen</span>
+              {% elif 4 not in challenge_status.unlocked %}
+              <span class="status locked">🔒 Gesperrt</span>
+              {% endif %}
             </div>
+            {% if 4 in challenge_status.unlocked %}
             <a href="/challenge4" class="challenge-btn">Challenge starten →</a>
+            {% else %}
+            <button class="challenge-btn locked" disabled>🔒 Gesperrt</button>
+            {% endif %}
           </div>
         </div>
       </div>
     </div>
+
+    <script src="{{ url_for('static', filename='js/progress.js') }}"></script>
   </body>
 </html>
