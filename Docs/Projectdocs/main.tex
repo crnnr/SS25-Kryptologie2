@@ -178,7 +178,7 @@ Die Challenge ist als Progressive Web Application konzipiert, die ohne Installat
 Die CurveBall-Challenge ist als interaktive Lernreise konzipiert, die Studierende spielerisch an das Thema heranführt.
 \begin{enumerate}
   \item \textbf{Starten der Challenge}: Durch starten des Docker-Containers wird die Web-Anwendung bereitgestellt.
-  \item \textbf{Aufrufen der Web-Anwendung}: Die Studierenden öffnen die Web-App im Browser unter \texttt{https://localhost:8443} und erhalten eine Einführung in die Challenge.
+  \item \textbf{Aufrufen der Web-Anwendung}: Die Studierenden öffnen die Web-App im Browser unter \url{https://localhost:8443} und erhalten eine Einführung in die Challenge.
   \item \textbf{Einführung \& Theorie}: Vermittlung der Grundlagen zu elliptischen Kurven und X.509-Zertifikaten
   \item \textbf{Challenges}: Danach folgen verschiedene Herausforderungen, die die Studierenden dazu anregen, das Gelernte anzuwenden und zu vertiefen.
 \end{enumerate}
@@ -190,6 +190,104 @@ Jede Phase beinhaltet interaktive Elemente wie Code-Eingabefelder, Zertifikatsvi
 Die Challenge kann sowohl einzeln als auch in Kleingruppen bearbeitet werden und ist zeitlich flexibel gestaltbar – von kompakten 90-Minuten-Sessions bis zu mehrstündigen Vertiefungen.
 
 \newpage
+\section{Aufbau und Komponenten}
+\subsection{Flask Webserver}
+Der \emph{server.py} ist das Herzstück der Curveball CTF-Webanwendung und implementiert einen Flask-basierten Webserver mit SSL-Unterstützung. Der Server verwaltet 4 aufeinanderfolgende Challenges zum Thema ECC-Kryptographie und der CVE-2020-0601 Curveball-Schwachstelle.\\
+\\
+\textbf{Architektur und Technologie:}
+\begin{itemize}
+    \item \textbf{Framework:} Flask (Python Web Framework)
+    \item \textbf{Session-Management:} Flask Sessions mit Secret Key
+    \item \textbf{SSL/TLS:} HTTPS über Port 8443 mit eigenen Zertifikaten
+    \item \textbf{Template Engine:} Jinja2 (Flask Standard)
+\end{itemize}
+\textbf{Kernfunktionalitäten:}
+\begin{enumerate}
+    \item \textbf{Challenge-Fortschrittsverfolgung}
+    \begin{itemize}
+        \item \textbf{Session-basiert:} Nutzt Flask Sessions zur Speicherung des Fortschritts
+        \item \textbf{Sequenzieller Ablauf:} Challenges werden der Reihe nach freigeschaltet
+        \item \textbf{Persistenz:} Fortschirtt bleibt während der Browser Session erhalten
+    \end{itemize}
+    \begin{lstlisting}[language=Python,caption={Challenge-Lock}]
+    def is_challenge_unlocked(challenge_number):
+    """Checks if a challenge is unlocked"""
+        if challenge_number == 1:
+            return True  # Challenge 1 is always unlocked
+    
+        completed = get_completed_challenges()
+        # Challenge N is only available if Challenge N-1 is completed
+        return (challenge_number - 1) in completed
+    \end{lstlisting}
+    \item \textbf{Route-Struktur}
+    \begin{itemize}
+        \item \textbf{Hauptrouten:}
+        \begin{itemize}
+            \item / => Startseite mit Challenge-Übersicht
+            \item /introduction => Curveball-Einführung (Markdown zu HTML)
+            \item /challenge1 bis /challenge4 => Einzelne Challenge-Seiten
+        \end{itemize}
+        \item \textbf{API-Endpunkte:}
+        \begin{itemize}
+            \item /api/complete\_challenge/<int> => Challenge als abgeschlossen markieren
+            \item /api/challenge\_status => Aktueller Fortschrittsstatus
+            \item /api/reset\_progress => Zurücksetzen des Fortschritts (Debug)
+        \end{itemize}
+        \item \textbf{Download-Endpunkte:}
+        \begin{itemize}
+            \item /downloads/<filename> => Challenge-Dateien (Zertifikate, JSON)
+            \item /scripts/<filename> => Python-Skripte für Challenges
+            \item /explain/<topic> => Kryptographie-Konzepte erklärt
+        \end{itemize}
+    \end{itemize}
+    \item \textbf{Challenge-Inhalte}
+    \begin{enumerate}
+        \item \textbf{Challenge1:} ECC Grundlagen - Punktmultiplikation
+        \item \textbf{Challenge2:} Zertifikatsanalyse mit OpenSSL
+        \item \textbf{Challenge3:} Curveball Exploit Simulation
+        \item \textbf{Challenge4:} Kurvenparameter \& Signaturvalidierung
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Javascript}
+Die CTF-Anwendung verwendet ein modulares JavaScript-System mit separaten Dateien für verschiedene Funktionsbereiche. Das System kombiniert mathematische ECC-Berechnungen, interaktive UI-Elemente und Fortschrittsverfolgung.\\
+
+\subsubsection{main.js - Zentrale Steuerung}
+\begin{itemize}
+    \item \textbf{Funktion:} Grundlegende Seitenfunktionalität und Easter Egg
+    \item \textbf{Features:}
+    \begin{itemize}
+        \item DOM-Initialisierung
+        \item Konami-Code Implementation
+        \item Visuelle Effekte (Gradient-Animation)
+        \item Basis-Event-Handling
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{progress.js - Fortschrittssystem}
+\begin{itemize}
+    \item \textbf{Kernklasse:} ChallengeProgress
+    \item \textbf{Funktionalitäten:}
+    \begin{itemize}
+        \item Session-basierte Fortschrittsverfolgung
+        \item Server-API Integration
+        \item Dynamische UI-Updates für Challenge-Cards
+        \item Visuelle Status-Indikatoren (gesperrt/freigeschaltet/abgeschlossen)
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{challenge1.js - ECC Grundlagen}
+\begin{itemize}
+    \item \textbf{Thema:} Elliptische Kurven Punktmultiplikation
+    \item \textbf{Kurvendefinition:} \mathrm{y^2 = x^3 + 3 (mod 97)}, Generator G = (3,6)
+    \item \textbf{Mathematische Funktionen:}
+    \begin{itemize}
+        \item \emph{modInverse()} - Modulare Inverse Berechnung
+        \item \emph{pointAdd()} - Elliptische Kurven Punktaddition
+        \item \emph{scalarMult()} - Skalare Multiplikation
+        \item \emph{isOnCurve()} - Punktvalidierung
+    \end{itemize}
+\end{itemize}
 
 \section{Arbeitsaufteilung}
 
@@ -203,26 +301,29 @@ Die Challenge kann sowohl einzeln als auch in Kleingruppen bearbeitet werden und
 
     Manuel Friedl & Kryptographie \& Frontend & 
     \begin{itemize}
-      \item Analyse der CVE-2020-0601 Schwachstelle
-      \item Entwicklung der Python-Skripte \texttt{gen\_key.py} und \texttt{simulate\_vuln\_check.py}
-      \item Entwicklung des Web-Interface und Zertifikats-Visualizers
-      \item Erstellung verständlicher Challenge-Beschreibungen
-      \item Implementierung der Angriffslogik in Python
-      \item Frontend-Design mit HTML/CSS
-      \item Dokumentation der kryptographischen Konzepte
+        \item Konzeptionierung der einzelnen Challenges
+        \item Analyse der CVE-2020-0601 Schwachstelle
+        \item Entwicklung der Python-Skripte \texttt{verification.py} und \texttt{signature\_validator.py} 
+        \item Entwicklung des Web-Interface und Zertifikats-Visualizers
+        \item Erstellung verständlicher Challenge-Beschreibungen
+        \item Implementierung der Angriffslogik in Python
+        \item Frontend-Design mit HTML/CSS
+        \item Erstellen der Zertifikate \texttt{mystery\_cert.pem} und \texttt{valid\_certificate.pem}
+        \item Dokumentation der kryptographischen Konzepte
     \end{itemize} \\
     \hline
 
     Christof Renner & DevOps \& Infrastruktur & 
     \begin{itemize}
-      \item Docker-Containerisierung mit Multi-Stage-Builds
-      \item CI/CD-Pipeline mit GitHub Actions
-      \item Security-Scanning und Linting-Integration
-      \item GitHub Container Registry Konfiguration
-      \item Dokumentation der technischen Details
-      \item Container-Deployment-Architektur
-      \item Implementierung der Sicherheitsmaßnahmen
-      \item Frontend-Optimierungen
+        \item Konzeptionierung der einzelnen Challenges
+        \item Docker-Containerisierung mit Multi-Stage-Builds
+        \item CI/CD-Pipeline mit GitHub Actions
+        \item Security-Scanning und Linting-Integration
+        \item GitHub Container Registry Konfiguration
+        \item Dokumentation der technischen Details
+        \item Container-Deployment-Architektur
+        \item Implementierung der Sicherheitsmaßnahmen
+        \item Frontend-Optimierungen
     \end{itemize} \\
     \hline
     \end{longtable}
@@ -233,27 +334,26 @@ Die Challenge kann sowohl einzeln als auch in Kleingruppen bearbeitet werden und
 
 \section{Containerisierung}
 \subsection{Dockerfile}
-
-Das Projekt nutzt ein \emph{Multi-Stage-Build}-Konzept, um die Abhängigkeiten in einem schlanken Container zu installieren und gleichzeitig die Größe des finalen Images zu minimieren. \\
-Dabei wird beim starten des Containers ein einfacher HTTP-Server gestartet, der die Challenge-Dateien bereitstellt.
-Die Abhängigkeiten werden in einem separaten Build-Stage installiert, um die Sicherheit und Portabilität zu erhöhen. \\
-Die Abhängigkeiten sind in der Datei \texttt{requirements.txt} definiert, die die benötigten Python-Pakete enthält.
+Das vorliegende Dockerfile definiert die Containerisierung der Curveball-CTF Webanwendung und nutzt dabei Python 3.12 auf Alpine Linux als schlanke und sicherheitsorientierte Basis. Durch die explizite Installation von OpenSSL Version 3.5.1-r0 werden kryptographische Funktionalitäten bereitgestellt, die für die SSL/TLS-basierten Challenges essentiell sind. Die Anwendung wird systematisch aufgebaut, indem zunächst die Python-Abhängigkeiten aus der \emph{requirements.txt} installiert werden, bevor der Anwendungscode kopiert wird - eine bewährte Praxis für effizientes Docker Layer Caching. Der Container exponiert Port 8443, einen Standard-Port für HTTPS-Verbindungen, und startet automatisch den Python-Server über das \emph{server.py}-Skript. Diese Konfiguration gewährleistet eine reproduzierbare, isolierte Umgebung für die Kryptologie-Challenges und minimiert gleichzeitig durch die Alpine-Basis die Angriffsfläche des Systems.
 
 \vspace{1cm}
 
 \begin{lstlisting}[language=bash,caption={Auszug aus dem finalen Dockerfile}]
-FROM python:3.12-slim AS build
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libssl-dev build-essential && rm -rf /var/lib/apt/lists/*
-COPY requirements.txt .
-RUN pip install --prefix=/install -r requirements.txt
+FROM python:3.12-alpine
 
-FROM python:3.12-slim
-COPY --from=build /install /usr/local
-COPY curveball-ctf /app
+# Pin Alpine package versions for reproducible builds
+RUN apk add --no-cache openssl=3.5.1-r0
+
 WORKDIR /app
-USER 1001:1001
-ENTRYPOINT ["python", "-m", "http.server", "8080"]
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir --requirement requirements.txt
+
+COPY . /app
+
+EXPOSE 8443
+
+CMD ["python", "server.py"]
+
 \end{lstlisting}
 
 \subsection{Architektur}
@@ -267,7 +367,7 @@ ENTRYPOINT ["python", "-m", "http.server", "8080"]
     \node[service, right=of browser] (ctf) {CurveBall-CTF\\Container};
     \node[service, right=of ctf] (registry) {GHCR\\Registry};
 
-    \draw[-Stealth] (browser) -- node[midway, above]{HTTP :8080} (ctf);
+    \draw[-Stealth] (browser) -- node[midway, above]{HTTPS :8443} (ctf);
     \draw[-Stealth, dashed] (ctf) -- node[midway, above]{Image-Pull} (registry);
   \end{tikzpicture}
   \caption{Container-Deployment in der Lehrumgebung}\label{fig:container}
@@ -509,8 +609,6 @@ Die Umsetzung dieses Ansatzes scheiterte letztendlich aus mehreren gravierenden 
   \item[Storage-Anforderungen] Das vollständige Windows 10-Image hätte mindestens 8 GB Speicherplatz benötigt, selbst in komprimierter Form. Dies hätte den Rahmen des Git-Repositorys gesprengt und eine Nutzung von Git LFS (Large File Storage) erforderlich gemacht, was mit erheblichen Kosten für Bandbreite und Speicherplatz verbunden gewesen wäre. Zudem hätte die Verteilung an mehrere Dutzend Studierende die Netzwerkressourcen der Hochschule stark belastet.
   
   \item[CI/CD-Limitationen] Die genutzten GitHub-Actions-Runner unterstützen keine Nested-Virtualisation, was eine automatisierte Überprüfung und Tests der VM innerhalb der CI/CD-Pipeline unmöglich machte. Dies hätte zu nicht getesteten Releases führen können, was dem DevSecOps-Ansatz des Projekts fundamental widerspricht.
-  
-  \item[Wartungsaufwand] Mit jedem Windows-Update wäre eine Aktualisierung des Basis-Images nötig geworden, um die Verwundbarkeit zu erhalten. Dies hätte einen erheblichen fortlaufenden Wartungsaufwand bedeutet und die langfristige Nutzbarkeit des Lernmaterials gefährdet.
 \end{description}
 
 \subsection{Vorteile der Container-Lösung}
