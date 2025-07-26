@@ -657,14 +657,11 @@
     <script src="{{ url_for('static', filename='js/progress.js') }}"></script>
     <script src="{{ url_for('static', filename='js/challenge4.js') }}"></script>
     
-    <!-- Add download debugging script -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Add click event listener to all download links for custom download handling
         const downloadLinks = document.querySelectorAll('a[download]');
         downloadLinks.forEach(link => {
             link.addEventListener('click', function(e) {
-                // Prevent the default download to avoid filename conflicts
                 e.preventDefault();
                 
                 const filename = this.getAttribute('download');
