@@ -162,7 +162,7 @@ Challenge 1 behandelt die Grundlagen der elliptischen Kurven-Kryptographie durch
 \begin{tcolorbox}[colback=thd-blue!10,colframe=thd-blue,title=\textbf{Gegebene Parameter}]
 \begin{itemize}[leftmargin=1.5cm]
     \item \textbf{Elliptische Kurve:} $y^2 \equiv x^3 + 3x + 3 \pmod{97}$
-    \item \textbf{Generator-Punkt:} $G = (3, 6)$
+    \item \textbf{Generator-Punkt:} $G = (11, 3)$
     \item \textbf{Private Key:} $d = 7$
     \item \textbf{Ziel:} Berechnung von $P = 7G$ (Public Key)
 \end{itemize}
@@ -203,7 +203,7 @@ y_3 &= \lambda(x_1 - x_3) - y_1 \pmod{p}
 \begin{solutionbox}
 \textbf{Lösung Schritt 1}
 \begin{equation}
-1G = G = (3, 6)
+1G = G = (11, 3)
 \end{equation}
 \end{solutionbox}
 
@@ -213,90 +213,86 @@ y_3 &= \lambda(x_1 - x_3) - y_1 \pmod{p}
 \textbf{Wichtiger Hinweis:} Bei der Punktverdopplung muss die spezielle Formel für $P_1 = P_2$ verwendet werden.
 \end{warningbox}
 
-Gegeben: $G = (3, 6)$, $a = 3$, $p = 97$
+Gegeben: $G = (11, 3)$, $a = 3$, $p = 97$
 
 \begin{align}
-\lambda &= \frac{3 \cdot 3^2 + 3}{2 \cdot 6} \pmod{97} \\
-&= \frac{3 \cdot 9 + 3}{12} \pmod{97} \\
-&= \frac{30}{12} \pmod{97} \\
-&= 30 \cdot 12^{-1} \pmod{97}
+\lambda &= \frac{3 \cdot 11^2 + 3}{2 \cdot 3} \pmod{97} \\
+&= \frac{3 \cdot 121 + 3}{6} \pmod{97} \\
+&= \frac{366}{6} \pmod{97} =  \frac{75}{6} \pmod{97}\\
+&= 75 \cdot 6^{-1} \pmod{97}
 \end{align}
 
 Berechnung des modularen Inversen von 12 modulo 97:
 \begin{align}
-12^{-1} \equiv 89 \pmod{97} \quad \text{(da } 12 \cdot 89 = 1068 \equiv 1 \pmod{97}\text{)}
+6^{-1} \equiv 81 \pmod{97} \quad \text{(da } 6 \cdot 81 = 486 \equiv 1 \pmod{97}\text{)}
 \end{align}
 
 \begin{align}
-\lambda &= 30 \cdot 89 \pmod{97} = 2670 \pmod{97} = 49 \\
-x_3 &= 49^2 - 2 \cdot 3 \pmod{97} = 2401 - 6 \pmod{97} = 80 \\
-y_3 &= 49 \cdot (3 - 80) - 6 \pmod{97} = 49 \cdot (-77) - 6 \pmod{97} \\
-&= -3773 - 6 \pmod{97} = -3779 \pmod{97} = 87
+\lambda &= 75 \cdot 81 \pmod{97} = 6075 \pmod{97} = 86 \\
+x_3 &= 86^2 - 2 \cdot11 \pmod{97} = 7396 - 22 \pmod{97} = 13 \\
+y_3 &= 86 \cdot (11 - 13) - 3 \pmod{97} = 86 \cdot (-2) - 3 \pmod{97} \\
+&= -175 \pmod{97} = 69
 \end{align}
 
 \begin{solutionbox}
-\textbf{Ergebnis Schritt 2:} $2G = (80, 87)$
+\textbf{Ergebnis Schritt 2:} $2G = (13, 69)$
 \end{solutionbox}
 
 \subsubsection{Schritt 3: Berechnung von 4G = 2G + 2G}
-Gegeben: $2G = (80, 87)$
+Gegeben: $2G = (13, 69)$
 
 \begin{align}
-\lambda &= \frac{3 \cdot 80^2 + 3}{2 \cdot 87} \pmod{97} \\
-&= \frac{3 \cdot 6400 + 3}{174} \pmod{97} \\
-&= \frac{19203}{174} \pmod{97} \\
-&= \frac{92}{77} \pmod{97} \quad \text{(nach Reduktion mod 97)} \\
-&= 92 \cdot 77^{-1} \pmod{97}
+\lambda &= \frac{3 \cdot 13^2 + 3}{2 \cdot 89} \pmod{97} \\
+&= \frac{3 \cdot 169 + 3}{138} \pmod{97} \\
+&= \frac{510}{138} \pmod{97} \\
+&= \frac{25}{41} \pmod{97} \quad \text{(nach Reduktion mod 97)} \\
+&= 25 \cdot 41^{-1} \pmod{97}
 \end{align}
 
-Modularer Inverser von 77 modulo 97: $77^{-1} \equiv 19 \pmod{97}$
+Modularer Inverser von 77 modulo 97: $41^{-1} \equiv 19 \pmod{97}$
 
 \begin{align}
-\lambda &= 92 \cdot 19 \pmod{97} = 1748 \pmod{97} = 6 \\
-x_3 &= 6^2 - 2 \cdot 80 \pmod{97} = 36 - 160 \pmod{97} = -124 \pmod{97} = 3 \\
-y_3 &= 6 \cdot (80 - 3) - 87 \pmod{97} = 6 \cdot 77 - 87 \pmod{97} \\
-&= 462 - 87 \pmod{97} = 375 \pmod{97} = 91
+\lambda &= 25 \cdot 19 \pmod{97} = 475 \pmod{97} = 90 \\
+x_3 &= 90^2 - 2 \cdot 13 \pmod{97} = 8100 - 26 \pmod{97} = 8074 \pmod{97} = 39 \\
+y_3 &= 90 \cdot (13 - 39) - 69 \pmod{97} = 90 \cdot (-26) - 69 \pmod{97} \\
+&= -2340 - 69 \pmod{97} = -2409 \pmod{97} = 50
 \end{align}
 
 \begin{solutionbox}
-\textbf{Ergebnis Schritt 3:} $4G = (3, 91)$
+\textbf{Ergebnis Schritt 3:} $4G = (39, 50)$
 \end{solutionbox}
 
 \subsubsection{Schritt 4: Berechnung von 6G = 4G + 2G}
-Gegeben: $4G = (3, 91)$, $2G = (80, 87)$
+Gegeben: $4G = (39, 50)$, $2G = (13, 69)$
 
 \begin{align}
-\lambda &= \frac{87 - 91}{80 - 3} \pmod{97} = \frac{-4}{77} \pmod{97} \\
-&= (-4) \cdot 77^{-1} \pmod{97} = (-4) \cdot 19 \pmod{97} \\
-&= -76 \pmod{97} = 21
+\lambda &= \frac{50 - 69}{39 - 13} \pmod{97} = \frac{-19}{26} \pmod{97} \\
+&= (-19) \cdot 26^{-1} \pmod{97} = 78 \cdot 56 \pmod{97} \\
+&= 4368 \pmod{97} = 3
 \end{align}
 
 \begin{align}
-x_3 &= 21^2 - 3 - 80 \pmod{97} = 441 - 83 \pmod{97} = 358 \pmod{97} = 67 \\
-y_3 &= 21 \cdot (3 - 67) - 91 \pmod{97} = 21 \cdot (-64) - 91 \pmod{97} \\
-&= -1344 - 91 \pmod{97} = -1435 \pmod{97} = 10
+x_3 &= 3^2 - 13 - 39 \pmod{97} = 9 - 52 \pmod{97} = -27 \pmod{97} = 54 \\
+y_3 &= 3 \cdot (13 - 54) - 69 \pmod{97} = 3 \cdot (-41) - 69 \pmod{97} \\
+&= -123 - 69 \pmod{97} = -192 \pmod{97} = 2
 \end{align}
-
-\begin{warningbox}
-\textbf{Korrektur der Berechnung:} Bei genauerer Überprüfung ergibt sich: $6G = (80, 10)$
-\end{warningbox}
 
 \subsubsection{Schritt 5: Berechnung von 7G = 6G + 1G}
-Gegeben: $6G = (80, 10)$, $1G = (3, 6)$
+Gegeben: $6G = (54, 2)$, $1G = (11, 3)$
 
 \begin{align}
-\lambda &= \frac{6 - 10}{3 - 80} \pmod{97} = \frac{-4}{-77} \pmod{97} = \frac{4}{77} \pmod{97} \\
-&= 4 \cdot 77^{-1} \pmod{97} = 4 \cdot 19 \pmod{97} = 76
+\lambda &= \frac{3 - 2}{11 - 54} \pmod{97} = \frac{1}{-43} \pmod{97} = \frac{4}{54} \pmod{97} \\
+&= 1 \cdot 54^{-1} \pmod{97} = 1 \cdot 9 \pmod{97} = 9
 \end{align}
 
 \begin{align}
-x_3 &= 76^2 - 80 - 3 \pmod{97} = 5776 - 83 \pmod{97} = 5693 \pmod{97} = 89 \\
-y_3 &= 76 \cdot (80 - 89) - 10 \pmod{97} = 76 \cdot (-9) - 10 \pmod{97} \\
-&= -684 - 10 \pmod{97} = -694 \pmod{97} = 12
+x_3 &= 9^2 - 54 - 11 \pmod{97} = 3721 - 65 \pmod{97} = 3656 \pmod{97} = 16 \\
+y_3 &= 9 \cdot (54 - 16) - 2 \pmod{97} = 9 \cdot 38 - 2 \pmod{97} \\
+&= 342 - 2 \pmod{97} = 340 \pmod{97} = 49
 \end{align}
 
 \begin{solutionbox}
-\textbf{Finales Ergebnis:} $7G = (89, 12)$
+\textbf{Finales Ergebnis:} $7G = (16, 49)$
 \end{solutionbox}
 
 \subsection{Verifikation}
@@ -310,9 +306,9 @@ Der berechnete Public Key muss die Kurvengleichung erfüllen, um die Korrektheit
 Der berechnete Public Key kann durch Einsetzen in die Kurvengleichung verifiziert werden:
 \begin{align}
 y^2 &\stackrel{?}{=} x^3 + 3x + 3 \pmod{97} \\
-12^2 &\stackrel{?}{=} 89^3 + 3 \cdot 89 + 3 \pmod{97} \\
-144 &\stackrel{?}{=} 704969 + 267 + 3 \pmod{97} \\
-47 &\stackrel{?}{=} 47 \pmod{97} \quad \checkmark
+49^2 &\stackrel{?}{=} 16^3 + 3 \cdot 16 + 3 \pmod{97} \\
+2401 &\stackrel{?}{=} 4096 + 48 + 3 \pmod{97} \\
+73 &\stackrel{?}{=} 73 \pmod{97} \quad \checkmark
 \end{align}
 
 \subsection{Kryptographische Bedeutung}
