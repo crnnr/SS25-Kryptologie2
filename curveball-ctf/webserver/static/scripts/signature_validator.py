@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 """
-Curveball CTF Challenge 4 - Signatur-Validierungs-Simulator
+Curveball CTF Challenge 4 - Signature Validator Simulator
 ==========================================================
 
-Dieses Skript demonstriert, wie ECC-Parameter-Manipulation die Signaturvalidierung 
-beeinflussen kann, ohne dass der Angreifer den ursprünglichen privaten Schlüssel kennt.
-
-CVE-2020-0601 Demonstration
+This script demonstrates how ECC parameter manipulation can affect signature validation
+without the attacker knowing the original private key.
 """
 
 import json
@@ -14,14 +12,14 @@ import hashlib
 from typing import Dict, Tuple, Optional
 
 class ECCSignatureValidator:
-    """Simuliert ECC-Signaturvalidierung mit manipulierbaren Parametern"""
+    """Simulate an ECC Signature Validator"""
     
     def __init__(self, curve_params: Dict[str, str]):
         """
-        Initialisiert den Validator mit Kurvenparametern
-        
+        Initialize the validator with curve parameters
+
         Args:
-            curve_params: Dictionary mit ECC-Kurvenparametern (p, a, b, generator, order)
+            curve_params: Dictionary with ECC curve parameters (p, a, b, generator, order)
         """
         self.p = int(curve_params['p'], 16) if isinstance(curve_params['p'], str) else curve_params['p']
         self.a = int(curve_params['a'], 16) if isinstance(curve_params['a'], str) else curve_params['a']
@@ -31,7 +29,7 @@ class ECCSignatureValidator:
         self.order = int(curve_params['order'], 16) if isinstance(curve_params['order'], str) else curve_params['order']
         
     def point_add(self, x1: int, y1: int, x2: int, y2: int) -> Tuple[int, int]:
-        """Elliptische Kurven Punkt-Addition (vereinfacht)"""
+        """Elliptic Curve Point Addition (simplified)"""
         if x1 == x2:
             if y1 == y2:
                 # Point doubling
@@ -46,7 +44,7 @@ class ECCSignatureValidator:
         return x3, y3
     
     def point_multiply(self, k: int, x: int, y: int) -> Tuple[int, int]:
-        """Skalare Multiplikation auf elliptischer Kurve (vereinfacht)"""
+        """Scalar multiplication on elliptic curve (simplified)"""
         if k == 0:
             return None, None
         if k == 1:
@@ -69,17 +67,7 @@ class ECCSignatureValidator:
     
     def validate_signature(self, message: str, signature_r: int, signature_s: int, 
                           public_key_x: int, public_key_y: int) -> Dict[str, any]:
-        """
-        Validiert eine ECDSA-Signatur
-        
-        Args:
-            message: Nachricht die signiert wurde
-            signature_r, signature_s: Signatur-Komponenten
-            public_key_x, public_key_y: Öffentlicher Schlüssel
-            
-        Returns:
-            Dictionary mit Validierungsergebnis und Details
-        """
+        """ Validates an ECDSA signature """
         try:
             # 1. Hash of the message 
             message_hash = int(hashlib.sha256(message.encode()).hexdigest(), 16)
@@ -160,7 +148,7 @@ class ECCSignatureValidator:
             }
 
 def load_signature_data(file_path: str = 'signature_data.json') -> Dict:
-    """Lädt Signatur-Testdaten aus JSON-Datei"""
+    """Loads signature test data from JSON file"""
     try:
         with open(file_path, 'r') as f:
             return json.load(f)
@@ -169,7 +157,7 @@ def load_signature_data(file_path: str = 'signature_data.json') -> Dict:
         return None
 
 def demonstrate_curveball_exploit():
-    """Demonstriert CVE-2020-0601 Curveball Exploit"""
+    """Shows how Curveball attack can manipulate ECC parameters"""
     
     print("🔐 Curveball CTF Challenge 4 - Signatur-Validierungs-Simulator")
     print("=" * 70)

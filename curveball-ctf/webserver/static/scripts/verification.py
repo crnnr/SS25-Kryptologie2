@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 """
-CVE-2020-0601 Curveball Vulnerability Simulation
-Verification Script for Challenge 3
+Curveball CTF Challenge 3 - Certificate Validation Simulator
+==========================================================
 
 This script simulates the vulnerable Windows CryptoAPI behavior
 and validates manipulated ECC certificates for educational purposes.
-
-DISCLAIMER: This is for educational use only!
 """
 
 import sys
@@ -80,14 +78,11 @@ def analyze_ecc_parameters(certificate):
         curve = public_key.curve
         curve_name = curve.name if hasattr(curve, 'name') else 'unknown'
         
-        # Check for non-standard curves (indicator of manipulation)
+        # Check for non-standard curves
         standard_curves = ['secp256r1', 'secp384r1', 'secp521r1']
         
         if curve_name not in standard_curves:
             return True, f"Non-standard curve detected: {curve_name}"
-        
-        # In a real implementation, we would check generator points here
-        # For this simulation, we'll check other indicators
         
         return False, f"Standard curve: {curve_name}"
         
