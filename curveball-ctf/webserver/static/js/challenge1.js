@@ -1,19 +1,19 @@
 // Challenge 1: ECC Fundamentals - Point Multiplication
 // Curve: y² ≡ x³ + 3x + 3 (mod 97)
-// Generator: G = (3, 6)
+// Generator: G = (11, 3)
 // Private Key: d = 7
 
 const CURVE_A = 3;
 const CURVE_B = 3;
 const MODULUS = 97;
-const GENERATOR = { x: 3, y: 6 };
+const GENERATOR = { x: 11, y: 3 };
 
 // Correct answers for the steps
 const CORRECT_ANSWERS = {
-    '2G': { x: 80, y: 87 },
-    '4G': { x: 3, y: 91 },
-    '6G': { x: 80, y: 10 },
-    '7G': { x: 89, y: 12 }
+    '2G': { x: 13, y: 69 },
+    '4G': { x: 39, y: 50 },
+    '6G': { x: 54, y: 2 },
+    '7G': { x: 16, y: 49 }
 };
 
 // Helper functions for modular arithmetic
@@ -100,7 +100,7 @@ function check2G() {
     }
     
     if (x === CORRECT_ANSWERS['2G'].x && y === CORRECT_ANSWERS['2G'].y) {
-        feedback.innerHTML = '<span class="success">✅ Korrekt! 2G = (80, 87)</span>';
+        feedback.innerHTML = '<span class="success">✅ Korrekt! 2G = (13, 69)</span>';
         showCalculationDetails('2G');
         setTimeout(() => {
             document.getElementById('step3').style.display = 'block';
@@ -123,7 +123,7 @@ function check4G() {
     }
     
     if (x === CORRECT_ANSWERS['4G'].x && y === CORRECT_ANSWERS['4G'].y) {
-        feedback.innerHTML = '<span class="success">✅ Korrekt! 4G = (3, 91)</span>';
+        feedback.innerHTML = '<span class="success">✅ Korrekt! 4G = (39, 50)</span>';
         showCalculationDetails('4G');
         setTimeout(() => {
             document.getElementById('step4').style.display = 'block';
@@ -145,7 +145,7 @@ function check6G() {
     }
     
     if (x === CORRECT_ANSWERS['6G'].x && y === CORRECT_ANSWERS['6G'].y) {
-        feedback.innerHTML = '<span class="success">✅ Korrekt! 6G = (80, 10)</span>';
+        feedback.innerHTML = '<span class="success">✅ Korrekt! 6G = (54, 2)</span>';
         setTimeout(() => {
             document.getElementById('step5').style.display = 'block';
             document.getElementById('step5').scrollIntoView({ behavior: 'smooth' });
@@ -189,11 +189,11 @@ function showCalculationDetails(step) {
         const details = `
             <div class="calculation-details">
                 <h5>Detaillierte Berechnung für 2G:</h5>
-                <div class="calc-step">λ = (3 × 3² + 3) × (2 × 6)⁻¹ mod 97</div>
-                <div class="calc-step">λ = (3 × 9 + 3) × 12⁻¹ mod 97</div>
-                <div class="calc-step">λ = 30 × 89 mod 97 = 49</div>
-                <div class="calc-step">x₃ = 49² - 2 × 3 mod 97 = 2401 - 6 mod 97 = 80</div>
-                <div class="calc-step">y₃ = 49 × (3 - 80) - 6 mod 97 = 49 × (-77) - 6 mod 97 = 87</div>
+                <div class="calc-step">λ = (3 × 11² + 3) × (2 × 3)⁻¹ mod 97</div>
+                <div class="calc-step">λ = (3 × 121 + 3) × 6⁻¹ mod 97</div>
+                <div class="calc-step">λ = 75 × 81 mod 97 = 61</div>
+                <div class="calc-step">x₃ = 61² - 2 × 11 mod 97 = 3721 - 22 mod 97 = 13</div>
+                <div class="calc-step">y₃ = 61 × (11 - 13) - 3 mod 97 = 61 × (-2) - 3 mod 97 = 69</div>
             </div>
         `;
         document.getElementById('feedback2g').innerHTML += details;
@@ -201,11 +201,11 @@ function showCalculationDetails(step) {
         const details = `
             <div class="calculation-details">
                 <h5>Detaillierte Berechnung für 4G = 2(2G):</h5>
-                <div class="calc-step">Mit 2G = (80, 87):</div>
-                <div class="calc-step">λ = (3 × 80² + 3) × (2 × 87)⁻¹ mod 97</div>
-                <div class="calc-step">λ = 19203 × 174⁻¹ mod 97 = 30 × 84 mod 97 = 91</div>
-                <div class="calc-step">x₃ = 91² - 2 × 80 mod 97 = 8281 - 160 mod 97 = 3</div>
-                <div class="calc-step">y₃ = 91 × (80 - 3) - 87 mod 97 = 91 × 77 - 87 mod 97 = 91</div>
+                <div class="calc-step">Mit 2G = (13, 69):</div>
+                <div class="calc-step">λ = (3 × 13² + 3) × (2 × 69)⁻¹ mod 97</div>
+                <div class="calc-step">λ = 25 × 71 mod 97 = 29</div>
+                <div class="calc-step">x₃ = 29² - 2 × 13 mod 97 = 841 - 26 mod 97 = 39</div>
+                <div class="calc-step">y₃ = 29 × (13 - 39) - 69 mod 97 = 29 × (-26) - 69 mod 97 = 50</div>
             </div>
         `;
         document.getElementById('feedback4g').innerHTML += details;
@@ -217,11 +217,11 @@ function showHint2G() {
         <div class="hint-section">
             <h5>💡 Tipp für 2G:</h5>
             <div class="hint-content">
-                <p>Für die Punktverdopplung G + G mit G = (3, 6):</p>
+                <p>Für die Punktverdopplung G + G mit G = (11, 3):</p>
                 <ul>
-                    <li>Berechnen Sie λ = (3 × 3² + 3) / (2 × 6) mod 97</li>
-                    <li>Der modulare Inverse von 12 mod 97 ist 89</li>
-                    <li>Also: λ = 30 × 89 mod 97 = 49</li>
+                    <li>Berechnen Sie λ = (3 × 11² + 3) / (2 × 3) mod 97</li>
+                    <li>Der modulare Inverse von 6 mod 97 ist 81</li>
+                    <li>Also: λ = 75 × 81 mod 97 = 61</li>
                 </ul>
             </div>
         </div>
