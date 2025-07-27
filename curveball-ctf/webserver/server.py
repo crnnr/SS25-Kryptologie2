@@ -127,36 +127,10 @@ def challenge4():
         return render_template('challenge_locked.html', challenge_number=4)
     return render_template('challenge4.html')
 
-@app.route('/api/complete_challenge/<int:challenge_number>', methods=['POST'])
-def complete_challenge(challenge_number):
-    """API endpoint to mark a challenge as completed"""
-    if challenge_number < 1 or challenge_number > 4:
-        return jsonify({'error': 'Invalid challenge number'}), 400
-    
-    if not is_challenge_unlocked(challenge_number):
-        return jsonify({'error': 'Challenge is not unlocked'}), 403
-    
-    mark_challenge_completed(challenge_number)
-    return jsonify({
-        'success': True,
-        'message': f'Challenge {challenge_number} completed!',
-        'status': get_challenge_status()
-    })
-
 @app.route('/api/challenge_status')
 def challenge_status_api():
     """API endpoint for challenge status"""
     return jsonify(get_challenge_status())
-
-@app.route('/api/reset_progress', methods=['POST'])
-def reset_progress():
-    """API endpoint to reset progress"""
-    session['completed_challenges'] = []
-    return jsonify({
-        'success': True,
-        'message': 'Progress reset',
-        'status': get_challenge_status()
-    })
 
 @app.route('/downloads/<filename>')
 def download_file(filename):
