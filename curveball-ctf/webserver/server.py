@@ -2,31 +2,31 @@ from flask import Flask, render_template, request, jsonify, send_from_directory,
 import os
 
 app = Flask(__name__)
-app.secret_key = 'curveball_ctf_secret_key_for_session_management_2025'  # Für Session-Management
+app.secret_key = 'curveball_ctf_secret_key_for_session_management_2025'  # Secret key for session management
 
-# Challenge-Fortschritt verwalten
+# Challenge progress management
 def get_completed_challenges():
-    """Gibt die Liste der abgeschlossenen Challenges zurück"""
+    """Returns the list of completed challenges"""
     return session.get('completed_challenges', [])
 
 def mark_challenge_completed(challenge_number):
-    """Markiert eine Challenge als abgeschlossen"""
+    """Marks a challenge as completed"""
     completed = get_completed_challenges()
     if challenge_number not in completed:
         completed.append(challenge_number)
         session['completed_challenges'] = completed
 
 def is_challenge_unlocked(challenge_number):
-    """Prüft, ob eine Challenge freigeschaltet ist"""
+    """Checks if a challenge is unlocked"""
     if challenge_number == 1:
-        return True  # Challenge 1 ist immer freigeschaltet
+        return True  # Challenge 1 is always unlocked
     
     completed = get_completed_challenges()
-    # Challenge N ist freigeschaltet, wenn Challenge N-1 abgeschlossen ist
+    # Challenge N is unlocked if Challenge N-1 is completed
     return (challenge_number - 1) in completed
 
 def get_challenge_status():
-    """Gibt den Status aller Challenges zurück"""
+    """Returns the status of all challenges"""
     completed = get_completed_challenges()
     return {
         'completed': completed,
@@ -45,18 +45,17 @@ def after_request(response):
 
 @app.route('/')
 def index():
-    """Hauptseite mit Curveball-Einführung und Challenge-Übersicht"""
+    """Main page with challenge status"""
     challenge_status = get_challenge_status()
     return render_template('index.html', challenge_status=challenge_status)
 
 @app.route('/introduction')
 def introduction():
-    """Serviert die detaillierte Curveball-Einführung"""
+    """shows the introduction documentation"""
     try:
         with open('CURVEBALL_INTRODUCTION.md', 'r', encoding='utf-8') as f:
             markdown_content = f.read()
         
-        # Konvertiere Markdown zu HTML (einfache Version)
         html_content = markdown_to_html(markdown_content)
         
         return render_template('introduction.html', content=html_content)
@@ -64,7 +63,7 @@ def introduction():
         return "Einführungsdokumentation nicht gefunden", 404
 
 def markdown_to_html(markdown_text):
-    """Einfache Markdown-zu-HTML Konvertierung"""
+    """Markdown to HTML conversion"""
     import re
     
     html = markdown_text
@@ -102,14 +101,14 @@ def markdown_to_html(markdown_text):
 
 @app.route('/challenge1')
 def challenge1():
-    """Challenge 1: ECC Grundlagen - Punktmultiplikation"""
+    """Challenge 1: ECC Basics - Point Multiplication"""
     if not is_challenge_unlocked(1):
         return render_template('challenge_locked.html', challenge_number=1)
     return render_template('challenge1.html')
 
 @app.route('/challenge2')
 def challenge2():
-    """Challenge 2: Zertifikatsanalyse mit OpenSSL"""
+    """Challenge 2: Certificate Analysis with OpenSSL"""
     if not is_challenge_unlocked(2):
         return render_template('challenge_locked.html', challenge_number=2)
     return render_template('challenge2.html')
@@ -123,14 +122,14 @@ def challenge3():
 
 @app.route('/challenge4')
 def challenge4():
-    """Challenge 4: Kurvenparameter & Signaturvalidierung"""
+    """Challenge 4: Curve Parameters & Signature Validation"""
     if not is_challenge_unlocked(4):
         return render_template('challenge_locked.html', challenge_number=4)
     return render_template('challenge4.html')
 
 @app.route('/api/complete_challenge/<int:challenge_number>', methods=['POST'])
 def complete_challenge(challenge_number):
-    """API-Endpoint zum Markieren einer Challenge als abgeschlossen"""
+    """API endpoint to mark a challenge as completed"""
     if challenge_number < 1 or challenge_number > 4:
         return jsonify({'error': 'Invalid challenge number'}), 400
     
@@ -146,12 +145,12 @@ def complete_challenge(challenge_number):
 
 @app.route('/api/challenge_status')
 def challenge_status_api():
-    """API-Endpoint für Challenge-Status"""
+    """API endpoint for challenge status"""
     return jsonify(get_challenge_status())
 
 @app.route('/api/reset_progress', methods=['POST'])
 def reset_progress():
-    """API-Endpoint zum Zurücksetzen des Fortschritts (für Debugging)"""
+    """API endpoint to reset progress"""
     session['completed_challenges'] = []
     return jsonify({
         'success': True,
@@ -161,7 +160,7 @@ def reset_progress():
 
 @app.route('/downloads/<filename>')
 def download_file(filename):
-    """Serviert alle Download-Dateien"""
+    """Shows files for download"""
     try:
         downloads_path = os.path.join(app.root_path, 'static', 'downloads')
         file_path = os.path.join(downloads_path, filename)
@@ -197,7 +196,7 @@ def download_file(filename):
 
 @app.route('/scripts/<filename>')
 def download_script(filename):
-    """Serviert Python-Skripte für Downloads"""
+    """Shows Python scripts for download"""
     try:
         scripts_path = os.path.join(app.root_path, 'static', 'scripts')
         file_path = os.path.join(scripts_path, filename)
@@ -234,7 +233,7 @@ def download_script(filename):
 
 @app.route('/debug/files')
 def debug_files():
-    """Debug-Route um verfügbare Dateien zu überprüfen"""
+    """Debug route to check available files"""
     try:
         downloads_path = os.path.join(app.root_path, 'static', 'downloads')
         scripts_path = os.path.join(app.root_path, 'static', 'scripts')
@@ -276,14 +275,9 @@ def serve_static_download(filename):
         print(f"Error in serve_static_download: {e}")
         return "Internal server error", 500
 
-@app.route('/static/challenge4/<filename>')
-def download_challenge4_files(filename):
-    """Serviert Challenge 4 Dateien für Downloads - deprecated, use /downloads/ instead"""
-    return send_from_directory(os.path.join(app.root_path, 'static', 'downloads'), filename, as_attachment=True)
-
 @app.route('/explain/<topic>')
 def explain(topic):
-    """Erklärt verschiedene Kryptographie-Konzepte"""
+    """Explains various cryptography concepts"""
     explanations = {
         'ecc': {
             'title': 'Elliptic Curve Cryptography (ECC)',

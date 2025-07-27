@@ -34,10 +34,10 @@ class ECCSignatureValidator:
         """Elliptische Kurven Punkt-Addition (vereinfacht)"""
         if x1 == x2:
             if y1 == y2:
-                # Punkt-Verdopplung
+                # Point doubling
                 s = (3 * x1 * x1 + self.a) * pow(2 * y1, -1, self.p) % self.p
             else:
-                return None, None  # Punkt im Unendlichen
+                return None, None  # Point at infinity
         else:
             s = (y2 - y1) * pow(x2 - x1, -1, self.p) % self.p
         
@@ -52,7 +52,7 @@ class ECCSignatureValidator:
         if k == 1:
             return x, y
         
-        # Double-and-add Algorithmus (vereinfacht)
+        # Double-and-add Algorithmus
         result_x, result_y = None, None
         addend_x, addend_y = x, y
         
@@ -81,10 +81,10 @@ class ECCSignatureValidator:
             Dictionary mit Validierungsergebnis und Details
         """
         try:
-            # 1. Hash der Nachricht berechnen
+            # 1. Hash of the message 
             message_hash = int(hashlib.sha256(message.encode()).hexdigest(), 16)
-            
-            # 2. Signatur-Parameter prüfen
+
+            # 2. Check signature parameters
             if not (1 <= signature_r < self.order and 1 <= signature_s < self.order):
                 return {
                     'valid': False,
@@ -92,7 +92,7 @@ class ECCSignatureValidator:
                     'step': 'parameter_check'
                 }
             
-            # 3. Inverse von s berechnen
+            # 3. Invers of s modulo order
             try:
                 s_inv = pow(signature_s, -1, self.order)
             except ValueError:
@@ -102,11 +102,11 @@ class ECCSignatureValidator:
                     'step': 'inverse_calculation'
                 }
             
-            # 4. u1 und u2 berechnen
+            # 4. calculate u1 and u2
             u1 = (message_hash * s_inv) % self.order
             u2 = (signature_r * s_inv) % self.order
             
-            # 5. Punkt-Berechnung: u1*G + u2*Qa
+            # 5. u1*G + u2*Qa
             # u1 * Generator
             x1, y1 = self.point_multiply(u1, self.gx, self.gy)
             if x1 is None:
@@ -125,7 +125,7 @@ class ECCSignatureValidator:
                     'step': 'public_key_multiplication'
                 }
             
-            # Addition der Punkte
+            # Add the two points
             result_x, result_y = self.point_add(x1, y1, x2, y2)
             if result_x is None:
                 return {
@@ -134,7 +134,7 @@ class ECCSignatureValidator:
                     'step': 'point_addition'
                 }
             
-            # 6. Validierung: result_x mod order == signature_r
+            # 6. Validation: result_x mod order == signature_r
             final_x = result_x % self.order
             is_valid = final_x == signature_r
             
@@ -174,7 +174,7 @@ def demonstrate_curveball_exploit():
     print("🔐 Curveball CTF Challenge 4 - Signatur-Validierungs-Simulator")
     print("=" * 70)
     
-    # Lade Testdaten
+    # Load signature data
     data = load_signature_data()
     if not data:
         return
@@ -184,7 +184,7 @@ def demonstrate_curveball_exploit():
     signature_r = int(sig_data['original_signature']['r'], 16)
     signature_s = int(sig_data['original_signature']['s'], 16)
     
-    # Simuliere einen öffentlichen Schlüssel
+    # Simulate public key from original parameters
     public_key_x = int(original_params['generator_x'], 16)
     public_key_y = int(original_params['generator_y'], 16)
     
@@ -193,7 +193,7 @@ def demonstrate_curveball_exploit():
     print(f"🔢 Signatur s: {hex(signature_s)[:20]}...")
     print()
     
-    # Test 1: Normale Validierung
+    # Test 1: Normal signature validation with original parameters
     print("1️⃣  Normale Signatur-Validierung mit ursprünglichen Parametern")
     print("-" * 50)
     
@@ -206,7 +206,7 @@ def demonstrate_curveball_exploit():
     print(f"💭 Grund: {result_original['reason']}")
     print()
     
-    # Test 2: Manipulation von Parametern
+    # Test 2: Manipulation of parameters to demonstrate Curveball
     print("2️⃣  Curveball-Angriff: Parameter-Manipulation")
     print("-" * 50)
     
@@ -215,7 +215,6 @@ def demonstrate_curveball_exploit():
         print(f"   📊 Ausnutzbarkeit: {example['exploitation_factor'].upper()}")
         print(f"   📋 {example['description']}")
         
-        # Erstelle manipulierte Parameter
         manipulated_params = original_params.copy()
         
         if 'new_generator_x' in example:
@@ -235,7 +234,7 @@ def demonstrate_curveball_exploit():
         print(f"   💭 Details: {result_manipulated['reason']}")
         print()
     
-    # Sicherheitshinweise
+    # Safety measures
     print("🛡️  Schutzmaßnahmen gegen Curveball")
     print("-" * 40)
     print("• Immer Kurvenparameter gegen vertrauenswürdige Standards validieren")

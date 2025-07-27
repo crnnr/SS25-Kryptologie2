@@ -29,18 +29,6 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  # challenger:
-  #   build: 
-  #     context: ./challenger
-  #     dockerfile: Dockerfile
-  #   container_name: curveball-challenger
-  #   restart: unless-stopped
-  #   networks:
-  #     - ctfnet
-  #   depends_on:
-  #     webserver:
-  #       condition: service_healthy
-
 networks:
   ctfnet:
     driver: bridge
