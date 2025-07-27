@@ -279,7 +279,7 @@ Die CTF-Anwendung verwendet ein modulares JavaScript-System mit separaten Dateie
 \subsubsection{challenge1.js - ECC Grundlagen}
 \begin{itemize}
     \item \textbf{Thema:} Elliptische Kurven Punktmultiplikation
-    \item \textbf{Kurvendefinition:} \mathrm{y^2 = x^3 + 3 (mod 97)}, Generator G = (3,6)
+    \item \textbf{Kurvendefinition:} $y^2 = x^3 + 3$ (mod 97), Generator G = (11,3)
     \item \textbf{Mathematische Funktionen:}
     \begin{itemize}
         \item \emph{modInverse()} - Modulare Inverse Berechnung
@@ -289,6 +289,111 @@ Die CTF-Anwendung verwendet ein modulares JavaScript-System mit separaten Dateie
     \end{itemize}
 \end{itemize}
 
+\subsubsection{challenge2.js - Zertifikatsanalyse}
+\begin{itemize}
+    \item \textbf{Thema:} Analysieren eines Zertifikats auf eine Flag
+    \item \textbf{Max. Versuche:} 10 mit eskalierenden Hinweisen
+    \item \textbf{Kernfunktionen:}
+    \begin{itemize}
+        \item Flag-Validierung mit mehreren Formatvarianten
+        \item Progressives Hint-System nach mehreren Versuchen
+        \item OpenSSL-Befehl-Kopierungsfunktion
+        \item Confetti-Animationen bei Erfolg
+        \item Lokale Speicherung des Fortschritts
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{challenge3.js - Curveball Exploit-Simulation}
+\begin{itemize}
+    \item \textbf{ECC-Kurven:} Unterstützung für P-256, P-384, P-521
+    \item \textbf{Angriffsmethoden:}
+    \begin{itemize}
+        \item Generator-Punkt Manipulation
+        \item Parameter-Spoofing
+        \item Custom Exploits
+        \item Confetti-Animationen bei Erfolg
+        \item Lokale Speicherung des Fortschritts
+    \end{itemize}
+    \item \textbf{Kernfunktionen:}
+    \begin{itemize}
+        \item \emph{generateExploitParameters()} - Erstellt manipulierte Parameter
+        \item \emph{generateRogueGenerator()} - Generiert manipulierte Generator-Punkte
+        \item Mock-Zertifikatserstellung
+        \item OpenSSL-Befehlsgenerierunng
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{challenge4.js - Kurvenparameter \& Signatur-Validierung}
+\begin{itemize}
+    \item \textbf{Standard-Kurve:} NIST P-256 Parameter
+    \item \textbf{Max. Versuche:} 10 mit eskalierenden Hinweisen
+    \item \textbf{Manipulationsmethoden:}
+    \begin{itemize}
+        \item Generator-Punkt Spoofing
+        \item Kurvenparameter-Manipulation (a,b)
+        \item Gruppenordnung-Manipulation (n)
+        \item Benutzerdefinierte Kombinationen
+    \end{itemize}
+    \item \textbf{Kernfunktionen:}
+    \begin{itemize}
+        \item \emph{performManipulation()} - Führt Parameter-Manipulationen durch
+        \item \emph{calculateExploitPotential()} - Bewertet Angriffspotenzial (0-100)
+        \item Hex-Validierung und -Manipulation
+        \item JSON-Export für Parameter
+    \end{itemize}
+\end{itemize}
+
+\subsection{Python-Skript: verification.py}
+Das Python-Skript verification.py dient als Simulator zur Analyse der Curveball-Schwachstelle (CVE-2020-0601) im Windows CryptoAPI. Es ermöglicht das Verständnis des fehlerhaften Verhaltens bei der ECC-Zertifikatsvalidierung, indem es zeigt, wie Windows in der betroffenen Version kritische Prüfungen – insbesondere die Validierung der ECC-Parameter und des Generatorpunkts – überspringt. Das Skript unterstützt zwei Betriebsmodi: einen Analysemodus, der die Unterschiede zwischen sicherer und unsicherer Validierung aufzeigt, sowie einen Validierungsmodus, mit dem manipulierte ECC-Zertifikate überprüft und potenzielle Exploit-Marker erkannt werden können. Durch die Simulation des Schwachstellenverhaltens bietet das Tool eine praxisnahe Möglichkeit zur Schulung und zum sicheren Testen von Sicherheitsmechanismen im Bereich der Zertifikatsprüfung. Bei erfolgreicher Ausnutzung wird eine symbolische Flagge ausgegeben, was das Skript auch für CTF-Challenges besonders geeignet macht.\\
+
+\begin{lstlisting}[language=Python,caption={analyze\_ecc\_parameter()-Methode}]
+    curve = public_key.curve
+    curve_name = curve.name if hasattr(curve, 'name') else 'unknown'
+
+    standard_curves = ['secp256r1', 'secp384r1', 'secp521r1']
+
+    if curve_name not in standard_curves:
+        return True, f"Non-standard curve detected: {curve_name}"
+
+\end{lstlisting}
+Im Rahmen der Schwachstellenanalyse überprüft das Skript, ob ein Zertifikat auf einer nicht standardisierten elliptischen Kurve basiert. Standardmäßig werden in der Praxis nur gut geprüfte Kurven wie \textbf{secp256r1}, \textbf{secp384r1} und \textbf{secp521r1} verwendet. Das Snippet extrahiert den Namen der verwendeten Kurve aus dem Zertifikat und vergleicht ihn mit dieser Liste. Wenn eine nicht standardisierte Kurve erkannt wird, deutet das auf eine manipulierte ECC-Struktur hin – ein zentrales Element der Curveball-Ausnutzung. Dadurch wird sichtbar, ob das Zertifikat potenziell Teil eines Exploits ist.\\
+
+\subsection{Python-Skript: signature\_validator.py}
+In diesem Skritp wird demonstriert, wie die Curveball-Schwachstelle (CVE-2020-0601) ausgenutzt werden kann, um gültige ECDSA-Signaturen auf Basis manipulierter elliptischer Kurvenparameter zu erzeugen – ohne Kenntnis des privaten Schlüssels. Im Zentrum steht die Klasse ECCSignatureValidator, die eine vereinfachte ECC-Signaturprüfung durchführt. Mithilfe manipulierten Parametersätzen lassen sich gezielt Situationen erzeugen, in denen Signaturen als gültig anerkannt werden, obwohl sie unter vertrauenswürdigen Parametern nicht gültig wären.\\
+\\
+Die Validierung beruht auf klassischen ECDSA-Schritten: Hashing der Nachricht, Inversion von s, Berechnung von Punktkombinationen auf der elliptischen Kurve und abschließender Vergleich.\\
+
+\begin{lstlisting}[language=Python,caption={Punktmultiplikation auf der Kurve}]
+def point_multiply(self, k: int, x: int, y: int) -> Tuple[int, int]:
+    """Scalar multiplication on elliptic curve (simplified)"""
+    if k == 0:
+        return None, None
+    if k == 1:
+        return x, y
+
+    result_x, result_y = None, None
+    addend_x, addend_y = x, y
+
+    while k:
+        if k & 1:
+            if result_x is None:
+                result_x, result_y = addend_x, addend_y
+            else:
+                result_x, result_y = self.point_add(result_x, result_y, addend_x, addend_y)
+        addend_x, addend_y = self.point_add(addend_x, addend_y, addend_x, addend_y)
+        k >>= 1
+
+    return result_x, result_y
+\end{lstlisting}
+Dieses Snippet implementiert das sogenannte Double-and-Add-Verfahren, um Punkte auf einer elliptischen Kurve effizient zu multiplizieren. Diese Operation ist zentral für die ECDSA-Signaturvalidierung und angreifbar, wenn die Kurvenparameter manipuliert werden.\\
+\\
+\begin{lstlisting}[language=Python,caption={Signaturprüfung mit Kurvenparametern}]
+    final_x = result_x % self.order
+    is_valid = final_x == signature_r
+\end{lstlisting}
+Der finale Schritt der Validierung vergleicht die x-Koordinate des berechneten Punkts mit dem übermittelten Signaturwert r. Wird durch manipulierte Parameter gezielt ein passender final\_x konstruiert, kann eine gefälschte Signatur als gültig erscheinen – Kern der Curveball-Ausnutzung.
+
+\newpage
 \section{Arbeitsaufteilung}
 
 \noindent Die Arbeitsaufteilung erfolgte pragmatisch basierend auf den individuellen Stärken der Teammitglieder, wobei gleichzeitig Wert auf Wissenstransfer und gemeinsames Lernen gelegt wurde.
