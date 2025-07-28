@@ -190,6 +190,188 @@ Jede Phase beinhaltet interaktive Elemente wie Code-Eingabefelder, Zertifikatsvi
 Die Challenge kann sowohl einzeln als auch in Kleingruppen bearbeitet werden und ist zeitlich flexibel gestaltbar – von kompakten 90-Minuten-Sessions bis zu mehrstündigen Vertiefungen.
 
 \newpage
+
+\section{Kryptographische Grundlagen}
+
+\subsection{Elliptische Kurven-Kryptographie (ECC)}
+Elliptische Kurven-Kryptographie bildet das mathematische Fundament der CurveBall-Schwachstelle. Im Gegensatz zu klassischen asymmetrischen Verfahren wie RSA bietet ECC bei deutlich kürzeren Schlüssellängen ein vergleichbares Sicherheitsniveau.
+
+\subsubsection{Mathematische Definition}
+Eine elliptische Kurve über einem endlichen Körper \(F_p\) (mit \(p\) als Primzahl) wird durch die Weierstraß-Gleichung definiert:
+
+\begin{equation}
+y^2 = x^3 + ax + b \mod p
+\end{equation}
+
+Wobei die Parameter \(a\) und \(b\) die Form der Kurve bestimmen. Für kryptographische Anwendungen müssen zusätzlich folgende Bedingungen erfüllt sein:
+\begin{equation}
+4a^3 + 27b^2 \neq 0 \mod p
+\end{equation}
+
+Die Menge aller Punkte auf dieser Kurve, zusammen mit einem speziellen Punkt \(O\) (dem „Punkt im Unendlichen"), bildet eine abelsche Gruppe.
+
+\subsubsection{Punktoperationen}
+Zentral für die ECC sind zwei Grundoperationen:
+
+\textbf{Punktaddition:} Für zwei unterschiedliche Punkte \(P_1 = (x_1, y_1)\) und \(P_2 = (x_2, y_2)\) auf der Kurve wird die Summe \(P_3 = P_1 + P_2 = (x_3, y_3)\) wie folgt berechnet:
+
+\begin{align}
+\lambda &= \frac{y_2 - y_1}{x_2 - x_1} \mod p \\
+x_3 &= \lambda^2 - x_1 - x_2 \mod p \\
+y_3 &= \lambda(x_1 - x_3) - y_1 \mod p
+\end{align}
+
+\textbf{Punktverdopplung:} Für einen Punkt \(P = (x, y)\) wird \(2P = (x', y')\) berechnet mit:
+
+\begin{align}
+\lambda &= \frac{3x^2 + a}{2y} \mod p \\
+x' &= \lambda^2 - 2x \mod p \\
+y' &= \lambda(x - x') - y \mod p
+\end{align}
+
+\textbf{Skalarmultiplikation:} Die wiederholte Addition eines Punktes mit sich selbst (z.B. \(k \cdot P = P + P + \ldots + P\)) ist die Grundlage der ECC-Verschlüsselung. Effiziente Algorithmen wie Double-and-Add werden verwendet, um diese Operation zu optimieren.
+
+\subsubsection{Standardisierte Kurven}
+In der Praxis werden für kryptographische Anwendungen standardisierte Kurven verwendet, deren Parameter sorgfältig ausgewählt wurden, um bestimmte Sicherheitsanforderungen zu erfüllen:
+
+\begin{itemize}
+  \item \textbf{NIST-Kurven:} P-256, P-384, P-521 (auch als secp256r1, secp384r1, secp521r1 bekannt)
+  \item \textbf{Brainpool-Kurven:} Entwickelt als Alternative zu NIST-Kurven
+  \item \textbf{Curve25519:} Moderne Kurve mit besonderen Sicherheitseigenschaften
+\end{itemize}
+
+\subsection{Public-Key-Infrastruktur (PKI) und X.509-Zertifikate}
+
+\subsubsection{PKI-Grundkonzepte}
+Public-Key-Infrastrukturen bilden das Vertrauenssystem des modernen Internets. Sie basieren auf mehreren Kernkonzepten:
+
+\begin{itemize}
+  \item \textbf{Asymmetrische Kryptographie:} Verwendung von Schlüsselpaaren (öffentlich/privat)
+  \item \textbf{Digitale Zertifikate:} Bindung eines öffentlichen Schlüssels an eine Identität
+  \item \textbf{Zertifizierungsstellen (CA):} Vertrauenswürdige Dritte, die Zertifikate signieren
+  \item \textbf{Vertrauensketten:} Hierarchische Strukturen von Zertifikaten
+\end{itemize}
+
+\subsubsection{X.509-Zertifikate}
+X.509 ist der internationale Standard für digitale Zertifikate. Ein X.509v3-Zertifikat enthält:
+
+\begin{itemize}
+  \item \textbf{Version:} Aktuell meist Version 3
+  \item \textbf{Seriennummer:} Eindeutige Kennung innerhalb einer CA
+  \item \textbf{Signaturalgorithmus:} Verwendeter Algorithmus (z.B. ECDSA mit SHA-256)
+  \item \textbf{Aussteller (Issuer):} Informationen zur signierenden CA
+  \item \textbf{Gültigkeit:} Start- und Enddatum
+  \item \textbf{Betreff (Subject):} Identifikation des Zertifikatsinhabers
+  \item \textbf{Public-Key-Information:} Der öffentliche Schlüssel und Algorithmus-Identifier
+  \item \textbf{Erweiterungen:} Zusätzliche Felder wie Subject Alternative Name, Key Usage, etc.
+\end{itemize}
+
+\subsection{ECDSA-Signaturverfahren}
+
+Der Elliptic Curve Digital Signature Algorithm (ECDSA) ist das bei ECC-Zertifikaten verwendete Signaturverfahren und direktes Ziel der CurveBall-Schwachstelle.
+
+\subsubsection{Signaturerzeugung}
+Für eine Nachricht \(m\) mit privatem Schlüssel \(d_A\):
+\begin{enumerate}
+  \item Berechne \(e = \text{HASH}(m)\)
+  \item Wähle zufällig \(k \in [1, n-1]\)
+  \item Berechne Punkt \(R = k \cdot G = (x_R, y_R)\)
+  \item Setze \(r = x_R \mod n\). Falls \(r = 0\), zurück zu Schritt 2
+  \item Berechne \(s = k^{-1} \cdot (e + r \cdot d_A) \mod n\). Falls \(s = 0\), zurück zu Schritt 2
+  \item Die Signatur ist das Paar \((r, s)\)
+\end{enumerate}
+
+\subsubsection{Signaturverifikation}
+Zur Überprüfung einer Signatur \((r, s)\) für eine Nachricht \(m\) mit dem öffentlichen Schlüssel \(Q\):
+\begin{enumerate}
+  \item Berechne \(e = \text{HASH}(m)\)
+  \item Berechne den inversen Wert \(s^{-1} \mod n\)
+  \item Berechne die Werte \(u_1 = e \cdot s^{-1} \mod n\) und \(u_2 = r \cdot s^{-1} \mod n\)
+  \item Berechne den Punkt \(P = u_1 \cdot G + u_2 \cdot Q\)
+  \item Die Signatur ist gültig, wenn \(P \neq O\) und \(x_P \mod n = r\)
+\end{enumerate}
+
+\subsection{Die CurveBall-Schwachstelle (CVE-2020-0601)}
+
+Die Schwachstelle basiert auf einer kritischen Lücke in der Windows CryptoAPI bei der Validierung von ECC-Zertifikaten:
+
+\begin{itemize}
+  \item \textbf{Normale ECC-Validierung} prüft, ob:
+  \begin{enumerate}
+    \item Die Kurvenparameter gültig sind
+    \item Der Generator-Punkt \(G\) dem definierten Standard entspricht
+    \item Der Public-Key tatsächlich auf der angegebenen Kurve liegt
+  \end{enumerate}
+  
+  \item \textbf{Windows CryptoAPI-Fehler:} Die API prüfte \textit{nicht}, ob der Generator-Punkt \(G\) dem Standard entspricht.
+\end{itemize}
+
+Ein Angreifer kann diesen Fehler ausnutzen, indem er:
+\begin{enumerate}
+  \item Den öffentlichen Schlüssel \(Q_{CA}\) einer vertrauenswürdigen CA extrahiert
+  \item Einen eigenen Generator \(G'\) und privaten Schlüssel \(d'\) wählt, sodass \(Q_{CA} = d' \cdot G'\)
+  \item Ein Zertifikat mit manipulierten Kurvenparametern erstellt, das \(G'\) statt \(G\) verwendet
+  \item Mit \(d'\) beliebige Signaturen erstellt, die Windows als gültig vom Original-CA stammend akzeptiert
+\end{enumerate}
+
+Diese Schwachstelle unterläuft das fundamentale Sicherheitskonzept des ECC, das auf der Schwierigkeit des diskreten Logarithmusproblems beruht, indem es einem Angreifer erlaubt, dieses Problem vollständig zu umgehen.
+
+\subsection{Mathematische Tiefe des Problems}
+
+Die CurveBall-Schwachstelle unterläuft den grundlegenden Sicherheitsmechanismus von ECC, der auf der Schwierigkeit des diskreten Logarithmusproblems (DLP) basiert. Das DLP besagt, dass es bei gegebenen Punkten \(P\) und \(Q = d \cdot P\) auf einer elliptischen Kurve rechnerisch schwer ist, den Faktor \(d\) zu bestimmen – insbesondere bei großen Kurven.
+
+\subsubsection{Mathematische Eleganz des Exploits}
+Was die CurveBall-Schwachstelle mathematisch besonders interessant macht, ist die Umkehrung der Problemstellung:
+
+\begin{itemize}
+  \item \textbf{Normales ECC-Sicherheitsmodell:} Bei bekanntem Generator \(G\) und Public Key \(Q = d \cdot G\) ist es praktisch unmöglich, den privaten Schlüssel \(d\) zu ermitteln.
+  
+  \item \textbf{CurveBall-Angriff:} Der Angreifer kennt den Public Key \(Q_{CA}\) einer vertrauenswürdigen CA und \textit{wählt gezielt} einen privaten Schlüssel \(d'\) und berechnet dann rückwärts einen Generator \(G'\) so, dass die Gleichung \(Q_{CA} = d' \cdot G'\) erfüllt ist:
+  
+  \begin{equation}
+  G' = {d'}^{-1} \cdot Q_{CA} \mod n
+  \end{equation}
+\end{itemize}
+
+Diese mathematische Umkehrung ist elegant und zeigt, wie entscheidend die vollständige Validierung aller kryptographischen Parameter ist.
+
+\subsubsection{Kryptoanalytische Einordnung}
+Der CurveBall-Angriff stellt keine traditionelle kryptoanalytische Methode dar, da er keinen mathematischen Algorithmus der ECC-Kryptographie bricht. Stattdessen ist er ein Beispiel für einen \textit{Implementation Flaw}, bei dem eine kritische Validierungsroutine fehlt.
+
+Diese Art von Schwachstelle ist besonders gefährlich, weil:
+\begin{itemize}
+  \item Sie unabhängig von der mathematischen Stärke des zugrunde liegenden Algorithmus ist
+  \item Sie auf alle Versionen von Windows mit der betroffenen CryptoAPI anwendbar war
+  \item Sie ohne spezialisierte Hardwareressourcen ausnutzbar ist
+  \item Die Ausführung des Angriffs in Echtzeit erfolgen kann (low latency)
+\end{itemize}
+
+\subsection{Reale Angriffsszenarien}
+
+Die praktischen Auswirkungen der CurveBall-Schwachstelle manifestieren sich in mehreren kritischen Szenarien:
+
+\subsubsection{TLS-Verbindungsmanipulation}
+Ein Angreifer mit Netzwerkzugriff kann eine Man-in-the-Middle-Position einnehmen und TLS-Verbindungen abfangen. Mit einem gefälschten Zertifikat, das von einer vertrauenswürdigen Root-CA zu stammen scheint, kann er:
+
+\begin{itemize}
+  \item HTTPS-Verbindungen transparent entschlüsseln und manipulieren
+  \item Banking-Transaktionen abfangen oder umleiten
+  \item Sensible Daten in verschlüsselten Verbindungen auslesen
+\end{itemize}
+
+Das Opfer sieht im Browser ein vermeintlich gültiges HTTPS-Zertifikat mit grünem Schloss-Symbol, da Windows die Signatur als authentisch validiert.
+
+\subsubsection{Code-Signing-Subversion}
+Bei der Code-Signing-Subversion kann ein Angreifer Malware mit einer scheinbar legitimen digitalen Signatur versehen:
+
+\begin{itemize}
+  \item Die Malware erscheint als signiert von einem vertrauenswürdigen Softwarehersteller
+  \item Windows-Sicherheitsmechanismen wie SmartScreen und User Account Control (UAC) werden umgangen
+  \item Treiber können mit gefälschten Signaturen ins Kernelsystem geladen werden
+\end{itemize}
+
+Dies ist besonders kritisch, da die Signaturprüfung ein zentraler Sicherheitsmechanismus für Softwareinstallationen in Windows-Umgebungen ist.
+
 \section{Aufbau und Komponenten}
 \subsection{Flask Webserver}
 Der \emph{server.py} ist das Herzstück der Curveball CTF-Webanwendung und implementiert einen Flask-basierten Webserver mit SSL-Unterstützung. Der Server verwaltet 4 aufeinanderfolgende Challenges zum Thema ECC-Kryptographie und der CVE-2020-0601 Curveball-Schwachstelle.\\
@@ -358,6 +540,8 @@ Das Python-Skript verification.py dient als Simulator zur Analyse der Curveball-
 \end{lstlisting}
 Im Rahmen der Schwachstellenanalyse überprüft das Skript, ob ein Zertifikat auf einer nicht standardisierten elliptischen Kurve basiert. Standardmäßig werden in der Praxis nur gut geprüfte Kurven wie \textbf{secp256r1}, \textbf{secp384r1} und \textbf{secp521r1} verwendet. Das Snippet extrahiert den Namen der verwendeten Kurve aus dem Zertifikat und vergleicht ihn mit dieser Liste. Wenn eine nicht standardisierte Kurve erkannt wird, deutet das auf eine manipulierte ECC-Struktur hin – ein zentrales Element der Curveball-Ausnutzung. Dadurch wird sichtbar, ob das Zertifikat potenziell Teil eines Exploits ist.\\
 
+\newpage
+
 \subsection{Python-Skript: signature\_validator.py}
 In diesem Skritp wird demonstriert, wie die Curveball-Schwachstelle (CVE-2020-0601) ausgenutzt werden kann, um gültige ECDSA-Signaturen auf Basis manipulierter elliptischer Kurvenparameter zu erzeugen – ohne Kenntnis des privaten Schlüssels. Im Zentrum steht die Klasse ECCSignatureValidator, die eine vereinfachte ECC-Signaturprüfung durchführt. Mithilfe manipulierten Parametersätzen lassen sich gezielt Situationen erzeugen, in denen Signaturen als gültig anerkannt werden, obwohl sie unter vertrauenswürdigen Parametern nicht gültig wären.\\
 \\
@@ -418,7 +602,7 @@ Der finale Schritt der Validierung vergleicht die x-Koordinate des berechneten P
     \end{itemize} \\
     \hline
 
-    Christof Renner & DevOps \& Infrastruktur & 
+    Christof Renner & DevOps, Infrastructure, Konzeptionierung, Crypto-Implementierung  & 
     \begin{itemize}
         \item Konzeptionierung der einzelnen Challenges
         \item Docker-Containerisierung mit Multi-Stage-Builds
@@ -428,6 +612,9 @@ Der finale Schritt der Validierung vergleicht die x-Koordinate des berechneten P
         \item Dokumentation der technischen Details
         \item Container-Deployment-Architektur
         \item Implementierung der Sicherheitsmaßnahmen
+        \item Frontend-Entwicklung mit JavaScript
+        \item Frontend-Design mit HTML/CSS
+        \item Entwicklung der Challenge-Skripte
         \item Frontend-Optimierungen
     \end{itemize} \\
     \hline
